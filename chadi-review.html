@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="es">
+<head>
+<script src="auth.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Zalei Atlas — Opciones De Revisión Y Render</title>
+  <meta name="description" content="Página de revisión para Chadi: Atlas Zalei, validación de zonas, microzonas, 3D, renders y recorribles.">
+  <style>
+    :root{
+      --bg:#08090c;
+      --panel:#11141a;
+      --panel2:#171b23;
+      --ink:#f5f2ea;
+      --muted:#a7a092;
+      --soft:#6f685b;
+      --gold:#d8b56d;
+      --gold2:#f1d58a;
+      --line:rgba(255,255,255,.12);
+      --ok:#7fd19b;
+      --warn:#ffcf66;
+      --danger:#ff6b7a;
+      --blue:#8ec5ff;
+      --radius:24px;
+      --shadow:0 24px 70px rgba(0,0,0,.45);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(216,181,109,.17), transparent 34%),
+        radial-gradient(circle at 90% 10%, rgba(142,197,255,.10), transparent 28%),
+        linear-gradient(180deg,#08090c 0%,#101116 54%,#07080a 100%);
+      color:var(--ink);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height:1.45;
+    }
+    a{color:inherit;text-decoration:none}
+    .wrap{width:min(1180px,92vw);margin:auto}
+    .hero{
+      min-height:92vh;
+      display:grid;
+      place-items:center;
+      padding:42px 0 56px;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:before{
+      content:"";
+      position:absolute;
+      inset:40px auto auto 50%;
+      width:760px;height:760px;
+      transform:translateX(-50%);
+      border:1px solid rgba(216,181,109,.12);
+      border-radius:50%;
+      pointer-events:none;
+    }
+    .eyebrow{
+      display:inline-flex;gap:10px;align-items:center;
+      color:var(--gold2);
+      border:1px solid rgba(216,181,109,.36);
+      background:rgba(216,181,109,.08);
+      padding:9px 14px;border-radius:999px;
+      font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+      font-size:12px;
+    }
+    h1{
+      font-size:clamp(42px,8vw,92px);
+      line-height:.94;
+      margin:28px 0 18px;
+      letter-spacing:-.055em;
+      max-width:980px;
+    }
+    .lead{
+      font-size:clamp(18px,2.4vw,27px);
+      color:#d9d2c4;
+      max-width:900px;
+      margin:0 0 28px;
+    }
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.25fr .75fr;
+      gap:28px;
+      align-items:end;
+      width:100%;
+      margin-top:28px;
+    }
+    .glass{
+      background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(12px);
+    }
+    .hero-card{padding:28px}
+    .hero-card h2{font-size:24px;margin:0 0 12px}
+    .hero-card p{margin:0;color:#c9c1b3;font-size:16px}
+    .stat-grid{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px
+    }
+    .stat{
+      padding:16px;border-radius:18px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08)
+    }
+    .stat b{display:block;font-size:30px;color:var(--gold2);line-height:1}
+    .stat span{display:block;color:#aaa193;font-size:12px;margin-top:6px}
+    .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:9px;
+      padding:14px 18px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:#1a1e27;
+      color:#fff;
+      font-weight:800;
+      font-size:14px;
+      transition:.18s ease;
+      cursor:pointer;
+    }
+    .btn:hover{transform:translateY(-2px);border-color:rgba(216,181,109,.55);background:#222838}
+    .btn.primary{background:linear-gradient(135deg,var(--gold),#8b6b2e);color:#111;border-color:transparent}
+    .btn.ghost{background:transparent}
+    .nav{
+      position:sticky;top:0;z-index:20;
+      background:rgba(8,9,12,.86);
+      backdrop-filter:blur(16px);
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .nav .wrap{display:flex;gap:10px;overflow:auto;padding:10px 0}
+    .nav a{
+      flex:0 0 auto;
+      padding:10px 14px;border-radius:999px;
+      color:#cfc6b6;background:rgba(255,255,255,.04);
+      font-weight:700;font-size:13px;
+      border:1px solid transparent;
+    }
+    .nav a:hover{border-color:rgba(216,181,109,.35);color:#fff}
+    section{padding:72px 0;border-top:1px solid rgba(255,255,255,.06)}
+    .section-head{display:flex;justify-content:space-between;gap:24px;align-items:end;margin-bottom:28px}
+    .section-head h2{font-size:clamp(30px,4vw,54px);margin:0;letter-spacing:-.04em}
+    .section-head p{max-width:600px;color:#bdb4a4;margin:0;font-size:16px}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{
+      background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:22px;
+      padding:22px;
+      min-height:220px;
+      position:relative;
+      overflow:hidden;
+    }
+    .card:after{
+      content:"";
+      position:absolute;right:-60px;top:-60px;width:160px;height:160px;
+      background:radial-gradient(circle,rgba(216,181,109,.15),transparent 65%);
+    }
+    .card .icon{font-size:28px;margin-bottom:14px}
+    .card h3{margin:0 0 10px;font-size:21px}
+    .card p{color:#c1b9aa;margin:0 0 14px}
+    .card ul{padding-left:18px;margin:0;color:#a9a091}
+    .card li{margin:6px 0}
+    .media-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .media-card{
+      border-radius:22px;overflow:hidden;background:#111;border:1px solid rgba(255,255,255,.10)
+    }
+    .media-card img{width:100%;display:block;background:#0e0e0e}
+    .media-card div{padding:16px}
+    .media-card h3{margin:0 0 8px;font-size:19px}
+    .media-card p{margin:0;color:#bdb4a4}
+    .choice-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+    .choice{
+      display:grid;grid-template-columns:auto 1fr;gap:16px;
+      padding:22px;border-radius:22px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.045);
+    }
+    .choice .num{
+      width:42px;height:42px;border-radius:50%;
+      display:grid;place-items:center;
+      background:rgba(216,181,109,.14);
+      color:var(--gold2);
+      font-weight:900;
+      border:1px solid rgba(216,181,109,.35);
+    }
+    .choice h3{margin:0 0 8px;font-size:21px}
+    .choice p{margin:0;color:#bdb4a4}
+    .tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .tag{font-size:12px;padding:7px 9px;border-radius:999px;background:rgba(255,255,255,.06);color:#d9d2c4;border:1px solid rgba(255,255,255,.08)}
+    .warn{
+      border-left:4px solid var(--warn);
+      background:rgba(255,207,102,.08);
+      padding:18px;border-radius:18px;color:#eadbb8;
+    }
+    .copy-box{
+      background:#0e1118;border:1px solid rgba(255,255,255,.12);
+      border-radius:20px;padding:18px;
+    }
+    textarea{
+      width:100%;min-height:160px;resize:vertical;
+      background:#090b10;color:#f4f0e8;border:1px solid rgba(255,255,255,.13);
+      border-radius:16px;padding:14px;font:15px/1.45 ui-sans-serif,system-ui;
+    }
+    footer{padding:44px 0 70px;color:#8f8677}
+    @media (max-width:880px){
+      .hero-grid,.cards,.media-grid,.choice-grid{grid-template-columns:1fr}
+      .section-head{display:block}
+      .section-head p{margin-top:12px}
+      .stat-grid{grid-template-columns:1fr}
+      .hero{min-height:auto}
+    }
+  </style>
+</head>
+<body>
+  <main class="hero">
+    <div class="wrap">
+      <span class="eyebrow">Zalei Atlas · Revisión Para Chadi</span>
+      <h1>Elegí Qué Querés Ver Y Qué Querés Construir Después</h1>
+      <p class="lead">Este Atlas permite pasar de una imagen satelital a planos, microzonas, 3D, renders con texturas y recorribles sin perder ubicación, calidad ni detalles.</p>
+      <div class="hero-grid">
+        <div class="hero-card glass">
+          <h2>La Idea Principal</h2>
+          <p>No estamos haciendo una imagen linda “a ojo”. Estamos armando una base técnica: satélite, coordenadas, crops, microzonas, etiquetas y máscaras. Con eso después se pueden producir renders de distintos estilos sin que la IA invente edificios, cambie posiciones o pierda detalles chicos.</p>
+          <div class="cta-row">
+            <a class="btn primary" href="#elegir">Ver Opciones</a>
+            <a class="btn" href="#validacion">Validar Z15 / Z16</a>
+            <a class="btn ghost" href="#renders">Tipos De Render</a>
+          </div>
+        </div>
+        <div class="hero-card glass">
+          <h2>Estado Actual</h2>
+          <div class="stat-grid">
+            <div class="stat"><b>22</b><span>Zonas Generales</span></div>
+            <div class="stat"><b>41</b><span>Microzonas</span></div>
+            <div class="stat"><b>0</b><span>Fails Críticos</span></div>
+          </div>
+          <p style="margin-top:18px">Ya están separados elementos críticos como Silos Secos y Tanques De Aceite. Quedan zonas para validar con Chadi antes de hacer el 3D/texturas finales.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <nav class="nav">
+    <div class="wrap">
+      <a href="#elegir">Elegir Qué Ver</a>
+      <a href="#atlas">Atlas Actual</a>
+      <a href="#validacion">Validación Chadi</a>
+      <a href="#renders">Renders Posibles</a>
+      <a href="#recorribles">3D / Recorribles</a>
+      <a href="#mensaje">Mensaje WhatsApp</a>
+    </div>
+  </nav>
+
+  <section id="elegir">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Opciones Para Ver Ahora</h2>
+        <p>Chadi puede elegir si quiere revisar el mapa técnico, los crops de detalle, la maqueta 3D o directamente las opciones de renders futuros.</p>
+      </div>
+      <div class="cards">
+        <article class="card">
+          <div class="icon">🗺️</div>
+          <h3>Mapa 2D Atlas</h3>
+          <p>Vista general del predio con zonas y microzonas.</p>
+          <ul>
+            <li>Ideal para validar ubicación general.</li>
+            <li>Permite hacer zoom.</li>
+            <li>Sirve como base de verdad.</li>
+          </ul>
+          <div class="tag-row"><span class="tag">Mapa</span><span class="tag">Coordenadas</span><span class="tag">Zonas</span></div>
+          <p style="margin-top:16px"><a class="btn" href="../../viewers/index_2d.html">Abrir Viewer 2D</a></p>
+        </article>
+        <article class="card">
+          <div class="icon">🔎</div>
+          <h3>Crops Por Zona</h3>
+          <p>Recortes de alta resolución para revisar cada zona sin que se mezcle todo.</p>
+          <ul>
+            <li>Ideal para validar detalles chicos.</li>
+            <li>Sirve para corregir etiquetas.</li>
+            <li>Evita errores en 3D.</li>
+          </ul>
+          <div class="tag-row"><span class="tag">Zoom</span><span class="tag">Microzonas</span><span class="tag">Detalle</span></div>
+          <p style="margin-top:16px"><a class="btn" href="../../viewers/crop_viewer.html">Abrir Crop Viewer</a></p>
+        </article>
+        <article class="card">
+          <div class="icon">🏗️</div>
+          <h3>3D Blockout</h3>
+          <p>Maqueta técnica para revisar volumen, posición y lectura espacial.</p>
+          <ul>
+            <li>No es render final.</li>
+            <li>Alturas todavía heurísticas.</li>
+            <li>Base para recorribles y texturas.</li>
+          </ul>
+          <div class="tag-row"><span class="tag">3D</span><span class="tag">Volumen</span><span class="tag">Recorrible</span></div>
+          <p style="margin-top:16px"><a class="btn" href="../../viewers/index_3d.html">Abrir Viewer 3D</a></p>
+        </article>
+      </div>
+      <div class="warn" style="margin-top:20px">
+        Si esta página se sube sola como paquete liviano, los viewers interactivos pueden no abrir porque dependen del proyecto completo. Las imágenes de revisión sí deben verse siempre.
+      </div>
+    </div>
+  </section>
+
+  <section id="atlas">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Qué Ya Está Armado</h2>
+        <p>Esto es lo que permite no perder calidad ni detalles: cada parte importante se transforma en zona, microzona, máscara o volumen.</p>
+      </div>
+      <div class="media-grid">
+        <article class="media-card">
+          <img src="assets/01_atlas_overview.jpg" alt="Overview Atlas">
+          <div>
+            <h3>Atlas General</h3>
+            <p>22 zonas generales organizadas sobre la imagen satelital. Sirve como base global.</p>
+          </div>
+        </article>
+        <article class="media-card">
+          <img src="assets/02_z06_compare.jpg" alt="Z06 Silos Secos">
+          <div>
+            <h3>Z06 · Silos Secos</h3>
+            <p>Los 7 Silos Secos ya están separados como microzonas individuales.</p>
+          </div>
+        </article>
+        <article class="media-card">
+          <img src="assets/03_z19_compare.jpg" alt="Z19 Tanques De Aceite">
+          <div>
+            <h3>Z19 · Tanques De Aceite</h3>
+            <p>Los 3 Tanques De Aceite fueron ajustados con bboxes individuales.</p>
+          </div>
+        </article>
+        <article class="media-card">
+          <img src="assets/04_z18_questioned.jpg" alt="Z18 Secado Y Limpieza">
+          <div>
+            <h3>Z18 · Pendiente</h3>
+            <p>Necesitamos confirmar exactamente dónde está Secado Y Limpieza De Granos para no confundirlo con una pasarela superior.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="validacion">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Validación Que Necesitamos De Chadi</h2>
+        <p>Con que responda números alcanza. No hace falta usar nombres técnicos perfectos.</p>
+      </div>
+      <div class="media-grid">
+        <article class="media-card">
+          <img src="assets/05_z15_candidates.jpg" alt="Z15 Candidatos">
+          <div>
+            <h3>Z15 · Silos Húmedos</h3>
+            <p>Indicar qué números son realmente Silos Húmedos. Si alguno sobra, decir “Descartar Número X”.</p>
+          </div>
+        </article>
+        <article class="media-card">
+          <img src="assets/06_z16_candidates.jpg" alt="Z16 Candidatos">
+          <div>
+            <h3>Z16 · Silos De Almacenamiento / Consumo / Expeller</h3>
+            <p>Indicar qué números corresponden a esa zona. Si falta algo no numerado, marcarlo o describirlo.</p>
+          </div>
+        </article>
+      </div>
+      <div class="cards" style="margin-top:18px">
+        <article class="card">
+          <div class="icon">1</div>
+          <h3>Z15</h3>
+          <p>Responder con los números que sean Silos Húmedos.</p>
+          <p><b>Ejemplo:</b> “Z15: 03, 07, 12. Descartar 05.”</p>
+        </article>
+        <article class="card">
+          <div class="icon">2</div>
+          <h3>Z16</h3>
+          <p>Responder con los números que sean Silos De Almacenamiento / Consumo / Expeller.</p>
+          <p><b>Ejemplo:</b> “Z16: 01, 02, 04, 08, 11.”</p>
+        </article>
+        <article class="card">
+          <div class="icon">3</div>
+          <h3>Z18</h3>
+          <p>Marcar dónde está Secado Y Limpieza De Granos.</p>
+          <p><b>Clave:</b> no confundir con la pasarela/tubular superior.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="renders">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Qué Renders Se Pueden Hacer Gracias A Esto</h2>
+        <p>Una vez validado el Atlas, se pueden generar visuales en distintos niveles de realismo sin perder la ubicación real.</p>
+      </div>
+      <div class="choice-grid">
+        <article class="choice">
+          <div class="num">A</div>
+          <div>
+            <h3>Render Aéreo General</h3>
+            <p>Vista completa del predio tipo drone, con texturas realistas y etiquetas opcionales.</p>
+            <div class="tag-row"><span class="tag">Ejemplo: Vista Investor</span><span class="tag">Día / Atardecer</span></div>
+          </div>
+        </article>
+        <article class="choice">
+          <div class="num">B</div>
+          <div>
+            <h3>Render Por Zona</h3>
+            <p>Render específico de Planta De Alimento, Silos, Galpones, Guano o Terreno Nuevo.</p>
+            <div class="tag-row"><span class="tag">Ejemplo: Z06 Silos</span><span class="tag">Zoom Premium</span></div>
+          </div>
+        </article>
+        <article class="choice">
+          <div class="num">C</div>
+          <div>
+            <h3>Antes / Después</h3>
+            <p>Comparar estado actual con ampliaciones o mejoras futuras.</p>
+            <div class="tag-row"><span class="tag">Ejemplo: Terreno Nuevo</span><span class="tag">Fase 1 / Fase 2</span></div>
+          </div>
+        </article>
+        <article class="choice">
+          <div class="num">D</div>
+          <div>
+            <h3>Plano Técnico Premium</h3>
+            <p>Versión limpia para presentación: zonas, etiquetas, leyenda, colores sobrios y lectura clara.</p>
+            <div class="tag-row"><span class="tag">PDF</span><span class="tag">Investor Pack</span></div>
+          </div>
+        </article>
+        <article class="choice">
+          <div class="num">E</div>
+          <div>
+            <h3>Render Sin Etiquetas</h3>
+            <p>Imagen final limpia para web, carpeta comercial o presentación visual.</p>
+            <div class="tag-row"><span class="tag">Fotorealista</span><span class="tag">Alta Resolución</span></div>
+          </div>
+        </article>
+        <article class="choice">
+          <div class="num">F</div>
+          <div>
+            <h3>Render Con Etiquetas</h3>
+            <p>Mismo render, pero con rótulos prolijos para explicar cada sector sin deformar texto.</p>
+            <div class="tag-row"><span class="tag">Labels Premium</span><span class="tag">Capas Separadas</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="recorribles">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Opciones 3D Y Recorribles</h2>
+        <p>Esto es probablemente lo que más le interesa al padre de Chadi: recorridos, 3D y texturas, pero con control real del detalle.</p>
+      </div>
+      <div class="cards">
+        <article class="card">
+          <div class="icon">🎮</div>
+          <h3>Recorrible Web</h3>
+          <p>Una maqueta 3D que se abre en navegador. Se puede rotar, acercar, prender/apagar etiquetas y revisar zonas.</p>
+          <ul>
+            <li>Ideal para WhatsApp o web.</li>
+            <li>Liviano y rápido.</li>
+            <li>Primero técnico, luego visual.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <div class="icon">🎥</div>
+          <h3>Video Recorrido</h3>
+          <p>Un video tipo drone/cámara que recorra acceso, galpones, planta, silos y terreno nuevo.</p>
+          <ul>
+            <li>Ejemplo: Entrada → Planta → Silos → Galpones.</li>
+            <li>Puede ser institucional.</li>
+            <li>Sirve para inversores.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <div class="icon">🧱</div>
+          <h3>3D Texturizado</h3>
+          <p>Modelo con techos, silos metálicos, caminos, suelo, guano plano y materiales realistas.</p>
+          <ul>
+            <li>No se pierden posiciones.</li>
+            <li>Texturas sobre máscaras.</li>
+            <li>Exportable a Blender / Web.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <div class="icon">🏢</div>
+          <h3>Maqueta Para Decidir Obras</h3>
+          <p>Ver cómo quedarían los 2 galpones nuevos, silo-bolsas y ampliaciones antes de construir.</p>
+          <ul>
+            <li>Comparar alternativas.</li>
+            <li>Medir impacto visual.</li>
+            <li>Presentar fases.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <div class="icon">🌐</div>
+          <h3>Micrositio De Proyecto</h3>
+          <p>Página privada con mapa, crops, renders, 3D y pendientes de validación.</p>
+          <ul>
+            <li>Todo centralizado.</li>
+            <li>Acceso por link.</li>
+            <li>Actualizable por fases.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <div class="icon">📐</div>
+          <h3>Capas Para Producción</h3>
+          <p>Máscaras SVG/PNG para texturas, etiquetas separadas y renders por zonas.</p>
+          <ul>
+            <li>No quemar textos en imagen.</li>
+            <li>Export 4K / 8K.</li>
+            <li>Control de calidad.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="mensaje">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Mensaje Para Mandar Por WhatsApp</h2>
+        <p>Copiar, pegar link y mandar.</p>
+      </div>
+      <div class="copy-box">
+        <textarea id="waText">Chadi, te paso una revisión visual del Atlas de Zalei.
+
+La idea es validar bien cada zona antes de hacer el 3D/texturas final. No estamos generando una imagen a ojo: estamos armando todo con imagen satelital, coordenadas, crops y etiquetas para que cada cosa quede bien ubicada.
+
+Gracias a este trabajo después podemos hacer renders de todo tipo: vista aérea realista, renders por zona, planos técnicos, 3D texturizado, recorribles y videos, sin perder calidad ni detalles chicos.
+
+Link: [PEGAR LINK ACÁ]
+
+Lo más importante ahora:
+1. Mirá Z15 y decime qué números son realmente Silos Húmedos.
+2. Mirá Z16 y decime qué números son Silos De Almacenamiento / Consumo / Expeller.
+3. Si algún número está mal, decime “descartar X”.
+4. Si falta algo que no está numerado, marcámelo o describímelo.
+5. También necesito que marques exactamente dónde está Secado Y Limpieza De Granos, para no confundirlo con la pasarela/tubular superior.
+
+Con que me respondas con los números ya sirve.</textarea>
+        <div class="cta-row">
+          <button class="btn primary" onclick="copyWA()">Copiar Mensaje</button>
+          <a class="btn" href="#validacion">Ver Validación</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      Zalei Atlas · Revisión Visual · Base Técnica Para Renders, 3D Y Recorribles.
+    </div>
+  </footer>
+
+  <script>
+    function copyWA(){
+      const el = document.getElementById('waText');
+      el.select();
+      el.setSelectionRange(0, 99999);
+      document.execCommand('copy');
+      alert('Mensaje copiado.');
+    }
+  </script>
+</body>
+</html>

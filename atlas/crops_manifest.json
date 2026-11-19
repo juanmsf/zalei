@@ -1,0 +1,688 @@
+{
+  "generated": "2026-05-24",
+  "padding_px": 80,
+  "crops": [
+    {
+      "zone_id": "Z01",
+      "zone_name": "Recría Existente",
+      "folder": "z01_recría_existente",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 16,
+        "y1": 53,
+        "x2": 1396,
+        "y2": 431
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 1299,
+        "y2": 298
+      },
+      "crop_size": {
+        "w": 1380,
+        "h": 378
+      },
+      "paths": {
+        "clean": "crops\\z01_recría_existente\\clean.png",
+        "border": "crops\\z01_recría_existente\\border.png",
+        "coords": "crops\\z01_recría_existente\\coords.png",
+        "label": "crops\\z01_recría_existente\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "validated",
+      "requires_chadi_validation": false
+    },
+    {
+      "zone_id": "Z02",
+      "zone_name": "Guano",
+      "folder": "z02_guano",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 2102,
+        "y1": 464,
+        "x2": 3564,
+        "y2": 2721
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 1382,
+        "y2": 2177
+      },
+      "crop_size": {
+        "w": 1462,
+        "h": 2257
+      },
+      "paths": {
+        "clean": "crops\\z02_guano\\clean.png",
+        "border": "crops\\z02_guano\\border.png",
+        "coords": "crops\\z02_guano\\coords.png",
+        "label": "crops\\z02_guano\\label.png"
+      },
+      "certainty": "medium",
+      "validation_status": "geometry_ok_subtype_pending",
+      "requires_chadi_validation": true
+    },
+    {
+      "zone_id": "Z03",
+      "zone_name": "Galpones De Ponedoras",
+      "folder": "z03_galpones_de_ponedoras",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 154,
+        "y1": 1952,
+        "x2": 1895,
+        "y2": 3880
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 1661,
+        "y2": 1848
+      },
+      "crop_size": {
+        "w": 1741,
+        "h": 1928
+      },
+      "paths": {
+        "clean": "crops\\z03_galpones_de_ponedoras\\clean.png",
+        "border": "crops\\z03_galpones_de_ponedoras\\border.png",
+        "coords": "crops\\z03_galpones_de_ponedoras\\coords.png",
+        "label": "crops\\z03_galpones_de_ponedoras\\label.png"
+      },
+      "certainty": "high_count_medium_individual",
+      "validation_status": "count_validated_individual_bbox_pending",
+      "requires_chadi_validation": false
+    },
+    {
+      "zone_id": "Z04",
+      "zone_name": "Planta De Alimento",
+      "folder": "z04_planta_de_alimento",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 2239,
+        "y1": 3229,
+        "x2": 2560,
+        "y2": 3820
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 240,
+        "y2": 512
+      },
+      "crop_size": {
+        "w": 321,
+        "h": 591
+      },
+      "paths": {
+        "clean": "crops\\z04_planta_de_alimento\\clean.png",
+        "border": "crops\\z04_planta_de_alimento\\border.png",
+        "coords": "crops\\z04_planta_de_alimento\\coords.png",
+        "label": "crops\\z04_planta_de_alimento\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "validated",
+      "requires_chadi_validation": false
+    },
+    {
+      "zone_id": "Z05",
+      "zone_name": "Cintas Transportadoras",
+      "folder": "z05_cintas_transportadoras",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 699,
+        "y1": 2134,
+        "x2": 1107,
+        "y2": 3366
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 328,
+        "y2": 1152
+      },
+      "crop_size": {
+        "w": 408,
+        "h": 1232
+      },
+      "paths": {
+        "clean": "crops\\z05_cintas_transportadoras\\clean.png",
+        "border": "crops\\z05_cintas_transportadoras\\border.png",
+        "coords": "crops\\z05_cintas_transportadoras\\coords.png",
+        "label": "crops\\z05_cintas_transportadoras\\label.png"
+      },
+      "certainty": "high_trajectory_medium_connections",
+      "validation_status": "trajectory_validated_connections_pending",
+      "requires_chadi_validation": false
+    },
+    {
+      "zone_id": "Z06",
+      "zone_name": "Silos Secos",
+      "folder": "z06_silos_secos",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 2666,
+        "y1": 3126,
+        "x2": 3531,
+        "y2": 3717
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 786,
+        "y2": 512
+      },
+      "crop_size": {
+        "w": 865,
+        "h": 591
+      },
+      "paths": {
+        "clean": "crops\\z06_silos_secos\\clean.png",
+        "border": "crops\\z06_silos_secos\\border.png",
+        "coords": "crops\\z06_silos_secos\\coords.png",
+        "label": "crops\\z06_silos_secos\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "validated",
+      "requires_chadi_validation": false
+    },
+    {
+      "zone_id": "Z07",
+      "zone_name": "Terreno Nuevo",
+      "folder": "z07_terreno_nuevo",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 3555,
+        "y1": 0,
+        "x2": 5042,
+        "y2": 4204
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 0,
+        "x2": 1487,
+        "y2": 4124
+      },
+      "crop_size": {
+        "w": 1487,
+        "h": 4204
+      },
+      "paths": {
+        "clean": "crops\\z07_terreno_nuevo\\clean.png",
+        "border": "crops\\z07_terreno_nuevo\\border.png",
+        "coords": "crops\\z07_terreno_nuevo\\coords.png",
+        "label": "crops\\z07_terreno_nuevo\\label.png"
+      },
+      "certainty": "high_perimeter_pending_content",
+      "validation_status": "perimeter_validated_content_pending",
+      "requires_chadi_validation": true
+    },
+    {
+      "zone_id": "Z08",
+      "zone_name": "Casa De Gerencia",
+      "folder": "z08_casa_de_gerencia",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 3321,
+        "y1": 3740,
+        "x2": 3715,
+        "y2": 4178
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 314,
+        "y2": 358
+      },
+      "crop_size": {
+        "w": 394,
+        "h": 438
+      },
+      "paths": {
+        "clean": "crops\\z08_casa_de_gerencia\\clean.png",
+        "border": "crops\\z08_casa_de_gerencia\\border.png",
+        "coords": "crops\\z08_casa_de_gerencia\\coords.png",
+        "label": "crops\\z08_casa_de_gerencia\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "validated",
+      "requires_chadi_validation": false
+    },
+    {
+      "zone_id": "Z09",
+      "zone_name": "Departamentos De Empleados",
+      "folder": "z09_departamentos_de_empleados",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 319,
+        "y1": 3772,
+        "x2": 1107,
+        "y2": 4137
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 708,
+        "y2": 285
+      },
+      "crop_size": {
+        "w": 788,
+        "h": 365
+      },
+      "paths": {
+        "clean": "crops\\z09_departamentos_de_empleados\\clean.png",
+        "border": "crops\\z09_departamentos_de_empleados\\border.png",
+        "coords": "crops\\z09_departamentos_de_empleados\\coords.png",
+        "label": "crops\\z09_departamentos_de_empleados\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "validated",
+      "requires_chadi_validation": false
+    },
+    {
+      "zone_id": "Z10",
+      "zone_name": "Clasificadora",
+      "folder": "z10_clasificadora",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 809,
+        "y1": 2480,
+        "x2": 1703,
+        "y2": 2913
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 813,
+        "y2": 354
+      },
+      "crop_size": {
+        "w": 894,
+        "h": 433
+      },
+      "paths": {
+        "clean": "crops\\z10_clasificadora\\clean.png",
+        "border": "crops\\z10_clasificadora\\border.png",
+        "coords": "crops\\z10_clasificadora\\coords.png",
+        "label": "crops\\z10_clasificadora\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "validated",
+      "requires_chadi_validation": false
+    },
+    {
+      "zone_id": "Z11",
+      "zone_name": "Casa De Mantenimiento Sur",
+      "folder": "z11_casa_de_mantenimiento_sur",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 1639,
+        "y1": 3864,
+        "x2": 2037,
+        "y2": 4183
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 318,
+        "y2": 239
+      },
+      "crop_size": {
+        "w": 398,
+        "h": 319
+      },
+      "paths": {
+        "clean": "crops\\z11_casa_de_mantenimiento_sur\\clean.png",
+        "border": "crops\\z11_casa_de_mantenimiento_sur\\border.png",
+        "coords": "crops\\z11_casa_de_mantenimiento_sur\\coords.png",
+        "label": "crops\\z11_casa_de_mantenimiento_sur\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "geometry_ok_name_conflict_pending",
+      "requires_chadi_validation": true
+    },
+    {
+      "zone_id": "Z12",
+      "zone_name": "Taller",
+      "folder": "z12_taller",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 621,
+        "y1": 3543,
+        "x2": 1038,
+        "y2": 3940
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 337,
+        "y2": 317
+      },
+      "crop_size": {
+        "w": 417,
+        "h": 397
+      },
+      "paths": {
+        "clean": "crops\\z12_taller\\clean.png",
+        "border": "crops\\z12_taller\\border.png",
+        "coords": "crops\\z12_taller\\coords.png",
+        "label": "crops\\z12_taller\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "validated",
+      "requires_chadi_validation": false
+    },
+    {
+      "zone_id": "Z13",
+      "zone_name": "Casa De Mantenimiento Norte",
+      "folder": "z13_casa_de_mantenimiento_norte",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 1474,
+        "y1": 284,
+        "x2": 2023,
+        "y2": 649
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 470,
+        "y2": 285
+      },
+      "crop_size": {
+        "w": 549,
+        "h": 365
+      },
+      "paths": {
+        "clean": "crops\\z13_casa_de_mantenimiento_norte\\clean.png",
+        "border": "crops\\z13_casa_de_mantenimiento_norte\\border.png",
+        "coords": "crops\\z13_casa_de_mantenimiento_norte\\coords.png",
+        "label": "crops\\z13_casa_de_mantenimiento_norte\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "geometry_ok_name_conflict_pending",
+      "requires_chadi_validation": true
+    },
+    {
+      "zone_id": "Z14",
+      "zone_name": "Aceitera",
+      "folder": "z14_aceitera",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 2386,
+        "y1": 3351,
+        "x2": 2679,
+        "y2": 3798
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 213,
+        "y2": 367
+      },
+      "crop_size": {
+        "w": 293,
+        "h": 447
+      },
+      "paths": {
+        "clean": "crops\\z14_aceitera\\clean.png",
+        "border": "crops\\z14_aceitera\\border.png",
+        "coords": "crops\\z14_aceitera\\coords.png",
+        "label": "crops\\z14_aceitera\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "validated",
+      "requires_chadi_validation": false
+    },
+    {
+      "zone_id": "Z15",
+      "zone_name": "Silos Húmedos",
+      "folder": "z15_silos_húmedos",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 2583,
+        "y1": 3016,
+        "x2": 2835,
+        "y2": 3381
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 172,
+        "y2": 285
+      },
+      "crop_size": {
+        "w": 252,
+        "h": 365
+      },
+      "paths": {
+        "clean": "crops\\z15_silos_húmedos\\clean.png",
+        "border": "crops\\z15_silos_húmedos\\border.png",
+        "coords": "crops\\z15_silos_húmedos\\coords.png",
+        "label": "crops\\z15_silos_húmedos\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "validated",
+      "requires_chadi_validation": false
+    },
+    {
+      "zone_id": "Z16",
+      "zone_name": "Silos De Almacenamiento Consumo Y Expeller",
+      "folder": "z16_silos_de_almacenamiento_consumo_y_expeller",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 2368,
+        "y1": 3121,
+        "x2": 2734,
+        "y2": 3550
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 286,
+        "y2": 349
+      },
+      "crop_size": {
+        "w": 366,
+        "h": 429
+      },
+      "paths": {
+        "clean": "crops\\z16_silos_de_almacenamiento_consumo_y_expeller\\clean.png",
+        "border": "crops\\z16_silos_de_almacenamiento_consumo_y_expeller\\border.png",
+        "coords": "crops\\z16_silos_de_almacenamiento_consumo_y_expeller\\coords.png",
+        "label": "crops\\z16_silos_de_almacenamiento_consumo_y_expeller\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "validated",
+      "requires_chadi_validation": false
+    },
+    {
+      "zone_id": "Z17",
+      "zone_name": "Planta De Descarga De Granos",
+      "folder": "z17_planta_de_descarga_de_granos",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 2281,
+        "y1": 2956,
+        "x2": 2500,
+        "y2": 3326
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 140,
+        "y2": 289
+      },
+      "crop_size": {
+        "w": 219,
+        "h": 370
+      },
+      "paths": {
+        "clean": "crops\\z17_planta_de_descarga_de_granos\\clean.png",
+        "border": "crops\\z17_planta_de_descarga_de_granos\\border.png",
+        "coords": "crops\\z17_planta_de_descarga_de_granos\\coords.png",
+        "label": "crops\\z17_planta_de_descarga_de_granos\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "validated",
+      "requires_chadi_validation": false
+    },
+    {
+      "zone_id": "Z18",
+      "zone_name": "Secado Y Limpieza De Granos",
+      "folder": "z18_secado_y_limpieza_de_granos",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 2583,
+        "y1": 3167,
+        "x2": 2949,
+        "y2": 3564
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 286,
+        "y2": 317
+      },
+      "crop_size": {
+        "w": 366,
+        "h": 397
+      },
+      "paths": {
+        "clean": "crops\\z18_secado_y_limpieza_de_granos\\clean.png",
+        "border": "crops\\z18_secado_y_limpieza_de_granos\\border.png",
+        "coords": "crops\\z18_secado_y_limpieza_de_granos\\coords.png",
+        "label": "crops\\z18_secado_y_limpieza_de_granos\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "validated",
+      "requires_chadi_validation": false
+    },
+    {
+      "zone_id": "Z19",
+      "zone_name": "Tanques De Aceite",
+      "folder": "z19_tanques_de_aceite",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 2358,
+        "y1": 3580,
+        "x2": 2716,
+        "y2": 3816
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 277,
+        "y2": 157
+      },
+      "crop_size": {
+        "w": 358,
+        "h": 236
+      },
+      "paths": {
+        "clean": "crops\\z19_tanques_de_aceite\\clean.png",
+        "border": "crops\\z19_tanques_de_aceite\\border.png",
+        "coords": "crops\\z19_tanques_de_aceite\\coords.png",
+        "label": "crops\\z19_tanques_de_aceite\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "validated",
+      "requires_chadi_validation": false
+    },
+    {
+      "zone_id": "Z20",
+      "zone_name": "Descarga De Alimento",
+      "folder": "z20_descarga_de_alimento",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 2171,
+        "y1": 3108,
+        "x2": 2514,
+        "y2": 3527
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 263,
+        "y2": 340
+      },
+      "crop_size": {
+        "w": 343,
+        "h": 419
+      },
+      "paths": {
+        "clean": "crops\\z20_descarga_de_alimento\\clean.png",
+        "border": "crops\\z20_descarga_de_alimento\\border.png",
+        "coords": "crops\\z20_descarga_de_alimento\\coords.png",
+        "label": "crops\\z20_descarga_de_alimento\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "validated",
+      "requires_chadi_validation": false
+    },
+    {
+      "zone_id": "Z21",
+      "zone_name": "Oficinas",
+      "folder": "z21_oficinas",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 1987,
+        "y1": 3103,
+        "x2": 2271,
+        "y2": 3619
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 204,
+        "y2": 436
+      },
+      "crop_size": {
+        "w": 284,
+        "h": 516
+      },
+      "paths": {
+        "clean": "crops\\z21_oficinas\\clean.png",
+        "border": "crops\\z21_oficinas\\border.png",
+        "coords": "crops\\z21_oficinas\\coords.png",
+        "label": "crops\\z21_oficinas\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "validated",
+      "requires_chadi_validation": false
+    },
+    {
+      "zone_id": "Z22",
+      "zone_name": "Balanza De Camiones",
+      "folder": "z22_balanza_de_camiones",
+      "padding_px": 80,
+      "crop_actual_bbox": {
+        "x1": 1918,
+        "y1": 3108,
+        "x2": 2152,
+        "y2": 3624
+      },
+      "zone_bbox_in_crop": {
+        "x1": 80,
+        "y1": 80,
+        "x2": 153,
+        "y2": 436
+      },
+      "crop_size": {
+        "w": 234,
+        "h": 516
+      },
+      "paths": {
+        "clean": "crops\\z22_balanza_de_camiones\\clean.png",
+        "border": "crops\\z22_balanza_de_camiones\\border.png",
+        "coords": "crops\\z22_balanza_de_camiones\\coords.png",
+        "label": "crops\\z22_balanza_de_camiones\\label.png"
+      },
+      "certainty": "high",
+      "validation_status": "validated",
+      "requires_chadi_validation": false
+    }
+  ]
+}

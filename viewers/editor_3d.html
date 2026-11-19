@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="../auth.js"></script>
+<meta charset="UTF-8">
+<title>Zalei Atlas — 3D Editor</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#0a0a0a;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#eee}
+
+#app{display:flex;height:100vh}
+
+/* Canvas */
+#canvas-wrap{flex:1;position:relative;overflow:hidden}
+#canvas{width:100%;height:100%;display:block}
+#mode-bar{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:4px;background:rgba(0,0,0,0.8);padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(4px);z-index:10}
+.mode-btn{padding:7px 16px;border:none;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;background:transparent;color:#888;transition:all 0.15s}
+.mode-btn:hover{color:#ddd;background:rgba(255,255,255,0.06)}
+.mode-btn.active{background:#0066cc;color:#fff}
+.mode-btn.crop-active{background:#cc6600;color:#fff}
+
+#info-overlay{position:absolute;bottom:12px;left:12px;background:rgba(0,0,0,0.78);padding:8px 12px;border-radius:6px;font-size:11px;max-width:400px;z-index:10}
+#info-overlay .row{display:flex;gap:12px;flex-wrap:wrap}
+#info-overlay .row span{color:#888}
+#info-overlay .row b{color:#fff}
+#status-msg{position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,0.8);padding:8px 14px;border-radius:6px;font-size:11px;color:#ffaa00;z-index:10;display:none}
+
+.crop-preview{position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.85);padding:10px;border-radius:8px;z-index:10;display:none;max-width:260px}
+.crop-preview.show{display:block}
+.crop-preview h3{font-size:11px;color:#aaa;margin-bottom:6px}
+.crop-preview canvas{width:100%;border:1px solid #333;border-radius:4px}
+
+/* Panel */
+#panel{width:340px;background:#141414;border-left:1px solid #222;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+#panel-header{padding:14px;border-bottom:1px solid #222}
+#panel-header h2{font-size:14px;font-weight:700}
+#panel-header .sub{font-size:10px;color:#666;margin-top:2px}
+
+#panel-tabs{display:flex;border-bottom:1px solid #222}
+.panel-tab{flex:1;padding:10px;text-align:center;cursor:pointer;background:transparent;border:none;color:#666;font-size:11px;font-weight:600;border-bottom:2px solid transparent}
+.panel-tab.active{color:#fff;border-bottom-color:#0066cc;background:#1a1a1a}
+
+#panel-body{flex:1;overflow-y:auto;padding:0}
+#props-panel,#crop-panel{display:none;padding:14px}
+#props-panel.show,#crop-panel.show{display:block}
+
+.prop-group{margin-bottom:14px}
+.prop-group h4{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.prop-row{display:flex;gap:6px;margin-bottom:4px;align-items:center}
+.prop-row label{font-size:11px;color:#888;min-width:50px}
+.prop-row input{flex:1;background:#1a1a1a;color:#eee;border:1px solid #333;padding:5px 7px;border-radius:3px;font-size:12px;font-family:monospace}
+.prop-row input:focus{outline:none;border-color:#0066cc}
+.prop-row .readonly{background:#111;color:#666}
+.prop-row input[type="color"]{width:36px;height:28px;padding:2px;cursor:pointer;flex:0 0 auto}
+
+.btn{background:#222;color:#ddd;border:1px solid #444;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:11px;transition:all 0.15s}
+.btn:hover{background:#333;color:#fff}
+.btn.primary{background:#0066cc;border-color:#0088ee}
+.btn.primary:hover{background:#0077dd}
+.btn.success{background:#2a7;border-color:#4c9}
+.btn.success:hover{background:#3a8}
+.btn.danger{background:#a22;border-color:#c44}
+.btn.danger:hover{background:#c33}
+.btn.small{padding:3px 8px;font-size:10px}
+
+.action-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.action-row .btn{flex:1;text-align:center;font-weight:600}
+
+#crop-panel label{font-size:11px;color:#888;display:block;margin-bottom:4px}
+#crop-panel .bbox-display{background:#000;font-family:monospace;font-size:11px;color:#6f6;padding:6px;border-radius:3px;margin-bottom:8px;word-break:break-all}
+
+#export-area{width:100%;min-height:100px;background:#000;color:#6f6;font-family:monospace;font-size:10px;border:1px solid #333;padding:6px;resize:vertical;margin-top:10px}
+
+#obj-list{max-height:200px;overflow-y:auto;margin-bottom:8px}
+.obj-item{padding:5px 8px;cursor:pointer;font-size:11px;border-left:3px solid transparent;display:flex;align-items:center;gap:6px}
+.obj-item:hover{background:#1c1c1c}
+.obj-item.active{background:#1a2a3a;border-left-color:#0066cc}
+.obj-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.obj-name{flex:1;color:#aaa}
+.obj-id{color:#555;font-family:monospace;font-size:10px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="canvas-wrap">
+    <canvas id="canvas"></canvas>
+
+    <div id="mode-bar">
+      <button class="mode-btn active" data-mode="select" title="Seleccionar y mover elementos">Select</button>
+      <button class="mode-btn" data-mode="resize" title="Redimensionar bordes">Resize</button>
+      <button class="mode-btn" data-mode="crop" title="Definir área de crop">Crop</button>
+    </div>
+
+    <div id="info-overlay">
+      <div class="row">
+        <span><b id="sel-id">—</b></span>
+        <span><b id="sel-coords">—</b></span>
+        <span><b id="sel-size">—</b></span>
+        <span id="mode-label" style="color:#0066cc">SELECT</span>
+      </div>
+    </div>
+
+    <div id="status-msg"></div>
+
+    <div class="crop-preview" id="crop-preview">
+      <h3>Crop Preview</h3>
+      <canvas id="crop-preview-canvas" width="200" height="150"></canvas>
+    </div>
+  </div>
+
+  <div id="panel">
+    <div id="panel-header">
+      <h2>Atlas 3D Editor</h2>
+      <div class="sub">Satellite-textured · 22 zones · Drag/Resize/Crop</div>
+    </div>
+
+    <div id="panel-tabs">
+      <button class="panel-tab active" data-ptab="props">Properties</button>
+      <button class="panel-tab" data-ptab="crop">Crop</button>
+      <button class="panel-tab" data-ptab="export">Export</button>
+    </div>
+
+    <div id="panel-body">
+      <!-- Properties Panel -->
+      <div id="props-panel" class="show">
+        <div id="props-content">
+          <div style="color:#555;font-size:12px;text-align:center;padding:40px 0">Seleccioná un elemento en el visor 3D</div>
+        </div>
+      </div>
+
+      <!-- Crop Panel -->
+      <div id="crop-panel">
+        <div id="crop-content">
+          <p style="color:#555;font-size:12px;margin-bottom:10px">Seleccioná modo <b>Crop</b> arriba y hacé clic en 2 esquinas del área a recortar.</p>
+          <div id="crop-bbox" class="bbox-display">—</div>
+          <div class="action-row">
+            <button class="btn success" id="btn-crop-save" onclick="saveCrop()">Save Crop</button>
+            <button class="btn" id="btn-crop-clear" onclick="clearCrop()">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Export Panel -->
+      <div id="export-panel" style="display:none;padding:14px">
+        <div class="action-row">
+          <button class="btn primary" onclick="exportJSON()">📋 Copy JSON</button>
+          <button class="btn success" onclick="downloadJSON()">💾 Download</button>
+        </div>
+        <textarea id="export-area" readonly></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+// ===================== CONSTANTS =====================
+const OBJECTS = [{"id": "Z01", "source": "zone", "parent_zone": null, "render_mode": "building", "skip_reason": null, "shape": "gable_box", "subtype": "galpon_recria", "label": "Recría Existente", "color": "#FFD700", "rotation_deg": 0, "footprint": {"cx": 7.06, "cz": 2.42, "w": 12.2, "d": 2.18}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "requires_chadi_validation": false, "is_questioned": false, "count": 1}, {"id": "Z02", "source": "zone", "parent_zone": null, "render_mode": "building", "skip_reason": null, "shape": "flat_organic", "subtype": "guano", "label": "Guano", "color": "#A0522D", "rotation_deg": 0, "footprint": {"cx": 28.33, "cz": 15.925, "w": 13.02, "d": 20.97}, "height_m_estimated": 0.5, "height_3d_units": 0.0333, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "geometry_ok_subtype_pending", "requires_chadi_validation": true, "is_questioned": true, "count": null}, {"id": "Z03", "source": "zone", "parent_zone": null, "render_mode": "footprint", "skip_reason": "has_renderable_microzones", "shape": "flat_transparent", "subtype": "galpon_ponedoras", "label": "[Footprint] Galpones De Ponedoras", "color": "#00B4FF", "rotation_deg": 0, "footprint": {"cx": 10.245, "cz": 29.16, "w": 15.81, "d": 17.68}, "height_m_estimated": 0.0, "height_3d_units": 0.0, "height_confidence": "n/a", "is_heuristic_height": true, "validation_status": "validated", "requires_chadi_validation": false, "is_questioned": false, "count": 10}, {"id": "Z05", "source": "zone", "parent_zone": null, "render_mode": "pending_footprint", "skip_reason": "all_microzones_bbox_pending", "shape": "flat_transparent", "subtype": "cintas_transportadoras", "label": "[Footprint - pending] Cintas Transportadoras", "color": "#FFFFFF", "rotation_deg": 0, "footprint": {"cx": 9.03, "cz": 27.5, "w": 2.48, "d": 10.72}, "height_m_estimated": 0.0, "height_3d_units": 0.0, "height_confidence": "n/a", "is_heuristic_height": true, "validation_status": "trajectory_validated_connections_pending", "requires_chadi_validation": false, "is_questioned": false, "count": null}, {"id": "Z06", "source": "zone", "parent_zone": null, "render_mode": "footprint", "skip_reason": "has_renderable_microzones", "shape": "flat_transparent", "subtype": "silo_seco_cilindrico", "label": "[Footprint] Silos Secos", "color": "#FF1493", "rotation_deg": 0, "footprint": {"cx": 30.985, "cz": 34.215, "w": 7.05, "d": 4.31}, "height_m_estimated": 0.0, "height_3d_units": 0.0, "height_confidence": "n/a", "is_heuristic_height": true, "validation_status": "validated", "requires_chadi_validation": false, "is_questioned": false, "count": 7}, {"id": "Z07", "source": "zone", "parent_zone": null, "render_mode": "footprint", "skip_reason": "has_renderable_microzones", "shape": "flat_transparent", "subtype": "terreno_nuevo", "label": "[Footprint] Terreno Nuevo", "color": "#00FF7F", "rotation_deg": 0, "footprint": {"cx": 43.385, "cz": 20.62, "w": 14.07, "d": 41.24}, "height_m_estimated": 0.0, "height_3d_units": 0.0, "height_confidence": "n/a", "is_heuristic_height": true, "validation_status": "validated_with_planned_elements", "requires_chadi_validation": true, "is_questioned": false, "count": null}, {"id": "Z08", "source": "zone", "parent_zone": null, "render_mode": "building", "skip_reason": null, "shape": "box", "subtype": "vivienda", "label": "Casa De Gerencia", "color": "#0b206b", "rotation_deg": 0, "footprint": {"cx": 35.18, "cz": 39.59, "w": 2.34, "d": 2.78}, "height_m_estimated": 4.0, "height_3d_units": 0.2667, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "validated", "requires_chadi_validation": false, "is_questioned": false, "count": 1}, {"id": "Z09", "source": "zone", "parent_zone": null, "render_mode": "building", "skip_reason": null, "shape": "box", "subtype": "departamentos", "label": "Departamentos De Empleados", "color": "#6a5b19", "rotation_deg": 0, "footprint": {"cx": 7.13, "cz": 39.545, "w": 6.28, "d": 2.05}, "height_m_estimated": 4.0, "height_3d_units": 0.2667, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "validated", "requires_chadi_validation": false, "is_questioned": false, "count": null}, {"id": "Z10", "source": "zone", "parent_zone": null, "render_mode": "building", "skip_reason": null, "shape": "box", "subtype": "clasificadora", "label": "Clasificadora", "color": "#b3abb0", "rotation_deg": 0, "footprint": {"cx": 12.56, "cz": 26.965, "w": 7.34, "d": 2.73}, "height_m_estimated": 4.0, "height_3d_units": 0.2667, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "validated", "requires_chadi_validation": false, "is_questioned": false, "count": 1}, {"id": "Z11", "source": "zone", "parent_zone": null, "render_mode": "building", "skip_reason": null, "shape": "box", "subtype": "vivienda_mantenimiento", "label": "Casa De Mantenimiento Sur", "color": "#ff0f6d", "rotation_deg": 0, "footprint": {"cx": 18.38, "cz": 40.235, "w": 2.38, "d": 1.59}, "height_m_estimated": 4.0, "height_3d_units": 0.2667, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "geometry_ok_name_conflict_pending", "requires_chadi_validation": true, "is_questioned": false, "count": 1}, {"id": "Z12", "source": "zone", "parent_zone": null, "render_mode": "building", "skip_reason": null, "shape": "box", "subtype": "taller", "label": "Taller", "color": "#347c65", "rotation_deg": 0, "footprint": {"cx": 8.295, "cz": 37.415, "w": 2.57, "d": 2.37}, "height_m_estimated": 4.0, "height_3d_units": 0.2667, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "validated", "requires_chadi_validation": false, "is_questioned": false, "count": 1}, {"id": "Z13", "source": "zone", "parent_zone": null, "render_mode": "building", "skip_reason": null, "shape": "box", "subtype": "vivienda_mantenimiento", "label": "Casa De Mantenimiento Norte", "color": "#284695", "rotation_deg": 0, "footprint": {"cx": 17.485, "cz": 4.665, "w": 3.89, "d": 2.05}, "height_m_estimated": 4.0, "height_3d_units": 0.2667, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "geometry_ok_name_conflict_pending", "requires_chadi_validation": true, "is_questioned": false, "count": 1}, {"id": "Z15", "source": "zone", "parent_zone": null, "render_mode": "footprint", "skip_reason": "has_renderable_microzones", "shape": "flat_transparent", "subtype": "silo_humedo", "label": "[Footprint] Silos Húmedos", "color": "#cb8f8d", "rotation_deg": 0, "footprint": {"cx": 27.09, "cz": 31.985, "w": 0.92, "d": 2.05}, "height_m_estimated": 0.0, "height_3d_units": 0.0, "height_confidence": "n/a", "is_heuristic_height": true, "validation_status": "validated", "requires_chadi_validation": false, "is_questioned": false, "count": null}, {"id": "Z16", "source": "zone", "parent_zone": null, "render_mode": "footprint", "skip_reason": "has_renderable_microzones", "shape": "flat_transparent", "subtype": "silo_consumo", "label": "[Footprint] Silos De Almacenamiento Consumo Y Expeller", "color": "#6010d0", "rotation_deg": 0, "footprint": {"cx": 25.51, "cz": 33.355, "w": 2.06, "d": 2.69}, "height_m_estimated": 0.0, "height_3d_units": 0.0, "height_confidence": "n/a", "is_heuristic_height": true, "validation_status": "validated", "requires_chadi_validation": false, "is_questioned": false, "count": null}, {"id": "Z18", "source": "zone", "parent_zone": null, "render_mode": "footprint", "skip_reason": "has_renderable_microzones", "shape": "flat_transparent", "subtype": "secado_limpieza", "label": "[Footprint] Secado Y Limpieza De Granos", "color": "#fe2948", "rotation_deg": 0, "footprint": {"cx": 27.66, "cz": 33.655, "w": 2.06, "d": 2.37}, "height_m_estimated": 0.0, "height_3d_units": 0.0, "height_confidence": "n/a", "is_heuristic_height": true, "validation_status": "requires_chadi_validation", "requires_chadi_validation": true, "is_questioned": true, "count": 1}, {"id": "Z19", "source": "zone", "parent_zone": null, "render_mode": "footprint", "skip_reason": "has_renderable_microzones", "shape": "flat_transparent", "subtype": "tanque_aceite_cilindrico", "label": "[Footprint] Tanques De Aceite", "color": "#e66981", "rotation_deg": 0, "footprint": {"cx": 25.31, "cz": 36.96, "w": 0.98, "d": 0.4}, "height_m_estimated": 0.0, "height_3d_units": 0.0, "height_confidence": "n/a", "is_heuristic_height": true, "validation_status": "validated", "requires_chadi_validation": false, "is_questioned": false, "count": 3}, {"id": "Z06_S01", "source": "microzone", "parent_zone": "Z06", "render_mode": "building", "skip_reason": null, "shape": "cylinder_tall", "subtype": "silo_seco_cilindrico", "label": "Silo Seco Norte 1", "color": "#FF1493", "rotation_deg": 0, "footprint": {"cx": 28.21, "cz": 32.84, "w": 1.38, "d": 1.38}, "height_m_estimated": 18.0, "height_3d_units": 1.2, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z06_S02", "source": "microzone", "parent_zone": "Z06", "render_mode": "building", "skip_reason": null, "shape": "cylinder_tall", "subtype": "silo_seco_cilindrico", "label": "Silo Seco Norte 2", "color": "#FF1493", "rotation_deg": 0, "footprint": {"cx": 29.74, "cz": 32.83, "w": 1.38, "d": 1.38}, "height_m_estimated": 18.0, "height_3d_units": 1.2, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z06_S03", "source": "microzone", "parent_zone": "Z06", "render_mode": "building", "skip_reason": null, "shape": "cylinder_tall", "subtype": "silo_seco_cilindrico", "label": "Silo Seco Norte 3", "color": "#FF1493", "rotation_deg": 0, "footprint": {"cx": 31.25, "cz": 32.85, "w": 1.3, "d": 1.3}, "height_m_estimated": 18.0, "height_3d_units": 1.2, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z06_S04", "source": "microzone", "parent_zone": "Z06", "render_mode": "building", "skip_reason": null, "shape": "cylinder_tall", "subtype": "silo_seco_cilindrico", "label": "Silo Seco Sur 1", "color": "#FF1493", "rotation_deg": 0, "footprint": {"cx": 28.23, "cz": 34.61, "w": 1.38, "d": 1.38}, "height_m_estimated": 18.0, "height_3d_units": 1.2, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z06_S05", "source": "microzone", "parent_zone": "Z06", "render_mode": "building", "skip_reason": null, "shape": "cylinder_tall", "subtype": "silo_seco_cilindrico", "label": "Silo Seco Sur 2", "color": "#FF1493", "rotation_deg": 0, "footprint": {"cx": 29.75, "cz": 34.6, "w": 1.38, "d": 1.38}, "height_m_estimated": 18.0, "height_3d_units": 1.2, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z06_S06", "source": "microzone", "parent_zone": "Z06", "render_mode": "building", "skip_reason": null, "shape": "cylinder_tall", "subtype": "silo_seco_cilindrico", "label": "Silo Seco Sur 3", "color": "#FF1493", "rotation_deg": 0, "footprint": {"cx": 31.29, "cz": 34.58, "w": 1.38, "d": 1.38}, "height_m_estimated": 18.0, "height_3d_units": 1.2, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z06_S07", "source": "microzone", "parent_zone": "Z06", "render_mode": "building", "skip_reason": null, "shape": "cylinder_tall", "subtype": "silo_seco_cilindrico", "label": "Silo Seco Sur 4", "color": "#FF1493", "rotation_deg": 0, "footprint": {"cx": 32.8, "cz": 34.57, "w": 1.38, "d": 1.38}, "height_m_estimated": 18.0, "height_3d_units": 1.2, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z19_T01", "source": "microzone", "parent_zone": "Z19", "render_mode": "building", "skip_reason": null, "shape": "cylinder_low", "subtype": "tanque_aceite_cilindrico", "label": "Tanque Aceite 1", "color": "#e66981", "rotation_deg": 0, "footprint": {"cx": 24.97, "cz": 36.94, "w": 0.3, "d": 0.32}, "height_m_estimated": 4.0, "height_3d_units": 0.2667, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z19_T02", "source": "microzone", "parent_zone": "Z19", "render_mode": "building", "skip_reason": null, "shape": "cylinder_low", "subtype": "tanque_aceite_cilindrico", "label": "Tanque Aceite 2", "color": "#e66981", "rotation_deg": 0, "footprint": {"cx": 25.32, "cz": 36.91, "w": 0.3, "d": 0.3}, "height_m_estimated": 4.0, "height_3d_units": 0.2667, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z19_T03", "source": "microzone", "parent_zone": "Z19", "render_mode": "building", "skip_reason": null, "shape": "cylinder_low", "subtype": "tanque_aceite_cilindrico", "label": "Tanque Aceite 3", "color": "#e66981", "rotation_deg": 0, "footprint": {"cx": 25.65, "cz": 37.0, "w": 0.3, "d": 0.3}, "height_m_estimated": 4.0, "height_3d_units": 0.2667, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z15_H01", "source": "microzone", "parent_zone": "Z15", "render_mode": "building", "skip_reason": null, "shape": "cylinder_tall", "subtype": "silo_humedo", "label": "Silo Humedo 1", "color": "#cb8f8d", "rotation_deg": 0, "footprint": {"cx": 26.64, "cz": 31.15, "w": 0.78, "d": 0.78}, "height_m_estimated": 18.0, "height_3d_units": 1.2, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "probable", "confidence": "medium", "requires_chadi_validation": true, "is_questioned": false}, {"id": "Z15_H02", "source": "microzone", "parent_zone": "Z15", "render_mode": "building", "skip_reason": null, "shape": "cylinder_tall", "subtype": "silo_humedo", "label": "Silo Humedo 2", "color": "#cb8f8d", "rotation_deg": 0, "footprint": {"cx": 27.18, "cz": 32.4, "w": 0.78, "d": 0.78}, "height_m_estimated": 18.0, "height_3d_units": 1.2, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "probable", "confidence": "medium", "requires_chadi_validation": true, "is_questioned": false}, {"id": "Z15_H03", "source": "microzone", "parent_zone": "Z15", "render_mode": "building", "skip_reason": null, "shape": "cylinder_tall", "subtype": "silo_humedo", "label": "Silo Humedo 3", "color": "#cb8f8d", "rotation_deg": 0, "footprint": {"cx": 27.25, "cz": 32.96, "w": 0.78, "d": 0.78}, "height_m_estimated": 18.0, "height_3d_units": 1.2, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "probable", "confidence": "medium", "requires_chadi_validation": true, "is_questioned": false}, {"id": "Z16_E01", "source": "microzone", "parent_zone": "Z16", "render_mode": "building", "skip_reason": null, "shape": "cylinder_tall", "subtype": "silo_consumo", "label": "Silo Consumo/Expeller 1", "color": "#6010d0", "rotation_deg": 0, "footprint": {"cx": 25.04, "cz": 32.25, "w": 0.62, "d": 0.62}, "height_m_estimated": 18.0, "height_3d_units": 1.2, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "probable", "confidence": "low", "requires_chadi_validation": true, "is_questioned": false}, {"id": "Z16_E02", "source": "microzone", "parent_zone": "Z16", "render_mode": "building", "skip_reason": null, "shape": "cylinder_tall", "subtype": "silo_consumo", "label": "Silo Consumo/Expeller 2", "color": "#6010d0", "rotation_deg": 0, "footprint": {"cx": 24.75, "cz": 32.61, "w": 0.62, "d": 0.62}, "height_m_estimated": 18.0, "height_3d_units": 1.2, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "probable", "confidence": "low", "requires_chadi_validation": true, "is_questioned": false}, {"id": "Z16_E03", "source": "microzone", "parent_zone": "Z16", "render_mode": "building", "skip_reason": null, "shape": "cylinder_tall", "subtype": "silo_consumo", "label": "Silo Consumo/Expeller 3", "color": "#6010d0", "rotation_deg": 0, "footprint": {"cx": 24.96, "cz": 32.9, "w": 0.62, "d": 0.62}, "height_m_estimated": 18.0, "height_3d_units": 1.2, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "probable", "confidence": "low", "requires_chadi_validation": true, "is_questioned": false}, {"id": "Z16_E04", "source": "microzone", "parent_zone": "Z16", "render_mode": "building", "skip_reason": null, "shape": "cylinder_tall", "subtype": "silo_consumo", "label": "Silo Consumo/Expeller 4", "color": "#6010d0", "rotation_deg": 0, "footprint": {"cx": 24.99, "cz": 34.54, "w": 0.62, "d": 0.62}, "height_m_estimated": 18.0, "height_3d_units": 1.2, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "probable", "confidence": "low", "requires_chadi_validation": true, "is_questioned": false}, {"id": "Z18A_Conexion_Tubular", "source": "microzone", "parent_zone": "Z18", "render_mode": "building", "skip_reason": null, "shape": "elevated_beam", "subtype": "infraestructura_tubular", "label": "Conexion Tubular (Pasarela Superior)", "color": "#fe8a48", "rotation_deg": 0, "footprint": {"cx": 26.9, "cz": 32.9, "w": 3.6, "d": 1.6}, "height_m_estimated": 1.5, "height_3d_units": 0.1, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "ambiguous", "confidence": "low", "requires_chadi_validation": true, "is_questioned": true}, {"id": "Z18B_Secado_Y_Limpieza", "source": "microzone", "parent_zone": "Z18", "render_mode": "building", "skip_reason": null, "shape": "tower", "subtype": "secado_limpieza", "label": "Secado Y Limpieza De Granos (Estructura Inferior)", "color": "#fe2948", "rotation_deg": 0, "footprint": {"cx": 27.66, "cz": 34.305, "w": 2.06, "d": 1.07}, "height_m_estimated": 14.0, "height_3d_units": 0.9333, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "requires_chadi_validation", "confidence": "low", "requires_chadi_validation": true, "is_questioned": true}, {"id": "Z04_E01", "source": "microzone", "parent_zone": "Z04", "render_mode": "building", "skip_reason": null, "shape": "box", "subtype": "planta_industrial", "label": "Planta De Alimento (Estructura Principal)", "color": "#C800FF", "rotation_deg": 0, "footprint": {"cx": 23.995, "cz": 35.245, "w": 1.61, "d": 4.31}, "height_m_estimated": 4.0, "height_3d_units": 0.2667, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z14_E01", "source": "microzone", "parent_zone": "Z14", "render_mode": "building", "skip_reason": null, "shape": "box", "subtype": "planta_industrial", "label": "Aceitera (Estructura Principal)", "color": "#f23dd7", "rotation_deg": 0, "footprint": {"cx": 25.325, "cz": 35.745, "w": 1.33, "d": 2.87}, "height_m_estimated": 4.0, "height_3d_units": 0.2667, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z17_D01", "source": "microzone", "parent_zone": "Z17", "render_mode": "building", "skip_reason": null, "shape": "tower", "subtype": "descarga_granos", "label": "Planta De Descarga De Granos (Estructura Principal)", "color": "#7a5b13", "rotation_deg": 0, "footprint": {"cx": 23.905, "cz": 31.41, "w": 0.59, "d": 2.1}, "height_m_estimated": 14.0, "height_3d_units": 0.9333, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z20_E01", "source": "microzone", "parent_zone": "Z20", "render_mode": "building", "skip_reason": null, "shape": "box", "subtype": "descarga_alimento", "label": "Descarga De Alimento (Estructura Principal)", "color": "#af1bdf", "rotation_deg": 0, "footprint": {"cx": 23.425, "cz": 33.175, "w": 1.83, "d": 2.59}, "height_m_estimated": 4.0, "height_3d_units": 0.2667, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z21_E01", "source": "microzone", "parent_zone": "Z21", "render_mode": "building", "skip_reason": null, "shape": "box", "subtype": "oficinas", "label": "Oficinas (Estructura Principal)", "color": "#b39bbd", "rotation_deg": 0, "footprint": {"cx": 21.29, "cz": 33.61, "w": 1.24, "d": 3.56}, "height_m_estimated": 4.0, "height_3d_units": 0.2667, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z22_E01", "source": "microzone", "parent_zone": "Z22", "render_mode": "building", "skip_reason": null, "shape": "flat_slab", "subtype": "balanza_camiones", "label": "Balanza De Camiones (Estructura Principal)", "color": "#4c3fac", "rotation_deg": 0, "footprint": {"cx": 20.35, "cz": 33.66, "w": 0.74, "d": 3.56}, "height_m_estimated": 0.4, "height_3d_units": 0.0267, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z03_E01", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "skip_reason": null, "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 01", "color": "#00B4FF", "rotation_deg": 0, "footprint": {"cx": 13.495, "cz": 22.45, "w": 7.89, "d": 1.76}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z03_E02", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "skip_reason": null, "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 02", "color": "#00B4FF", "rotation_deg": 0, "footprint": {"cx": 13.465, "cz": 25.04, "w": 7.87, "d": 1.18}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z03_E03", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "skip_reason": null, "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 3", "color": "#00B4FF", "rotation_deg": 0, "footprint": {"cx": 12.56, "cz": 26.965, "w": 7.34, "d": 2.73}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z03_E04", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "skip_reason": null, "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 04", "color": "#00B4FF", "rotation_deg": 0, "footprint": {"cx": 13.405, "cz": 28.98, "w": 7.65, "d": 1.38}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z03_E05", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "skip_reason": null, "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 05", "color": "#00B4FF", "rotation_deg": 0, "footprint": {"cx": 13.555, "cz": 31.735, "w": 7.83, "d": 2.01}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z03_E06", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "skip_reason": null, "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 06", "color": "#00B4FF", "rotation_deg": 0, "footprint": {"cx": 13.575, "cz": 34.165, "w": 7.89, "d": 2.85}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z03_E07", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "skip_reason": null, "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 07", "color": "#00B4FF", "rotation_deg": 45.4052, "footprint": {"cx": 5.74, "cz": 24.755, "w": 2.42, "d": 8.27}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z03_E08", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "skip_reason": null, "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 08", "color": "#00B4FF", "rotation_deg": 45, "footprint": {"cx": 5.895, "cz": 28.23, "w": 2.29, "d": 8.5}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z03_E09", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "skip_reason": null, "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 09", "color": "#00B4FF", "rotation_deg": 45.2067, "footprint": {"cx": 6.375, "cz": 34.685, "w": 2.35, "d": 7.81}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z03_E10", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "skip_reason": null, "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 10", "color": "#00B4FF", "rotation_deg": 45, "footprint": {"cx": 6.32, "cz": 31.525, "w": 1.92, "d": 7.37}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z07_G_NEW_01", "source": "microzone", "parent_zone": "Z07", "render_mode": "building", "skip_reason": null, "shape": "gable_box", "subtype": "galpon_recria_futuro", "label": "Galpon Recria Nuevo 1", "color": "#00FF7F", "rotation_deg": 0, "footprint": {"cx": 39.49, "cz": 8.355, "w": 2.18, "d": 12.19}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "planned_in_crop_editor", "confidence": "medium", "requires_chadi_validation": true, "is_questioned": false}, {"id": "Z07_G_NEW_02", "source": "microzone", "parent_zone": "Z07", "render_mode": "building", "skip_reason": null, "shape": "gable_box", "subtype": "galpon_recria_futuro", "label": "Galpon Recria Nuevo 2", "color": "#00FF7F", "rotation_deg": 0, "footprint": {"cx": 42.5, "cz": 8.315, "w": 2.18, "d": 12.19}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "height_confidence": "low", "is_heuristic_height": true, "validation_status": "planned_in_crop_editor", "confidence": "medium", "requires_chadi_validation": true, "is_questioned": false}, {"id": "Z03_E03_clasif", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "skip_reason": null, "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras Clasificadora", "color": "#b3abb0", "rotation_deg": 0, "footprint": {"cx": 12.095, "cz": 27.105, "w": 5.93, "d": 3.01}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}, {"id": "Z03_E11_taller", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "skip_reason": null, "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras Taller", "color": "#347c65", "rotation_deg": 0, "footprint": {"cx": 8.26, "cz": 37.485, "w": 1.52, "d": 2.13}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "height_confidence": "medium", "is_heuristic_height": true, "validation_status": "validated", "confidence": "high", "requires_chadi_validation": false, "is_questioned": false}];
+const TOTAL_W = 50.42;
+const TOTAL_D = 44.74;
+const IMG_W_PX = 5042;
+const IMG_H_PX = 4474;
+const DEFAULT_EXAG = 2.5;
+let exag = DEFAULT_EXAG;
+
+// ===================== THREE.JS SETUP =====================
+const canvas = document.getElementById('canvas');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+renderer.setClearColor(0x1a1a2e);
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0x1a1a2e, 100, 250);
+
+const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 500);
+camera.position.set(TOTAL_W*0.5, 30, TOTAL_D*1.4);
+camera.lookAt(TOTAL_W*0.5, 0, TOTAL_D*0.5);
+
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.target.set(TOTAL_W*0.5, 0, TOTAL_D*0.5);
+controls.enableDamping = true;
+controls.dampingFactor = 0.1;
+controls.minDistance = 5;
+controls.maxDistance = 150;
+controls.maxPolarAngle = Math.PI / 2.05;
+
+// Textures
+const texLoader = new THREE.TextureLoader();
+const satTex = texLoader.load('satellite_texture.jpg');
+satTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+satTex.wrapS = satTex.wrapT = THREE.ClampToEdgeWrapping;
+
+// Ground
+const groundGeo = new THREE.PlaneGeometry(TOTAL_W, TOTAL_D);
+const groundMat = new THREE.MeshStandardMaterial({map:satTex, roughness:0.85, metalness:0, side:THREE.DoubleSide});
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI/2;
+ground.position.set(TOTAL_W/2, -0.01, TOTAL_D/2);
+ground.receiveShadow = true;
+scene.add(ground);
+
+// Invisible ground plane for raycasting (editing)
+const pickerGeo = new THREE.PlaneGeometry(TOTAL_W, TOTAL_D);
+const pickerMat = new THREE.MeshBasicMaterial({visible:false, side:THREE.DoubleSide});
+const pickerPlane = new THREE.Mesh(pickerGeo, pickerMat);
+pickerPlane.rotation.x = -Math.PI/2;
+pickerPlane.position.set(TOTAL_W/2, 0, TOTAL_D/2);
+scene.add(pickerPlane);
+
+// Grid
+const gridHelper = new THREE.GridHelper(Math.max(TOTAL_W, TOTAL_D), 20, 0x444466, 0x333355);
+gridHelper.position.set(TOTAL_W/2, 0.002, TOTAL_D/2);
+gridHelper.material.transparent = true;
+gridHelper.material.opacity = 0.12;
+scene.add(gridHelper);
+
+// Border
+const borderGeo = new THREE.EdgesGeometry(new THREE.PlaneGeometry(TOTAL_W, TOTAL_D));
+const borderMat = new THREE.LineBasicMaterial({color:0x888888, transparent:true, opacity:0.3});
+const border = new THREE.LineSegments(borderGeo, borderMat);
+border.rotation.x = -Math.PI/2;
+border.position.set(TOTAL_W/2, 0.005, TOTAL_D/2);
+scene.add(border);
+
+// Lighting
+const ambient = new THREE.AmbientLight(0x8899bb, 0.4);
+scene.add(ambient);
+const hemi = new THREE.HemisphereLight(0x87ceeb, 0x3a2a1a, 0.5);
+scene.add(hemi);
+const key = new THREE.DirectionalLight(0xffeedd, 1.3);
+key.position.set(50,40,30);
+key.castShadow = true;
+key.shadow.mapSize.width = 2048;
+key.shadow.mapSize.height = 2048;
+key.shadow.camera.near = 0.1; key.shadow.camera.far = 120;
+key.shadow.camera.left = -40; key.shadow.camera.right = 40;
+key.shadow.camera.top = 40; key.shadow.camera.bottom = -40;
+scene.add(key);
+const fill = new THREE.DirectionalLight(0x8888ff, 0.3);
+fill.position.set(-30,20,-20);
+scene.add(fill);
+const rim = new THREE.DirectionalLight(0xffffff, 0.15);
+rim.position.set(0,10,-50);
+scene.add(rim);
+
+// ===================== DATA MODEL =====================
+let objects = JSON.parse(JSON.stringify(OBJECTS));
+let selectedId = null;
+let editingMode = 'select'; // select | resize | crop
+let cropPoints = [];
+
+// Three.js groups
+const groupBuildings = new THREE.Group(); scene.add(groupBuildings);
+const groupFootprints = new THREE.Group(); scene.add(groupFootprints);
+const groupHandles = new THREE.Group(); scene.add(groupHandles);
+const groupCrop = new THREE.Group(); scene.add(groupCrop);
+const groupSelection = new THREE.Group(); scene.add(groupSelection);
+
+let meshMap = new Map(); // id -> three mesh
+let handleMeshes = [];
+
+const SHAPE_CATALOG = {
+  cylinder_tally: {default_h_m:18}, cylinder_low: {default_h_m:4},
+  cylinder_long: {default_h_m:2.5}, gable_box: {default_h_m:5},
+  box: {default_h_m:4}, tower: {default_h_m:14},
+  flat_slab: {default_h_m:0.4}, flat_organic: {default_h_m:0.5},
+  flat_transparent: {default_h_m:0}, elevated_beam: {default_h_m:1.5}
+};
+
+function hex(h){return new THREE.Color(h)}
+
+function buildShape(obj) {
+  const fp = obj.footprint;
+  const h = Math.max(obj.height_3d_units, 0.001) * exag;
+  const color = hex(obj.color);
+  const isBuilding = obj.render_mode === 'building' && obj.source === 'zone';
+  const opacity = (obj.render_mode === 'footprint' || obj.render_mode === 'pending_footprint') ? 0.2 : 0.9;
+  const mat = new THREE.MeshStandardMaterial({
+    color, roughness: isBuilding ? 0.6 : 0.8,
+    metalness: (obj.subtype||'').includes('silo') || (obj.subtype||'').includes('tanque') ? 0.3 : 0.05,
+    transparent: opacity < 1, opacity, side: THREE.DoubleSide,
+    envMapIntensity: 0.4
+  });
+
+  let mesh;
+  const shape = obj.shape || 'box';
+  switch(shape) {
+    case 'cylinder_tall': case 'cylinder_low': {
+      const r = Math.min(fp.w, fp.d)/2;
+      const g = new THREE.CylinderGeometry(r, r, h, shape === 'cylinder_low' ? 24 : 20);
+      mesh = new THREE.Mesh(g, mat);
+      mesh.position.set(fp.cx, h/2, fp.cz); break;
+    }
+    case 'cylinder_long': {
+      const r = Math.min(fp.w, fp.d)/2; const len = Math.max(fp.w, fp.d);
+      const g = new THREE.CylinderGeometry(r, r, len, 18);
+      mesh = new THREE.Mesh(g, mat);
+      if (fp.w >= fp.d) mesh.rotation.z = Math.PI/2; else mesh.rotation.x = Math.PI/2;
+      mesh.position.set(fp.cx, Math.max(r, h/2), fp.cz); break;
+    }
+    case 'gable_box': {
+      const group = new THREE.Group();
+      const wallH = h * 0.65, roofH = h * 0.35;
+      const walls = new THREE.Mesh(new THREE.BoxGeometry(fp.w, wallH, fp.d), mat);
+      walls.position.y = wallH/2; group.add(walls);
+      const hw = fp.w / 2, hd = fp.d / 2;
+      const roofGeo = new THREE.BufferGeometry();
+      const verts = fp.w >= fp.d ? new Float32Array([
+        -hw, wallH, -hd,  -hw, wallH,  hd,  -hw, wallH + roofH, 0,
+         hw, wallH,  hd,   hw, wallH, -hd,   hw, wallH + roofH, 0,
+        -hw, wallH, -hd,   hw, wallH, -hd,   hw, wallH + roofH, 0,
+        -hw, wallH, -hd,   hw, wallH + roofH, 0,  -hw, wallH + roofH, 0,
+         hw, wallH,  hd,  -hw, wallH,  hd,  -hw, wallH + roofH, 0,
+         hw, wallH,  hd,  -hw, wallH + roofH, 0,   hw, wallH + roofH, 0
+      ]) : new Float32Array([
+        -hw, wallH, -hd,   hw, wallH, -hd,   0, wallH + roofH, -hd,
+         hw, wallH,  hd,  -hw, wallH,  hd,   0, wallH + roofH,  hd,
+        -hw, wallH,  hd,  -hw, wallH, -hd,   0, wallH + roofH, -hd,
+        -hw, wallH,  hd,   0, wallH + roofH, -hd,  0, wallH + roofH,  hd,
+         hw, wallH, -hd,   hw, wallH,  hd,   0, wallH + roofH,  hd,
+         hw, wallH, -hd,   0, wallH + roofH,  hd,  0, wallH + roofH, -hd
+      ]);
+      roofGeo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+      roofGeo.computeVertexNormals();
+      const roof = new THREE.Mesh(roofGeo, mat);
+      group.add(roof);
+      group.position.set(fp.cx, 0, fp.cz);
+      mesh = group; break;
+    }
+    case 'tower': {
+      const cw = Math.min(fp.w, fp.d);
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(cw, h, cw), mat);
+      mesh.position.set(fp.cx, h/2, fp.cz); break;
+    }
+    case 'flat_slab': case 'flat_organic': {
+      const slab = Math.max(h, 0.02);
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(fp.w, slab, fp.d), mat);
+      mesh.position.set(fp.cx, slab/2, fp.cz); break;
+    }
+    case 'flat_transparent': {
+      const flatMat = new THREE.MeshStandardMaterial({color, roughness:1, transparent:true, opacity:0.1, side:THREE.DoubleSide});
+      mesh = new THREE.Mesh(new THREE.PlaneGeometry(fp.w, fp.d), flatMat);
+      mesh.rotation.x = -Math.PI/2;
+      mesh.position.set(fp.cx, 0.005, fp.cz); break;
+    }
+    case 'elevated_beam': {
+      const beamH = Math.max(h, 0.05);
+      const elev = mToUnits(5.0) * exag;
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(fp.w, beamH, fp.d), mat);
+      mesh.position.set(fp.cx, elev + beamH/2, fp.cz); break;
+    }
+    default: {
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(fp.w, h, fp.d), mat);
+      mesh.position.set(fp.cx, h/2, fp.cz);
+    }
+  }
+  if (obj.rotation_deg) {
+    mesh.rotation.y = -obj.rotation_deg * Math.PI / 180;
+  }
+  return mesh;
+}
+
+function mToUnits(m){ return m / 15.0; }
+
+function setShadowRecursive(mesh, cast, receive) {
+  mesh.castShadow = cast; mesh.receiveShadow = receive;
+  if (mesh.children) mesh.children.forEach(c => setShadowRecursive(c, cast, receive));
+}
+
+function rebuildScene() {
+  groupBuildings.children.slice().forEach(c => { groupBuildings.remove(c); if (c.geometry) c.geometry.dispose(); if (c.material) c.material.dispose(); if (c.children) c.children.forEach(ch => { if (ch.geometry) ch.geometry.dispose(); if (ch.material) ch.material.dispose(); }); });
+  groupFootprints.children.slice().forEach(c => { groupFootprints.remove(c); });
+  meshMap.clear();
+
+  objects.forEach(obj => {
+    if (obj.render_mode === 'skipped') return;
+    const mesh = buildShape(obj);
+    mesh.userData = { id: obj.id, obj };
+    const isSolid = obj.render_mode === 'building' && !['flat_transparent','flat_organic','flat_slab'].includes(obj.shape);
+    setShadowRecursive(mesh, isSolid, isSolid);
+    if (obj.render_mode === 'footprint' || obj.render_mode === 'pending_footprint') {
+      groupFootprints.add(mesh);
+    } else {
+      groupBuildings.add(mesh);
+    }
+    meshMap.set(obj.id, mesh);
+  });
+  updateSelection();
+  renderHandles();
+}
+
+function renderHandles() {
+  groupHandles.children.slice().forEach(c => { groupHandles.remove(c); });
+  handleMeshes = [];
+  if (!selectedId || editingMode === 'crop') return;
+  const obj = objects.find(o => o.id === selectedId);
+  if (!obj || obj.render_mode === 'footprint' || obj.render_mode === 'pending_footprint') return;
+  const fp = obj.footprint;
+  const cx = fp.cx, cz = fp.cz;
+  const hw = fp.w/2, hd = fp.d/2;
+
+  const handleMat = new THREE.MeshBasicMaterial({color:0xffffff});
+  const handleMatHi = new THREE.MeshBasicMaterial({color:0xffcc00});
+
+  const positions = [];
+  if (editingMode === 'select') {
+    // Single center handle for dragging
+    positions.push({x:cx, z:cz, type:'move'});
+  } else if (editingMode === 'resize') {
+    // 4 corners + 4 midpoints
+    const corners = [
+      {x:cx-hw, z:cz-hd, type:'nw'}, {x:cx+hw, z:cz-hd, type:'ne'},
+      {x:cx-hw, z:cz+hd, type:'sw'}, {x:cx+hw, z:cz+hd, type:'se'},
+      {x:cx, z:cz-hd, type:'n'}, {x:cx, z:cz+hd, type:'s'},
+      {x:cx-hw, z:cz, type:'w'}, {x:cx+hw, z:cz, type:'e'}
+    ];
+    corners.forEach(p => positions.push(p));
+  }
+
+  positions.forEach(p => {
+    const geo = new THREE.SphereGeometry(p.type === 'move' ? 0.25 : 0.18, 12, 12);
+    const mat = p.type === 'move' ? new THREE.MeshBasicMaterial({color:0x00ff88}) : new THREE.MeshBasicMaterial({color:0xffffff});
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(p.x, 0.05, p.z);
+    mesh.userData = { handleType: p.type, parentId: selectedId };
+    handleMeshes.push(mesh);
+    groupHandles.add(mesh);
+  });
+}
+
+function updateSelection() {
+  groupSelection.children.slice().forEach(c => { groupSelection.remove(c); });
+  if (!selectedId) return;
+  const mesh = meshMap.get(selectedId);
+  if (!mesh) return;
+  const obj = objects.find(o => o.id === selectedId);
+  if (!obj) return;
+  // Selection highlight: wireframe box around footprint
+  const fp = obj.footprint;
+  const boxGeo = new THREE.EdgesGeometry(new THREE.BoxGeometry(fp.w, 0.02, fp.d));
+  const boxMat = new THREE.LineBasicMaterial({color:0xffffff, transparent:true, opacity:0.7});
+  const box = new THREE.LineSegments(boxGeo, boxMat);
+  box.position.set(fp.cx, 0.03, fp.cz);
+  groupSelection.add(box);
+  // Dashed border for larger selection
+  const dashGeo = new THREE.EdgesGeometry(new THREE.BoxGeometry(fp.w + 0.15, 0.01, fp.d + 0.15));
+  const dashMat = new THREE.LineBasicMaterial({color:0x00ff88, transparent:true, opacity:0.25});
+  const dash = new THREE.LineSegments(dashGeo, dashMat);
+  dash.position.set(fp.cx, 0.01, fp.cz);
+  groupSelection.add(dash);
+}
+
+// ===================== MODE MANAGEMENT =====================
+function setMode(mode) {
+  editingMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  document.getElementById('mode-label').textContent = mode.toUpperCase();
+  if (mode === 'crop') {
+    document.getElementById('mode-label').style.color = '#cc6600';
+    controls.enabled = true;
+  } else {
+    document.getElementById('mode-label').style.color = '#0066cc';
+  }
+  if (mode !== 'crop') {
+    clearCrop();
+  }
+  renderHandles();
+  updateInfo();
+  document.getElementById('status-msg').style.display = mode === 'crop' ? 'block' : 'none';
+  if (mode === 'crop') {
+    document.getElementById('status-msg').textContent = 'Crop mode: click left corner, then right corner on the ground';
+  }
+}
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => setMode(btn.dataset.mode));
+});
+
+// ===================== RAYCASTER + INTERACTION =====================
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let isDragging = false;
+let dragTarget = null;
+let dragStartMouse = new THREE.Vector2();
+let dragStartData = null;
+
+function getGroundPoint(event) {
+  const rect = canvas.getBoundingClientRect();
+  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  const hits = raycaster.intersectObject(pickerPlane);
+  if (hits.length > 0) {
+    return hits[0].point;
+  }
+  return null;
+}
+
+function hitTestObjects(event) {
+  const rect = canvas.getBoundingClientRect();
+  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+
+  if (editingMode !== 'crop') {
+    // Check handles first
+    const handleHits = raycaster.intersectObjects(handleMeshes);
+    if (handleHits.length > 0) {
+      const h = handleHits[0].object;
+      return { type: 'handle', handleType: h.userData.handleType, parentId: h.userData.parentId };
+    }
+  }
+
+  // Check building meshes
+  const allMeshes = [];
+  groupBuildings.children.forEach(c => collectMeshes(c, allMeshes));
+  groupFootprints.children.forEach(c => collectMeshes(c, allMeshes));
+  const hits = raycaster.intersectObjects(allMeshes, false);
+  if (hits.length > 0) {
+    let o = hits[0].object;
+    while (o && !o.userData?.id) o = o.parent;
+    if (o && o.userData?.id) {
+      return { type: 'object', id: o.userData.id };
+    }
+  }
+  return null;
+}
+
+function collectMeshes(obj, arr) {
+  if (obj.isMesh) arr.push(obj);
+  if (obj.children) obj.children.forEach(c => collectMeshes(c, arr));
+}
+
+// Mouse events
+canvas.addEventListener('mousedown', event => {
+  if (editingMode === 'crop') {
+    const pt = getGroundPoint(event);
+    if (pt) {
+      const px = pt.x / TOTAL_W * IMG_W_PX;
+      const py = pt.z / TOTAL_D * IMG_H_PX;
+      cropPoints.push({ x3d: pt.x, z3d: pt.z, px: Math.round(px), py: Math.round(py) });
+      if (cropPoints.length > 2) cropPoints = [cropPoints[cropPoints.length - 1]];
+      renderCropRect();
+      updateCropPanel();
+    }
+    return;
+  }
+
+  const hit = hitTestObjects(event);
+  if (!hit) {
+    if (editingMode !== 'resize') selectedId = null;
+    updateSelection(); renderHandles(); updatePropsPanel(); updateInfo();
+    return;
+  }
+
+  if (hit.type === 'handle') {
+    isDragging = true;
+    controls.enabled = false;
+    dragTarget = { id: hit.parentId, handleType: hit.handleType };
+    const pt = getGroundPoint(event);
+    if (pt) dragStartMouse.set(pt.x, pt.z);
+
+    const obj = objects.find(o => o.id === hit.parentId);
+    if (obj) {
+      dragStartData = {
+        cx: obj.footprint.cx, cz: obj.footprint.cz,
+        w: obj.footprint.w, d: obj.footprint.d
+      };
+    }
+    return;
+  }
+
+  if (hit.type === 'object') {
+    selectedId = hit.id;
+    if (editingMode === 'select') {
+      isDragging = true;
+      controls.enabled = false;
+      dragTarget = { id: hit.id, handleType: 'move' };
+      const pt = getGroundPoint(event);
+      if (pt) dragStartMouse.set(pt.x, pt.z);
+      const obj = objects.find(o => o.id === hit.id);
+      if (obj) {
+        dragStartData = { cx: obj.footprint.cx, cz: obj.footprint.cz };
+      }
+    }
+    updateSelection(); renderHandles(); updatePropsPanel(); updateInfo();
+  }
+});
+
+canvas.addEventListener('mousemove', event => {
+  if (!isDragging || !dragTarget) return;
+  const pt = getGroundPoint(event);
+  if (!pt) return;
+
+  const obj = objects.find(o => o.id === dragTarget.id);
+  if (!obj) return;
+
+  const dx = pt.x - dragStartMouse.x;
+  const dz = pt.z - dragStartMouse.y;
+
+  if (dragTarget.handleType === 'move') {
+    obj.footprint.cx = dragStartData.cx + dx;
+    obj.footprint.cz = dragStartData.cz + dz;
+    // Clamp
+    obj.footprint.cx = Math.max(obj.footprint.w/2, Math.min(TOTAL_W - obj.footprint.w/2, obj.footprint.cx));
+    obj.footprint.cz = Math.max(obj.footprint.d/2, Math.min(TOTAL_D - obj.footprint.d/2, obj.footprint.cz));
+  } else if (['n','s','e','w','ne','nw','se','sw'].includes(dragTarget.handleType)) {
+    const h = dragTarget.handleType;
+    let {cx, cz, w, d} = dragStartData;
+    if (h.includes('e')) { w = dragStartData.w + dx; }
+    if (h.includes('w')) { w = dragStartData.w - dx; cx = dragStartData.cx + dx/2; }
+    if (h.includes('s')) { d = dragStartData.d + dz; }
+    if (h.includes('n')) { d = dragStartData.d - dz; cz = dragStartData.cz + dz/2; }
+    w = Math.max(0.3, w); d = Math.max(0.3, d);
+    obj.footprint.w = w; obj.footprint.d = d;
+    obj.footprint.cx = cx; obj.footprint.cz = cz;
+  }
+
+  // Rebuild and restore selection
+  rebuildScene();
+  updateInfo();
+  updatePropsPanel();
+});
+
+canvas.addEventListener('mouseup', () => {
+  if (isDragging) {
+    controls.enabled = true;
+    isDragging = false;
+    dragTarget = null;
+    dragStartData = null;
+  }
+});
+
+// ===================== CROP =====================
+function renderCropRect() {
+  groupCrop.children.slice().forEach(c => { groupCrop.remove(c); });
+  if (cropPoints.length < 2) return;
+
+  const p1 = cropPoints[0], p2 = cropPoints[1];
+  const x1 = Math.min(p1.x3d, p2.x3d), z1 = Math.min(p1.z3d, p2.z3d);
+  const x2 = Math.max(p1.x3d, p2.x3d), z2 = Math.max(p1.z3d, p2.z3d);
+  const w = x2 - x1, d = z2 - z1;
+
+  // Fill
+  const fillMat = new THREE.MeshBasicMaterial({color:0xcc6600, transparent:true, opacity:0.12, side:THREE.DoubleSide, depthWrite:false});
+  const fill = new THREE.Mesh(new THREE.PlaneGeometry(w, d), fillMat);
+  fill.rotation.x = -Math.PI/2;
+  fill.position.set(x1 + w/2, 0.01, z1 + d/2);
+  groupCrop.add(fill);
+
+  // Border
+  const borderMat = new THREE.LineBasicMaterial({color:0xff8800, linewidth:2});
+  const borderGeo = new THREE.EdgesGeometry(new THREE.PlaneGeometry(w, d));
+  const border = new THREE.LineSegments(borderGeo, borderMat);
+  border.rotation.x = -Math.PI/2;
+  border.position.set(x1 + w/2, 0.015, z1 + d/2);
+  groupCrop.add(border);
+
+  // Corner dots
+  const dotMat = new THREE.MeshBasicMaterial({color:0xff8800});
+  [[x1,z1],[x2,z1],[x1,z2],[x2,z2]].forEach(([px,pz]) => {
+    const dot = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), dotMat);
+    dot.position.set(px, 0.02, pz);
+    groupCrop.add(dot);
+  });
+}
+
+function updateCropPanel() {
+  const el = document.getElementById('crop-bbox');
+  if (cropPoints.length < 2) {
+    el.textContent = `${cropPoints.length}/2 corners set`;
+    return;
+  }
+  const p1 = cropPoints[0], p2 = cropPoints[1];
+  const x1 = Math.min(p1.px, p2.px), y1 = Math.min(p1.py, p2.py);
+  const x2 = Math.max(p1.px, p2.px), y2 = Math.max(p1.py, p2.py);
+  const w = x2 - x1, h = y2 - y1;
+  el.innerHTML = `Crop: (${x1},${y1}) → (${x2},${y2})<br>Size: ${w}×${h} px`;
+}
+
+function saveCrop() {
+  if (cropPoints.length < 2) { alert('Definí 2 esquinas del crop primero'); return; }
+  const p1 = cropPoints[0], p2 = cropPoints[1];
+  const x1 = Math.min(p1.px, p2.px), y1 = Math.min(p1.py, p2.py);
+  const x2 = Math.max(p1.px, p2.px), y2 = Math.max(p1.py, p2.py);
+  const cropData = {
+    x1, y1, x2, y2,
+    w: x2 - x1, h: y2 - y1,
+    units: { cx: (x1+x2)/2/100, cz: (y1+y2)/2/100, w: (x2-x1)/100, d: (y2-y1)/100 }
+  };
+  const blob = new Blob([JSON.stringify(cropData, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `crop_${x1}_${y1}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(blob);
+  setMode('select');
+  statusMsg('Crop saved!');
+}
+
+function clearCrop() {
+  cropPoints = [];
+  groupCrop.children.slice().forEach(c => { groupCrop.remove(c); });
+  document.getElementById('crop-bbox').textContent = '—';
+  document.getElementById('crop-preview').classList.remove('show');
+}
+
+// ===================== PANELS =====================
+document.querySelectorAll('.panel-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('props-panel').classList.toggle('show', tab.dataset.ptab === 'props');
+    document.getElementById('crop-panel').style.display = tab.dataset.ptab === 'crop' ? 'block' : 'none';
+    document.getElementById('export-panel').style.display = tab.dataset.ptab === 'export' ? 'block' : 'none';
+    if (tab.dataset.ptab === 'export') updateExport();
+  });
+});
+
+function updatePropsPanel() {
+  const el = document.getElementById('props-content');
+  if (!selectedId) {
+    el.innerHTML = '<div style="color:#555;font-size:12px;text-align:center;padding:40px 0">Seleccioná un elemento en el visor 3D</div>';
+    return;
+  }
+  const obj = objects.find(o => o.id === selectedId);
+  if (!obj) { el.innerHTML = '<div style="color:#555;font-size:12px;text-align:center;padding:40px 0">Elemento no encontrado</div>'; return; }
+
+  const fp = obj.footprint;
+  el.innerHTML = `
+    <div class="prop-group">
+      <h4>Elemento</h4>
+      <div class="prop-row"><label>ID</label><input class="readonly" value="${obj.id}" readonly></div>
+      <div class="prop-row"><label>Label</label><input value="${obj.label}" onchange="updateField('${obj.id}','label',this.value)"></div>
+      <div class="prop-row"><label>Color</label><input type="color" value="${obj.color}" onchange="updateField('${obj.id}','color',this.value)"></div>
+      <div class="prop-row"><label>Shape</label><input class="readonly" value="${obj.shape}" readonly></div>
+      <div class="prop-row"><label>Subtype</label><input class="readonly" value="${obj.subtype||'-'}" readonly></div>
+    </div>
+    <div class="prop-group">
+      <h4>Footprint (coords normalizadas)</h4>
+      <div class="prop-row"><label>CX</label><input type="number" step="0.01" value="${fp.cx.toFixed(3)}" onchange="updateFootprint('${obj.id}','cx',parseFloat(this.value))"></div>
+      <div class="prop-row"><label>CZ</label><input type="number" step="0.01" value="${fp.cz.toFixed(3)}" onchange="updateFootprint('${obj.id}','cz',parseFloat(this.value))"></div>
+      <div class="prop-row"><label>W</label><input type="number" step="0.01" value="${fp.w.toFixed(3)}" onchange="updateFootprint('${obj.id}','w',parseFloat(this.value))"></div>
+      <div class="prop-row"><label>D</label><input type="number" step="0.01" value="${fp.d.toFixed(3)}" onchange="updateFootprint('${obj.id}','d',parseFloat(this.value))"></div>
+      <div class="prop-row"><label>Rot (deg)</label><input type="number" step="1" value="${obj.rotation_deg||0}" onchange="updateRotation('${obj.id}',parseFloat(this.value))"></div>
+    </div>
+    <div class="prop-group">
+      <h4>Pixels en imagen base</h4>
+      <div class="prop-row"><label>X1</label><input class="readonly" value="${Math.round(fp.cx*100 - fp.w*100/2)}" readonly></div>
+      <div class="prop-row"><label>Y1</label><input class="readonly" value="${Math.round(fp.cz*100 - fp.d*100/2)}" readonly></div>
+      <div class="prop-row"><label>X2</label><input class="readonly" value="${Math.round(fp.cx*100 + fp.w*100/2)}" readonly></div>
+      <div class="prop-row"><label>Y2</label><input class="readonly" value="${Math.round(fp.cz*100 + fp.d*100/2)}" readonly></div>
+    </div>
+    <div class="prop-group">
+      <h4>Altura</h4>
+      <div class="prop-row"><label>Height m</label><input class="readonly" value="${obj.height_m_estimated||'?'}" readonly></div>
+      <div class="prop-row"><label>Confidence</label><input class="readonly" value="${obj.height_confidence||'?'}" readonly></div>
+    </div>
+    <div class="prop-group">
+      <h4>Validación</h4>
+      <div class="prop-row"><label>Status</label><input class="readonly" value="${obj.validation_status||'?'}" readonly></div>
+      <div class="prop-row"><label>Source</label><input class="readonly" value="${obj.source||'zone'}" readonly></div>
+    </div>
+  `;
+}
+
+function updateField(id, field, value) {
+  const obj = objects.find(o => o.id === id);
+  if (!obj) return;
+  if (field === 'color') obj.color = value;
+  if (field === 'label') obj.label = value;
+  rebuildScene();
+  updateExport();
+}
+
+function updateFootprint(id, field, value) {
+  const obj = objects.find(o => o.id === id);
+  if (!obj) return;
+  obj.footprint[field] = value;
+  rebuildScene();
+  updateExport();
+}
+
+function updateRotation(id, deg) {
+  const obj = objects.find(o => o.id === id);
+  if (!obj) return;
+  if (deg === 0) delete obj.rotation_deg;
+  else obj.rotation_deg = deg;
+  rebuildScene();
+  updateExport();
+}
+
+function updateInfo() {
+  document.getElementById('sel-id').textContent = selectedId || '—';
+  if (selectedId) {
+    const obj = objects.find(o => o.id === selectedId);
+    if (obj) {
+      const fp = obj.footprint;
+      document.getElementById('sel-coords').textContent = `CX:${fp.cx.toFixed(2)} CZ:${fp.cz.toFixed(2)}`;
+      document.getElementById('sel-size').textContent = `${fp.w.toFixed(2)}×${fp.d.toFixed(2)} u`;
+      return;
+    }
+  }
+  document.getElementById('sel-coords').textContent = '—';
+  document.getElementById('sel-size').textContent = '—';
+}
+
+function statusMsg(msg) {
+  const el = document.getElementById('status-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 3000);
+}
+
+// ===================== EXPORT =====================
+function buildExportData() {
+  return {
+    project: 'Zalei Agropecuaria',
+    method: 'Atlas 3D Editor',
+    base_image: 'zalei_satellite_5042x4474.png',
+    dimensions_3d: { w: TOTAL_W, d: TOTAL_D },
+    dimensions_px: { w: IMG_W_PX, h: IMG_H_PX },
+    timestamp: new Date().toISOString(),
+    objects: objects.map(obj => ({
+      id: obj.id, label: obj.label, color: obj.color, shape: obj.shape, subtype: obj.subtype,
+      source: obj.source, render_mode: obj.render_mode, validation_status: obj.validation_status,
+      height_m_estimated: obj.height_m_estimated, height_confidence: obj.height_confidence,
+      rotation_deg: obj.rotation_deg || 0,
+      footprint_units: { ...obj.footprint },
+      footprint_pixels: {
+        x1: Math.round((obj.footprint.cx - obj.footprint.w/2) * 100),
+        y1: Math.round((obj.footprint.cz - obj.footprint.d/2) * 100),
+        x2: Math.round((obj.footprint.cx + obj.footprint.w/2) * 100),
+        y2: Math.round((obj.footprint.cz + obj.footprint.d/2) * 100),
+        w: Math.round(obj.footprint.w * 100),
+        h: Math.round(obj.footprint.d * 100)
+      }
+    }))
+  };
+}
+
+function updateExport() {
+  document.getElementById('export-area').value = JSON.stringify(buildExportData(), null, 2);
+}
+
+function exportJSON() {
+  const ta = document.getElementById('export-area');
+  ta.select();
+  navigator.clipboard.writeText(ta.value).catch(() => document.execCommand('copy'));
+  statusMsg('JSON copiado');
+}
+
+function downloadJSON() {
+  const data = JSON.stringify(buildExportData(), null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `atlas_3d_editor_${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(blob);
+  statusMsg('JSON descargado');
+}
+
+// ===================== KEYBOARD =====================
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (cropPoints.length > 0 && editingMode === 'crop') { clearCrop(); }
+    selectedId = null;
+    updateSelection(); renderHandles(); updatePropsPanel(); updateInfo();
+  }
+  if (e.key === 'Delete' && selectedId) {
+    if (confirm(`¿Eliminar ${selectedId}?`)) {
+      objects = objects.filter(o => o.id !== selectedId);
+      selectedId = null;
+      rebuildScene();
+      updatePropsPanel(); updateInfo(); updateExport();
+    }
+  }
+  if (e.key === '1') setMode('select');
+  if (e.key === '2') setMode('resize');
+  if (e.key === '3') setMode('crop');
+});
+
+// ===================== RESIZE =====================
+function resize() {
+  const w = window.innerWidth - 340, h = window.innerHeight;
+  renderer.setSize(Math.max(w, 340), h);
+  camera.aspect = (Math.max(w, 340)) / h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize);
+resize();
+
+// ===================== ANIMATE =====================
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+// ===================== INIT =====================
+rebuildScene();
+updateInfo();
+setMode('select');
+animate();
+</script>
+</body>
+</html>

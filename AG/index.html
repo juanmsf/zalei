@@ -1,0 +1,2505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zalei Atlas 3D — Consolidado</title>
+<style>
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0d0d11;
+  color: #f1f1f5;
+  overflow: hidden;
+}
+
+#split {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Left: 2D Editor */
+#canvas-container {
+  flex: 1;
+  overflow: auto;
+  background: #050508;
+  position: relative;
+  min-width: 0;
+}
+#img-wrap {
+  position: relative;
+  display: inline-block;
+}
+#base-img {
+  display: block;
+  max-width: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+#roads-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+#click-catcher {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  display: none;
+  z-index: 5;
+}
+body.mode-roads.drawing #click-catcher { display: block; }
+body.mode-roads.placing-codo #click-catcher { display: block; cursor: cell; }
+body.mode-roads #roads-svg { pointer-events: auto; }
+body.mode-roads .zone { pointer-events: none; opacity: 0.4; }
+body.mode-roads .zone.selected { opacity: 0.9; pointer-events: auto; }
+
+.microzona {
+  position: absolute;
+  border: 2px dashed;
+  cursor: move;
+  box-sizing: border-box;
+  transition: box-shadow 0.1s, opacity 0.2s;
+  border-radius: 6px;
+  z-index: 1000;
+  opacity: 0.85;
+}
+.microzona.selected {
+  z-index: 1001;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.95), 0 0 20px rgba(255,255,255,0.4);
+  opacity: 1;
+}
+
+.zone {
+  position: absolute;
+  border: 3px solid;
+  cursor: move;
+  box-sizing: border-box;
+  transition: box-shadow 0.1s, opacity 0.2s;
+  border-radius: 4px;
+}
+.zone.selected {
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.95), 0 0 25px rgba(255,255,255,0.5);
+  z-index: 10;
+}
+.zone-label {
+  position: absolute;
+  top: -28px;
+  left: -3px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: #000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  pointer-events: none;
+  z-index: 12;
+  border-radius: 3px;
+}
+.resize-handle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border: 2px solid #111;
+  display: none;
+  z-index: 11;
+  border-radius: 3px;
+}
+.zone.selected .resize-handle { display: block; }
+.rh-nw { top: -7px; left: -7px; cursor: nw-resize; }
+.rh-ne { top: -7px; right: -7px; cursor: ne-resize; }
+.rh-sw { bottom: -7px; left: -7px; cursor: sw-resize; }
+.rh-se { bottom: -7px; right: -7px; cursor: se-resize; }
+.rh-n { top: -7px; left: 50%; margin-left: -6px; cursor: n-resize; }
+.rh-s { bottom: -7px; left: 50%; margin-left: -6px; cursor: s-resize; }
+.rh-w { top: 50%; left: -7px; margin-top: -6px; cursor: w-resize; }
+.rh-e { top: 50%; right: -7px; margin-top: -6px; cursor: e-resize; }
+.rh-rotate {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  margin-left: -8px;
+  width: 16px;
+  height: 16px;
+  background: #ffcc00;
+  border: 2px solid #111;
+  border-radius: 50%;
+  cursor: grab;
+  display: none;
+  z-index: 12;
+}
+.zone.selected .rh-rotate { display: block; }
+.rh-rotate:active { cursor: grabbing; }
+
+#tooltip {
+  position: fixed;
+  background: rgba(10, 10, 15, 0.95);
+  color: #eee;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 100;
+  display: none;
+  max-width: 320px;
+  line-height: 1.5;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+}
+#tooltip b { color: #fff; }
+#tooltip .tt-row { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 2px; }
+#tooltip .tt-label { color: #8c8c9e; min-width: 60px; }
+#tooltip .tt-val { color: #e1e1e6; text-align: right; }
+
+#panel {
+  width: 440px;
+  min-width: 380px;
+  background: #13131a;
+  border-left: 1px solid #23232f;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+#panel-header {
+  padding: 16px;
+  border-bottom: 1px solid #23232f;
+  background: #171722;
+}
+#panel-header h2 { margin: 0 0 6px; font-size: 16px; color: #fff; font-weight: 700; letter-spacing: 0.5px; }
+#panel-header .sub { font-size: 11px; color: #8c8c9e; line-height: 1.4; }
+
+.mode-tabs { display: flex; border-bottom: 1px solid #23232f; }
+.mode-tab {
+  flex: 1;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: #8c8c9e;
+  font-weight: 600;
+  font-size: 13px;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+.mode-tab.active { color: #00ff7f; border-bottom-color: #00ff7f; background: #171722; }
+.mode-tab:hover:not(.active) { background: rgba(255,255,255,0.02); color: #fff; }
+
+#toolbar { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 16px; border-bottom: 1px solid #23232f; background: #171722; }
+#toolbar .hint { font-size: 10px; color: #68687a; align-self: center; margin-left: auto; }
+
+#drawing-status { display: none; padding: 12px 16px; background: #1e293b; border-bottom: 1px solid #23232f; font-size: 12px; }
+body.drawing #drawing-status { display: block; }
+body.placing-codo #drawing-status { display: block; background: #3b2a1e; }
+
+#road-presets { display: none; padding: 10px 16px; border-bottom: 1px solid #23232f; gap: 6px; flex-wrap: wrap; background: #171722; }
+body.mode-roads #road-presets { display: flex; }
+.road-preset-btn { padding: 6px 12px; font-size: 11px; border-radius: 4px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); opacity: 0.75; transition: all 0.15s; font-weight: 600; }
+.road-preset-btn:hover { opacity: 1; }
+.road-preset-btn.active { opacity: 1; outline: 2px solid #fff; border-color: transparent; }
+.codo-btn { background: #7c5208; border-color: #b8860b; color: #ffd700; }
+.codo-btn:hover { background: #96640a; }
+
+#items-list { flex: 1; overflow-y: auto; padding: 12px 16px; background: #13131a; }
+#export-section { border-top: 1px solid #23232f; padding: 12px 16px; background: #171722; }
+#export-area { width: 100%; min-height: 70px; background: #08080c; color: #00ff7f; font-family: 'Consolas', monospace; font-size: 11px; border: 1px solid #23232f; padding: 8px; resize: vertical; border-radius: 6px; }
+#export-status { font-size: 10px; color: #8c8c9e; margin-top: 6px; text-align: right; font-family: monospace; }
+#undo-btn { padding: 6px 10px; font-size: 11px; background: #23232f; border-color: #3b3b4f; color: #ddd; border-radius: 4px; cursor: pointer; }
+#undo-btn:hover { background: #2e2e3f; }
+
+button {
+  background: #23232f; color: #eee; border: 1px solid #3b3b4f;
+  padding: 8px 12px; cursor: pointer; border-radius: 6px; font-size: 12px; transition: all 0.15s;
+  font-weight: 500;
+}
+button:hover { background: #2e2e3f; border-color: #51516a; }
+button.primary { background: #00ff7f; border-color: #00e672; color: #000; font-weight: 700; }
+button.primary:hover { background: #1aff8c; }
+button.danger { background: #b91c1c; border-color: #dc2626; color: #fff; }
+button.danger:hover { background: #dc2626; }
+button.success { background: #047857; border-color: #059669; color: #fff; }
+button.success:hover { background: #059669; }
+
+.item-card { background: #1c1c24; border-radius: 6px; margin-bottom: 12px; padding: 12px; border-left: 4px solid; border-top: 1px solid rgba(255,255,255,0.02); }
+.item-card.selected { background: #242430; outline: 2px solid #00ff7f; }
+.item-card .row { display: flex; gap: 6px; margin-bottom: 8px; align-items: center; }
+.item-card input[type="text"],
+.item-card textarea,
+.item-card select {
+  width: 100%; background: #0c0c10; color: #eee; border: 1px solid #2d2d3d;
+  padding: 6px 9px; border-radius: 4px; font-family: inherit; font-size: 12px; transition: border 0.15s;
+}
+.item-card input[type="text"]:focus,
+.item-card textarea:focus,
+.item-card select:focus {
+  border-color: #00ff7f; outline: none;
+}
+.item-card textarea { resize: vertical; min-height: 48px; }
+.item-card input[type="color"] { width: 36px; height: 30px; border: 1px solid #2d2d3d; cursor: pointer; padding: 0; background: none; border-radius: 4px; }
+.item-card input[type="number"] { width: 85px; background: #0c0c10; color: #eee; border: 1px solid #2d2d3d; padding: 6px; border-radius: 4px; }
+.item-card .meta { font-size: 10px; color: #68687a; margin: 4px 0; font-family: monospace; }
+.item-card .actions { display: flex; gap: 6px; margin-top: 8px; }
+.item-card .actions button { flex: 1; padding: 5px; font-size: 11px; }
+
+.label-id { font-size: 10px; color: #68687a; margin-bottom: 4px; font-family: monospace; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.rot-indicator {
+  position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; color: #ffcc00; background: rgba(0,0,0,0.85); padding: 2px 6px;
+  border-radius: 3px; display: none; pointer-events: none; white-space: nowrap; border: 1px solid rgba(255,255,255,0.05);
+}
+.zone.selected .rot-indicator { display: block; }
+
+#zoom-controls {
+  position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(13, 13, 17, 0.85); padding: 6px 12px; border-radius: 30px; z-index: 20;
+  backdrop-filter: blur(10px); font-size: 12px; border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+#zoom-controls button {
+  font-size: 16px; font-weight: 700; width: 30px; height: 30px; display: flex;
+  align-items: center; justify-content: center; padding: 0; border-radius: 50%; border: none; background: #23232f;
+}
+#zoom-controls button:hover { background: #2e2e3f; }
+#zoom-level { min-width: 50px; text-align: center; color: #00ff7f; font-family: monospace; font-weight: bold; }
+
+/* Right: 3D Viewer */
+#viewer3d {
+  flex: 1;
+  background: #08080b;
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+}
+#viewer3d canvas { display: block; }
+#badge3d {
+  position: absolute; top: 12px; left: 12px;
+  background: rgba(13,13,17,0.85); padding: 8px 16px; border-radius: 8px;
+  font-size: 12px; color: #8c8c9e; z-index: 10; border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+}
+#badge3d b { color: #00ff7f; }
+#hint3d {
+  position: absolute; bottom: 12px; right: 12px;
+  background: rgba(13,13,17,0.7); padding: 6px 12px; border-radius: 6px;
+  font-size: 10px; color: #68687a; z-index: 10; pointer-events: none;
+}
+#info3d {
+  position: absolute; bottom: 12px; left: 12px;
+  background: rgba(13,13,17,0.92); padding: 12px 16px; border-radius: 10px;
+  font-size: 12px; max-width: 380px; z-index: 10; display: none;
+  border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  backdrop-filter: blur(10px);
+}
+#info3d.show { display: block; }
+#info3d .row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+#info3d .row span { color: #8c8c9e; }
+#info3d .row b { color: #fff; }
+#legend3d {
+  position: absolute; top: 12px; right: 12px;
+  background: rgba(13,13,17,0.9); padding: 12px 16px; border-radius: 10px;
+  font-size: 11px; z-index: 10; max-height: 80vh; overflow-y: auto;
+  min-width: 180px; border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+}
+#legend3d h3 { font-size: 12px; color: #8c8c9e; margin: 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; padding: 4px 0; user-select: none; display: flex; justify-content: space-between; align-items: center; }
+#legend3d h3:hover { color: #fff; }
+#legend3d h3 .toggle { font-size: 10px; color: #68687a; transition: transform 0.2s; }
+#legend3d.collapsed h3 .toggle { transform: rotate(-90deg); }
+#legend3d .entry { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; cursor: pointer; padding: 4px 6px; border-radius: 4px; transition: background 0.15s; }
+#legend3d .entry:hover { background: rgba(255,255,255,0.06); }
+#legend3d .swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+#legend3d .lbl { font-size: 11px; color: #ccc; }
+#legend3d .lbl small { color: #68687a; font-size: 8.5px; margin-left: 2px; }
+#legend3d.collapsed #legend-list { display: none; }
+
+#layer-toggles { display: flex; gap: 6px; padding: 6px 16px; border-bottom: 1px solid #23232f; align-items: center; font-size: 12px; background: #171722; }
+
+/* Resize handle between panels */
+#resize-handle {
+  width: 5px;
+  cursor: col-resize;
+  background: #23232f;
+  flex-shrink: 0;
+  transition: background 0.15s;
+  z-index: 30;
+}
+#resize-handle:hover { background: #00ff7f; }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="split">
+
+  <!-- LEFT: 2D Editor -->
+  <div id="canvas-container">
+    <div id="img-wrap">
+      <img id="base-img" src="base.jpg" alt="Zalei base satelital">
+      <svg id="roads-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div id="click-catcher"></div>
+    </div>
+    <div id="tooltip"></div>
+    <div id="zoom-controls">
+      <button title="Alejar" onclick="zoomStep(-0.25)">−</button>
+      <span id="zoom-level">100%</span>
+      <button title="Acercar" onclick="zoomStep(0.25)">+</button>
+      <button title="Restablecer zoom" onclick="zoomReset()">⟲</button>
+    </div>
+  </div>
+
+  <!-- Resize handle -->
+  <div id="resize-handle"></div>
+
+  <!-- RIGHT: 3D Viewer -->
+  <div id="viewer3d">
+    <div id="badge3d"><b>Zalei Atlas</b> · Vista 3D Integrada</div>
+    <div id="info3d"></div>
+    <div id="hint3d">Arrastrar click orbitar · Shift+drag pan · Rueda zoom · Arrastrar edif. para reposicionar en 2D</div>
+    <div id="legend3d"><h3 onclick="toggleLegend()">Estructuras <span class="toggle">▼</span></h3><div id="legend-list"></div></div>
+  </div>
+
+</div>
+
+<!-- Panel (sidebar) -->
+<div id="panel">
+  <div id="panel-header">
+    <h2>Atlas Zalei — Editor Consolidado</h2>
+    <div class="sub">Base: base.jpg (3.2MB · 5042×4474) · R rotar · Ctrl+C/V · Shift dib. ángulo recto · G agrupar · Arrastrar en 3D para posicionar</div>
+  </div>
+  <div class="mode-tabs">
+    <button class="mode-tab active" data-mode="zones" onclick="setMode('zones')">Zonas</button>
+    <button class="mode-tab" data-mode="roads" onclick="setMode('roads')">Calles</button>
+  </div>
+  <div id="layer-toggles">
+    <span style="color:#68687a;margin-right:4px">Capas:</span>
+    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;padding:3px 8px;border-radius:4px;background:rgba(0,255,127,0.1);border:1px solid rgba(0,255,127,0.25)">
+      <input type="checkbox" id="toggle-zones" checked onchange="toggleLayer('zones',this.checked)" style="accent-color:#00ff7f">
+      <span style="color:#00ff7f;font-weight:600">Zonas</span>
+    </label>
+    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;padding:3px 8px;border-radius:4px;background:rgba(0,180,255,0.1);border:1px solid rgba(0,180,255,0.25)">
+      <input type="checkbox" id="toggle-roads" checked onchange="toggleLayer('roads',this.checked)" style="accent-color:#00B4FF">
+      <span style="color:#00B4FF;font-weight:600">Calles</span>
+    </label>
+  </div>
+  <div id="toolbar">
+    <button class="primary" id="btn-add" onclick="addItem()">+ Nuevo</button>
+    <button onclick="copyJSON()">📋 Copiar</button>
+    <button onclick="downloadJSON()">💾 Guardar JSON</button>
+    <button onclick="loadJSON()">📤 Importar</button>
+    <button class="danger" onclick="resetAll()">↺ Reset</button>
+    <button id="undo-btn" onclick="undo()" title="Ctrl+Z">↩ Undo</button>
+    <span class="hint">Shift+click multiselect · G agrupar · R rotar · Del borrar</span>
+  </div>
+  <div id="road-presets">
+    <button class="road-preset-btn active" data-width="74" data-type="externa" data-color="#FFD700" onclick="setRoadTemplate(this,'externa',74,'#FFD700')" style="background:#FFD700;color:#000">Externa (74px)</button>
+    <button class="road-preset-btn" data-width="20" data-type="perimetral" data-color="#FF6600" onclick="setRoadTemplate(this,'perimetral',20,'#FF6600')" style="background:#FF6600;color:#000">Perimetral (20px)</button>
+    <button class="road-preset-btn" data-width="40" data-type="interna" data-color="#4488FF" onclick="setRoadTemplate(this,'interna',40,'#4488FF')" style="background:#4488FF;color:#fff">Interna (40px)</button>
+    <button class="road-preset-btn" data-width="8" data-type="alambrado" data-color="#0b27f4" onclick="setRoadTemplate(this,'alambrado',8,'#0b27f4')" style="background:#0b27f4;color:#fff;border:1px dashed #aaa">Alambrado (8px)</button>
+    <span style="flex:1"></span>
+    <button id="btn-select-all-roads" onclick="toggleSelectAllRoads()" style="padding:4px 8px;font-size:10px;border-radius:4px;cursor:pointer;background:#2a6d9c;color:#fff;border:1px solid #4a8dbc;font-weight:600">⊞ Seleccionar todo</button>
+    <button class="codo-btn" onclick="placeCodo('perimetral')">⟱ Codo Peri</button>
+    <button class="codo-btn" onclick="placeCodo('externa')">⟱ Codo Ext</button>
+  </div>
+  <div id="drawing-status">
+    <strong id="drawing-title">Dibujando calle</strong> — <span id="points-count">0</span> puntos.
+    <span id="drawing-hint">Clic en imagen para agregar punto.</span>
+    <div style="margin-top:6px;display:flex;gap:5px">
+      <button class="success" id="btn-finish" onclick="finishDrawing()">Finalizar (Enter)</button>
+      <button id="btn-undo-point" onclick="undoPoint()">Deshacer</button>
+      <button class="danger" onclick="cancelDrawing()">Cancelar (Esc)</button>
+    </div>
+  </div>
+  <div id="items-list"></div>
+  <div id="export-section">
+    <div class="label-id">JSON Exportado (Auto)</div>
+    <textarea id="export-area" readonly></textarea>
+    <div id="export-status"></div>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+// ===================== CONSTANTS =====================
+const BASE_W = 5042;
+const BASE_H = 4474;
+const STORAGE_KEY = 'atlas_zalei_editor2d';
+const STORAGE_KEY_MICRO = STORAGE_KEY + '_microzonas';
+
+// ===================== BLOCKOUT & INITIAL DATA (Merged source of truth) =====================
+const BLOCKOUT = {
+  "meta": {
+    "image_w_px": 5245,
+    "image_h_px": 4329,
+    "image_w_units": 52.45,
+    "image_d_units": 43.29,
+    "scale_px_to_units": 0.01,
+    "meters_per_unit": 15.0,
+    "vertical_exaggeration_default": 2.5,
+    "title": "Zalei Atlas — Blockout 3D"
+  },
+  "objects": [
+    { "id": "Z01", "source": "zone", "parent_zone": null, "render_mode": "building", "shape": "gable_box", "subtype": "galpon_recria", "label": "Recría Existente", "color": "#FFD700", "footprint": {"cx": 7.06, "cz": 2.42, "w": 12.2, "d": 2.18}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "validation_status": "validated", "count": 1 },
+    { "id": "Z02", "source": "zone", "parent_zone": null, "render_mode": "building", "shape": "flat_organic", "subtype": "guano", "label": "Guano", "color": "#A0522D", "footprint": {"cx": 28.33, "cz": 15.925, "w": 13.02, "d": 20.97}, "height_m_estimated": 0.5, "height_3d_units": 0.0333, "validation_status": "geometry_ok_subtype_pending", "requires_chadi_validation": true, "count": null },
+    { "id": "Z03", "source": "zone", "parent_zone": null, "render_mode": "footprint", "skip_reason": "has_renderable_microzones", "shape": "flat_transparent", "subtype": "galpon_ponedoras", "label": "Galpones De Ponedoras", "color": "#00B4FF", "footprint": {"cx": 10.245, "cz": 29.16, "w": 15.81, "d": 17.68}, "height_m_estimated": 0.0, "height_3d_units": 0.0, "validation_status": "individual_bbox_measured_in_crop_editor", "count": 10 },
+    { "id": "Z03_E01", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 01", "color": "#00B4FF", "rotation_deg": 0, "footprint": {"cx": 13.496, "cz": 20.068, "w": 7.891, "d": 1.758}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "validation_status": "measured_from_crop" },
+    { "id": "Z03_E02", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 02", "color": "#00B4FF", "rotation_deg": 0, "footprint": {"cx": 13.465, "cz": 25.041, "w": 7.871, "d": 1.181}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "validation_status": "measured_from_crop" },
+    { "id": "Z03_E03_clasif", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras Clasificadora", "color": "#b3abb0", "rotation_deg": 0, "footprint": {"cx": 12.096, "cz": 27.106, "w": 5.929, "d": 3.011}, "height_m_estimated": 6.5, "height_3d_units": 0.4333, "validation_status": "measured_from_crop" },
+    { "id": "Z03_E04", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 04", "color": "#00B4FF", "rotation_deg": 0, "footprint": {"cx": 13.485, "cz": 28.947, "w": 7.649, "d": 1.378}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "validation_status": "measured_from_crop" },
+    { "id": "Z03_E05", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 05", "color": "#00B4FF", "rotation_deg": 0, "footprint": {"cx": 13.555, "cz": 31.736, "w": 7.83, "d": 2.009}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "validation_status": "measured_from_crop" },
+    { "id": "Z03_E06", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 06", "color": "#00B4FF", "rotation_deg": 0, "footprint": {"cx": 13.586, "cz": 34.018, "w": 7.891, "d": 2.34}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "validation_status": "measured_from_crop" },
+    { "id": "Z03_E07", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 07", "color": "#00B4FF", "rotation_deg": 45.4, "footprint": {"cx": 5.748, "cz": 24.739, "w": 7.26, "d": 7.261}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "validation_status": "measured_from_crop" },
+    { "id": "Z03_E08", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 08", "color": "#00B4FF", "rotation_deg": 45.0, "footprint": {"cx": 5.851, "cz": 28.182, "w": 7.558, "d": 7.561}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "validation_status": "measured_from_crop" },
+    { "id": "Z03_E09", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 09", "color": "#00B4FF", "rotation_deg": 45.2, "footprint": {"cx": 6.065, "cz": 30.918, "w": 7.472, "d": 7.458}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "validation_status": "measured_from_crop" },
+    { "id": "Z03_E10", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras 10", "color": "#00B4FF", "rotation_deg": 45.0, "footprint": {"cx": 6.439, "cz": 34.723, "w": 7.039, "d": 7.042}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "validation_status": "measured_from_crop" },
+    { "id": "Z03_E11_taller", "source": "microzone", "parent_zone": "Z03", "render_mode": "building", "shape": "gable_box", "subtype": "galpon_ponedoras", "label": "Galpon Ponedoras Taller", "color": "#347c65", "rotation_deg": 0, "footprint": {"cx": 8.261, "cz": 37.483, "w": 1.518, "d": 2.13}, "height_m_estimated": 5.0, "height_3d_units": 0.3333, "validation_status": "measured_from_crop" },
+    { "id": "Z04_E01", "source": "microzone", "parent_zone": "Z04", "render_mode": "building", "shape": "box", "subtype": "planta_alimento", "label": "Planta de Alimento", "color": "#C800FF", "footprint": {"cx": 23.995, "cz": 35.245, "w": 1.61, "d": 4.31}, "height_m_estimated": 5.0, "height_3d_units": 0.3333 },
+    { "id": "Z05", "source": "zone", "parent_zone": null, "render_mode": "footprint", "shape": "flat_transparent", "subtype": "cintas_transportadoras", "label": "Cintas Transportadoras", "color": "#FFFFFF", "footprint": {"cx": 9.03, "cz": 27.5, "w": 2.48, "d": 10.72}, "height_m_estimated": 0.5, "height_3d_units": 0.0333 },
+    { "id": "Z06_S01", "source": "microzone", "parent_zone": "Z06", "render_mode": "building", "shape": "cylinder_tall", "subtype": "silo_seco_cilindrico", "label": "Silo Seco Norte 1", "color": "#FF1493", "footprint": {"cx": 28.21, "cz": 32.84, "w": 1.38, "d": 1.38}, "height_m_estimated": 18.0, "height_3d_units": 1.2 },
+    { "id": "Z06_S02", "source": "microzone", "parent_zone": "Z06", "render_mode": "building", "shape": "cylinder_tall", "subtype": "silo_seco_cilindrico", "label": "Silo Seco Norte 2", "color": "#FF1493", "footprint": {"cx": 29.74, "cz": 32.83, "w": 1.38, "d": 1.38}, "height_m_estimated": 18.0, "height_3d_units": 1.2 },
+    { "id": "Z06_S03", "source": "microzone", "parent_zone": "Z06", "render_mode": "building", "shape": "cylinder_tall", "subtype": "silo_seco_cilindrico", "label": "Silo Seco Norte 3", "color": "#FF1493", "footprint": {"cx": 31.25, "cz": 32.85, "w": 1.3, "d": 1.3}, "height_m_estimated": 18.0, "height_3d_units": 1.2 },
+    { "id": "Z06_S04", "source": "microzone", "parent_zone": "Z06", "render_mode": "building", "shape": "cylinder_tall", "subtype": "silo_seco_cilindrico", "label": "Silo Seco Sur 1", "color": "#FF1493", "footprint": {"cx": 28.23, "cz": 34.61, "w": 1.38, "d": 1.38}, "height_m_estimated": 18.0, "height_3d_units": 1.2 },
+    { "id": "Z06_S05", "source": "microzone", "parent_zone": "Z06", "render_mode": "building", "shape": "cylinder_tall", "subtype": "silo_seco_cilindrico", "label": "Silo Seco Sur 2", "color": "#FF1493", "footprint": {"cx": 29.75, "cz": 34.6, "w": 1.38, "d": 1.38}, "height_m_estimated": 18.0, "height_3d_units": 1.2 },
+    { "id": "Z06_S06", "source": "microzone", "parent_zone": "Z06", "render_mode": "building", "shape": "cylinder_tall", "subtype": "silo_seco_cilindrico", "label": "Silo Seco Sur 3", "color": "#FF1493", "footprint": {"cx": 31.29, "cz": 34.58, "w": 1.38, "d": 1.38}, "height_m_estimated": 18.0, "height_3d_units": 1.2 },
+    { "id": "Z06_S07", "source": "microzone", "parent_zone": "Z06", "render_mode": "building", "shape": "cylinder_tall", "subtype": "silo_seco_cilindrico", "label": "Silo Seco Sur 4", "color": "#FF1493", "footprint": {"cx": 32.8, "cz": 34.57, "w": 1.38, "d": 1.38}, "height_m_estimated": 18.0, "height_3d_units": 1.2 },
+    { "id": "Z07_G_NEW_01", "source": "microzone", "parent_zone": "Z07", "render_mode": "building", "shape": "gable_box", "subtype": "galpon_recria_futuro", "label": "Galpon Recria Nuevo 1", "color": "#00FF7F", "rotation_deg": 90, "footprint": {"cx": 39.4889, "cz": 8.3552, "w": 2.178, "d": 12.192}, "height_m_estimated": 5.0, "height_3d_units": 0.3333 },
+    { "id": "Z07_G_NEW_02", "source": "microzone", "parent_zone": "Z07", "render_mode": "building", "shape": "gable_box", "subtype": "galpon_recria_futuro", "label": "Galpon Recria Nuevo 2", "color": "#00FF7F", "rotation_deg": 90, "footprint": {"cx": 42.499, "cz": 8.3149, "w": 2.178, "d": 12.192}, "height_m_estimated": 5.0, "height_3d_units": 0.3333 },
+    { "id": "Z08", "source": "zone", "parent_zone": null, "render_mode": "building", "shape": "box", "subtype": "vivienda", "label": "Casa de Gerencia", "color": "#0B206B", "footprint": {"cx": 35.18, "cz": 39.59, "w": 2.34, "d": 2.78}, "height_m_estimated": 4.0, "height_3d_units": 0.2667 },
+    { "id": "Z09", "source": "zone", "parent_zone": null, "render_mode": "building", "shape": "box", "subtype": "departamentos", "label": "Departamentos", "color": "#6A5B19", "footprint": {"cx": 7.13, "cz": 39.545, "w": 6.28, "d": 2.05}, "height_m_estimated": 4.0, "height_3d_units": 0.2667 },
+    { "id": "Z11", "source": "zone", "parent_zone": null, "render_mode": "building", "shape": "box", "subtype": "vivienda_mantenimiento", "label": "Casa Mantenimiento Sur", "color": "#FF0F6D", "footprint": {"cx": 18.38, "cz": 40.235, "w": 2.38, "d": 1.59}, "height_m_estimated": 4.0, "height_3d_units": 0.2667 },
+    { "id": "Z13", "source": "zone", "parent_zone": null, "render_mode": "building", "shape": "box", "subtype": "vivienda_mantenimiento", "label": "Casa Mantenimiento Norte", "color": "#284695", "footprint": {"cx": 17.485, "cz": 4.665, "w": 3.89, "d": 2.05}, "height_m_estimated": 4.0, "height_3d_units": 0.2667 },
+    { "id": "Z14_E01", "source": "microzone", "parent_zone": "Z14", "render_mode": "building", "shape": "box", "subtype": "planta_industrial", "label": "Aceitera", "color": "#F23DD7", "footprint": {"cx": 25.325, "cz": 35.745, "w": 1.33, "d": 2.87}, "height_m_estimated": 4.0, "height_3d_units": 0.2667 },
+    { "id": "Z15_H01", "source": "microzone", "parent_zone": "Z15", "render_mode": "building", "shape": "cylinder_tall", "subtype": "silo_humedo", "label": "Silo Humedo 1", "color": "#CB8F8D", "footprint": {"cx": 26.64, "cz": 31.15, "w": 0.78, "d": 0.78}, "height_m_estimated": 18.0, "height_3d_units": 1.2 },
+    { "id": "Z15_H02", "source": "microzone", "parent_zone": "Z15", "render_mode": "building", "shape": "cylinder_tall", "subtype": "silo_humedo", "label": "Silo Humedo 2", "color": "#CB8F8D", "footprint": {"cx": 27.18, "cz": 32.4, "w": 0.78, "d": 0.78}, "height_m_estimated": 18.0, "height_3d_units": 1.2 },
+    { "id": "Z15_H03", "source": "microzone", "parent_zone": "Z15", "render_mode": "building", "shape": "cylinder_tall", "subtype": "silo_humedo", "label": "Silo Humedo 3", "color": "#CB8F8D", "footprint": {"cx": 27.25, "cz": 32.96, "w": 0.78, "d": 0.78}, "height_m_estimated": 18.0, "height_3d_units": 1.2 },
+    { "id": "Z16_E01", "source": "microzone", "parent_zone": "Z16", "render_mode": "building", "shape": "cylinder_tall", "subtype": "silo_consumo", "label": "Silo Consumo 1", "color": "#6010d0", "footprint": {"cx": 25.04, "cz": 32.25, "w": 0.62, "d": 0.62}, "height_m_estimated": 18.0, "height_3d_units": 1.2 },
+    { "id": "Z16_E02", "source": "microzone", "parent_zone": "Z16", "render_mode": "building", "shape": "cylinder_tall", "subtype": "silo_consumo", "label": "Silo Consumo 2", "color": "#6010d0", "footprint": {"cx": 24.75, "cz": 32.61, "w": 0.62, "d": 0.62}, "height_m_estimated": 18.0, "height_3d_units": 1.2 },
+    { "id": "Z16_E03", "source": "microzone", "parent_zone": "Z16", "render_mode": "building", "shape": "cylinder_tall", "subtype": "silo_consumo", "label": "Silo Consumo 3", "color": "#6010d0", "footprint": {"cx": 24.96, "cz": 32.9, "w": 0.62, "d": 0.62}, "height_m_estimated": 18.0, "height_3d_units": 1.2 },
+    { "id": "Z16_E04", "source": "microzone", "parent_zone": "Z16", "render_mode": "building", "shape": "cylinder_tall", "subtype": "silo_consumo", "label": "Silo Consumo 4", "color": "#6010d0", "footprint": {"cx": 24.99, "cz": 34.54, "w": 0.62, "d": 0.62}, "height_m_estimated": 18.0, "height_3d_units": 1.2 },
+    { "id": "Z17_D01", "source": "microzone", "parent_zone": "Z17", "render_mode": "building", "shape": "tower", "subtype": "descarga_granos", "label": "Descarga de Granos", "color": "#7A5B13", "footprint": {"cx": 23.905, "cz": 31.41, "w": 0.59, "d": 2.1}, "height_m_estimated": 14.0, "height_3d_units": 0.9333 },
+    { "id": "Z18A_Conexion_Tubular", "source": "microzone", "parent_zone": "Z18", "render_mode": "building", "shape": "elevated_beam", "subtype": "infraestructura_tubular", "label": "Conexion Tubular", "color": "#fe8a48", "footprint": {"cx": 26.9, "cz": 32.9, "w": 3.6, "d": 1.6}, "height_m_estimated": 1.5, "height_3d_units": 0.1 },
+    { "id": "Z18B_Secado_Y_Limpieza", "source": "microzone", "parent_zone": "Z18", "render_mode": "building", "shape": "tower", "subtype": "secado_limpieza", "label": "Secado Estructura", "color": "#FE2948", "footprint": {"cx": 27.66, "cz": 34.305, "w": 2.06, "d": 1.07}, "height_m_estimated": 14.0, "height_3d_units": 0.9333 },
+    { "id": "Z19_T01", "source": "microzone", "parent_zone": "Z19", "render_mode": "building", "shape": "cylinder_low", "subtype": "tanque_aceite_cilindrico", "label": "Tanque Aceite 1", "color": "#E66981", "footprint": {"cx": 24.97, "cz": 36.94, "w": 0.3, "d": 0.32}, "height_m_estimated": 4.0, "height_3d_units": 0.2667 },
+    { "id": "Z19_T02", "source": "microzone", "parent_zone": "Z19", "render_mode": "building", "shape": "cylinder_low", "subtype": "tanque_aceite_cilindrico", "label": "Tanque Aceite 2", "color": "#E66981", "footprint": {"cx": 25.32, "cz": 36.91, "w": 0.3, "d": 0.3}, "height_m_estimated": 4.0, "height_3d_units": 0.2667 },
+    { "id": "Z19_T03", "source": "microzone", "parent_zone": "Z19", "render_mode": "building", "shape": "cylinder_low", "subtype": "tanque_aceite_cilindrico", "label": "Tanque Aceite 3", "color": "#E66981", "footprint": {"cx": 25.65, "cz": 37.0, "w": 0.3, "d": 0.3}, "height_m_estimated": 4.0, "height_3d_units": 0.2667 },
+    { "id": "Z20_E01", "source": "microzone", "parent_zone": "Z20", "render_mode": "building", "shape": "box", "subtype": "descarga_alimento", "label": "Descarga de Alimento", "color": "#AF1BDF", "footprint": {"cx": 23.425, "cz": 33.175, "w": 1.83, "d": 2.59}, "height_m_estimated": 4.0, "height_3d_units": 0.2667 },
+    { "id": "Z21_E01", "source": "microzone", "parent_zone": "Z21", "render_mode": "building", "shape": "box", "subtype": "oficinas", "label": "Oficinas", "color": "#B39BBD", "footprint": {"cx": 21.29, "cz": 33.61, "w": 1.24, "d": 3.56}, "height_m_estimated": 4.0, "height_3d_units": 0.2667 },
+    { "id": "Z22_E01", "source": "microzone", "parent_zone": "Z22", "render_mode": "building", "shape": "flat_slab", "subtype": "balanza_camiones", "label": "Balanza de Camiones", "color": "#4C3FAC", "footprint": {"cx": 20.35, "cz": 33.66, "w": 0.74, "d": 3.56}, "height_m_estimated": 0.4, "height_3d_units": 0.0267 },
+    { "id": "Z23", "source": "zone", "parent_zone": null, "render_mode": "building", "shape": "gable_box", "subtype": "galpon_recria", "label": "Recría 23", "color": "#FFD700", "rotation_deg": 90, "footprint": {"cx": 39.315, "cz": 10.99, "w": 12.19, "d": 2.18}, "height_m_estimated": 5.0, "height_3d_units": 0.3333 },
+    { "id": "Z24", "source": "zone", "parent_zone": null, "render_mode": "building", "shape": "gable_box", "subtype": "galpon_recria", "label": "Recría 24", "color": "#FFD700", "rotation_deg": 90, "footprint": {"cx": 42.655, "cz": 11.09, "w": 12.19, "d": 2.18}, "height_m_estimated": 5.0, "height_3d_units": 0.3333 },
+  ]
+};
+
+// Initial zones with up-to-date coordinate mappings and settings
+const initialZones = [
+  {id:'Z01',name:'Recría Existente',x:0.0261,y:0.0297,w:0.1960,h:0.0550,rot:0,color:'#FFD700',description:'Galpón de recría existente, validado por Juan. 1 unidad.'},
+  {id:'Z02',name:'Guano',x:0.4327,y:0.1215,w:0.2582,h:0.4688,rot:0,color:'#A0522D',description:'Sector de guano. Pendiente validación Chadi (seco / húmedo).'},
+  {id:'Z03_E01',name:'Galpon Ponedoras 01',x:0.1894,y:0.4821,w:0.1565,h:0.0393,rot:0,color:'#00B4FF',description:'Galpon ponedoras · gable_box'},
+  {id:'Z03_E02',name:'Galpon Ponedoras 02',x:0.1890,y:0.5465,w:0.1561,h:0.0264,rot:0,color:'#00B4FF',description:'Galpon ponedoras · gable_box'},
+  {id:'Clasificadora',name:'Galpon Ponedoras Clasificadora',x:0.1811,y:0.5722,w:0.1176,h:0.0673,rot:0,color:'#00B4FF',description:'Galpon ponedoras · gable_box'},
+  {id:'Z03_E04',name:'Galpon Ponedoras 04',x:0.1900,y:0.6323,w:0.1517,h:0.0308,rot:0,color:'#00B4FF',description:'Galpon ponedoras · gable_box'},
+  {id:'Z03_E05',name:'Galpon Ponedoras 05',x:0.1912,y:0.6869,w:0.1553,h:0.0449,rot:0,color:'#00B4FF',description:'Galpon ponedoras · gable_box'},
+  {id:'Z03_E06',name:'Galpon Ponedoras 06',x:0.1909,y:0.7317,w:0.1565,h:0.0638,rot:0,color:'#00B4FF',description:'Galpon ponedoras · gable_box'},
+  {id:'Z03_E07',name:'Galpon Ponedoras 07',x:0.0899,y:0.4609,w:0.0479,h:0.1849,rot:45.4052,color:'#00B4FF',description:'Galpon ponedoras · gable_box · 45°'},
+  {id:'Z03_E08',name:'Galpon Ponedoras 08',x:0.0943,y:0.5359,w:0.0454,h:0.1900,rot:45,color:'#00B4FF',description:'Galpon ponedoras · gable_box · 45°'},
+  {id:'Z03_E09',name:'Galpon Ponedoras 09',x:0.1032,y:0.6880,w:0.0465,h:0.1746,rot:45.2067,color:'#00B4FF',description:'Galpon ponedoras · gable_box · 45°'},
+  {id:'Z03_E10',name:'Galpon Ponedoras 10',x:0.1064,y:0.6222,w:0.0379,h:0.1648,rot:45,color:'#00B4FF',description:'Galpon ponedoras · gable_box · 45°'},
+  {id:'Taller',name:'Galpon Ponedoras Taller',x:0.1488,y:0.8140,w:0.0301,h:0.0476,rot:0,color:'#00B4FF',description:'Galpon ponedoras · gable_box'},
+  {id:'Z04',name:'Planta de alimento',x:0.4600,y:0.7395,w:0.0318,h:0.0965,rot:0,color:'#C800FF',description:''},
+  {id:'Z05',name:'Cintas Transportadoras',x:0.1562,y:0.5037,w:0.0291,h:0.2149,rot:0,color:'#FFFFFF',description:'Linear. CRÍTICO no romper conexiones.'},
+  {id:'Z06',name:'Silos secos',x:0.5445,y:0.7165,w:0.1400,h:0.0965,rot:0,color:'#FF1493',description:'7 silos.'},
+  {id:'Z07',name:'Terreno Nuevo',x:0.7209,y:0.0000,w:0.2791,h:0.9217,rot:0,color:'#00FF7F',description:'2 galpones recría nuevos + silo-bolsas.'},
+  {id:'Z08',name:'Casa de gerencia',x:0.6745,y:0.8539,w:0.0464,h:0.0622,rot:0,color:'#0B206B',description:'Vivienda.'},
+  {id:'Z09',name:'Departamentos de empleados',x:0.0950,y:0.8659,w:0.0897,h:0.0314,rot:0,color:'#6A5B19',description:'Viviendas.'},
+  {id:'Z10',name:'Clasificadora',x:0.1786,y:0.5746,w:0.1205,h:0.0590,rot:0,color:'#B3ABB0',description:'Recibe y clasifica los huevos.'},
+  {id:'Z11',name:'Casa de mantenimiento (sur)',x:0.3510,y:0.8863,w:0.0280,h:0.0246,rot:0,color:'#FF0F6D',description:''},
+  {id:'Z12',name:'Taller',x:0.1391,y:0.8098,w:0.0509,h:0.0530,rot:0,color:'#347C65',description:''},
+  {id:'Z13',name:'Casa de mantenimiento (norte)',x:0.3096,y:0.0834,w:0.0695,h:0.0380,rot:0,color:'#284695',description:''},
+  {id:'Z14',name:'Aceitera',x:0.4900,y:0.7682,w:0.0232,h:0.0546,rot:0,color:'#F23DD7',description:''},
+  {id:'Z15',name:'Silos húmedos',x:0.5282,y:0.6920,w:0.0161,h:0.0367,rot:0,color:'#CB8F8D',description:''},
+  {id:'Z16',name:'Silos almacenamiento consumo y expeller',x:0.4855,y:0.7193,w:0.0328,h:0.0487,rot:0,color:'#6010D0',description:''},
+  {id:'Z17',name:'Planta de descarga de granos',x:0.4682,y:0.6787,w:0.0118,h:0.0468,rot:0,color:'#7A5B13',description:''},
+  {id:'Z18',name:'Secado y limpieza de granos',x:0.5282,y:0.7258,w:0.0170,h:0.0276,rot:0,color:'#FE2948',description:'Estructura tubular.'},
+  {id:'Z19',name:'Tanques de aceite',x:0.4912,y:0.8216,w:0.0228,h:0.0127,rot:0,color:'#E66981',description:'3 tanques. No confundir con sombras.'},
+  {id:'Z20',name:'Descarga de alimento',x:0.4464,y:0.7125,w:0.0364,h:0.0581,rot:0,color:'#AF1BDF',description:''},
+  {id:'Z21',name:'Oficinas',x:0.4100,y:0.7114,w:0.0245,h:0.0796,rot:0,color:'#B39BBD',description:''},
+  {id:'Z22',name:'Balanza de camiones',x:0.3964,y:0.7125,w:0.0145,h:0.0796,rot:0,color:'#4C3FAC',description:''},
+  {id:'Z23',name:'Recría',x:0.6609,y:0.1622,w:0.2418,h:0.0488,rot:90,color:'#FFD700',description:'Galpón de recría existente, validado por Juan. 1 unidad.'},
+  {id:'Z24',name:'Recría',x:0.7300,y:0.1652,w:0.2418,h:0.0488,rot:90,color:'#FFD700',description:'Galpón de recría existente, validado por Juan. 1 unidad.'},
+];
+
+const initialRoads = [
+  {id:'R01',name:'',type:'externa',width_px:74,color:'#FFD700',description:'',points:[{x:0.0077,y:0.9424},{x:0.9891,y:0.9386}]},
+  {id:'R02',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.3153,y:0.4476},{x:0.0815,y:0.4318},{x:0.0523,y:0.4397},{x:0.0372,y:0.4624},{x:0.0317,y:0.4884},{x:0.0387,y:0.8483},{x:0.0447,y:0.8568},{x:0.0558,y:0.8653},{x:0.0659,y:0.8681},{x:0.084,y:0.8647},{x:0.0996,y:0.8602},{x:0.1105,y:0.846},{x:0.126,y:0.8281},{x:0.139,y:0.8119},{x:0.16,y:0.8029},{x:0.1926,y:0.8007},{x:0.1911,y:0.8205},{x:0.1921,y:0.8443},{x:0.1921,y:0.8607},{x:0.2048,y:0.8655},{x:0.3222,y:0.8655},{x:0.3376,y:0.8633},{x:0.3488,y:0.8602},{x:0.36,y:0.8488},{x:0.3594,y:0.8331},{x:0.3533,y:0.7651}]},
+  {id:'R04',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.3168,y:0.4493},{x:0.3418,y:0.4613},{x:0.3496,y:0.4771},{x:0.351,y:0.4945},{x:0.3519,y:0.5108},{x:0.3506,y:0.5297},{x:0.3513,y:0.5539},{x:0.3504,y:0.578},{x:0.3479,y:0.599},{x:0.3468,y:0.6212},{x:0.3496,y:0.6483},{x:0.3552,y:0.7395},{x:0.3563,y:0.7616},{x:0.3524,y:0.7773},{x:0.3436,y:0.7882},{x:0.3309,y:0.7932},{x:0.3073,y:0.7959},{x:0.2661,y:0.7973},{x:0.2341,y:0.7953},{x:0.2092,y:0.7994},{x:0.1944,y:0.7987},{x:0.1832,y:0.8015}]},
+  {id:'R05',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.0352,y:0.6108},{x:0.0769,y:0.5581},{x:0.1071,y:0.5196},{x:0.1307,y:0.4862},{x:0.15,y:0.4645},{x:0.1881,y:0.4416}]},
+  {id:'R06',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.1837,y:0.4454},{x:0.184,y:0.5672}]},
+  {id:'R07',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.186,y:0.6468},{x:0.189,y:0.7052},{x:0.1921,y:0.7218},{x:0.1915,y:0.733}]},
+  {id:'R08',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.1893,y:0.7641},{x:0.1938,y:0.8006}]},
+  {id:'R09',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.0372,y:0.7378},{x:0.0725,y:0.7059},{x:0.0526,y:0.6747},{x:0.0453,y:0.6641},{x:0.0707,y:0.6288},{x:0.0442,y:0.5978}]},
+  {id:'R10',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.0382,y:0.689},{x:0.0537,y:0.6681}]},
+  {id:'R11',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.0382,y:0.7799},{x:0.0586,y:0.7591}]},
+  {id:'R12',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.0392,y:0.8487},{x:0.1031,y:0.7684}]},
+  {id:'R13',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.2891,y:0.609},{x:0.8181,y:0.6063}]},
+  {id:'R14',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.4025,y:0.9148},{x:0.3915,y:0.112},{x:0.3887,y:0.0913},{x:0.3782,y:0.0778},{x:0.3563,y:0.0694},{x:0.3259,y:0.0694},{x:0.2151,y:0.0834},{x:0.1968,y:0.0834},{x:0.1713,y:0.0834},{x:0.0946,y:0.0834},{x:0.0751,y:0.0862},{x:0.0568,y:0.0904},{x:0.0489,y:0.0904},{x:0.0489,y:0.0792},{x:0.0489,y:0.0679},{x:0.0489,y:0.0679}]},
+  {id:'R15',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.3931,y:0.8666},{x:0.6049,y:0.8652}]},
+  {id:'R16',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.4384,y:0.866},{x:0.4339,y:0.6338},{x:0.4233,y:0.6086}]},
+  {id:'R17',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.4668,y:0.7249},{x:0.4658,y:0.6445},{x:0.4557,y:0.6288},{x:0.4384,y:0.6167},{x:0.421,y:0.6101}]},
+  {id:'R18',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.5285,y:0.8656},{x:0.5283,y:0.7672}]},
+  {id:'R19',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.5008,y:0.609},{x:0.516,y:0.6175},{x:0.5244,y:0.6295},{x:0.5283,y:0.6426},{x:0.5302,y:0.6639},{x:0.5289,y:0.6999}]},
+  {id:'R20',name:'',type:'alambrado',width_px:8,color:'#0b27f4',description:'Alambrado de púas — NO es calle',points:[{x:0.9724,y:0.0088},{x:0.9735,y:0.917}]},
+  {id:'R24',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.3933,y:0.1272},{x:0.4052,y:0.1261},{x:0.4181,y:0.1237},{x:0.4341,y:0.1243},{x:0.466,y:0.1266},{x:0.4939,y:0.1261},{x:0.5155,y:0.1156},{x:0.5413,y:0.0947},{x:0.5557,y:0.0837},{x:0.5681,y:0.0552},{x:0.5681,y:0.0447},{x:0.565,y:0.0366},{x:0.5583,y:0.0308},{x:0.4734,y:0.0313},{x:0.4585,y:0.0313},{x:0.4349,y:0.0313},{x:0.4184,y:0.0313},{x:0.4019,y:0.0313},{x:0.3924,y:0.0313},{x:0.0872,y:0.0313}]},
+  {id:'R25',name:'',type:'interna',width_px:40,color:'#00BFFF',description:'',points:[{x:0.1933,y:0.8587},{x:0.1933,y:0.9126}]},
+  {id:'C02',name:'Codo Perimetral',type:'perimetral',width_px:20,color:'#FF6600',description:'Codo 90° perimetral esquina inferior derecha',points:[{x:0.0487,y:0.9245},{x:0.9644,y:0.9222},{x:0.9617,y:0.0051}]},
+  {id:'C03',name:'Codo Perimetral',type:'perimetral',width_px:20,color:'#FF6600',description:'Codo 90° perimetral esquina superior izquierda',points:[{x:0.0046,y:0.9314},{x:0.0027,y:0.0103},{x:0.9635,y:0.0062}]},
+  {id:'C28',name:'',type:'externa',width_px:74,color:'#FFD700',description:'',points:[{x:0.9908,y:0.9391},{x:0.9899,y:0.0056}]},
+  {id:'C26',name:'Calle C26',type:'interna',width_px:40,color:'#4488FF',description:'',points:[{x:0.7794,y:0.3832},{x:0.7801,y:0.6055}]},
+  {id:'C27',name:'Calle C27',type:'interna',width_px:40,color:'#4488FF',description:'',points:[{x:0.8456,y:0.3863},{x:0.8467,y:0.5799}]},
+  {id:'C29',name:'Calle C29',type:'interna',width_px:40,color:'#4488FF',description:'',points:[{x:0.8467,y:0.5822},{x:0.8452,y:0.5945},{x:0.841,y:0.6044},{x:0.8296,y:0.6068},{x:0.8193,y:0.6062}]},
+];
+
+// ===================== STATE =====================
+let mode = 'zones';
+let zones = [];
+let roads = [];
+let selectedZoneId = null;
+let selectedMicrozonaId = null;
+let selectedRoadId = null;
+let showZones = true;
+let showRoads = true;
+let multiSelect = new Set();
+let drawingRoad = null;
+let roadTemplate = { type: 'externa', width_px: 74, color: '#FFD700' };
+let placingCodo = null;
+let selectAllRoads = false;
+let batchRoadType = null;
+let allRoadsDrag = null;
+let roadDrag = null;
+const undoStack = [];
+const redoStack = [];
+const MAX_UNDO = 50;
+let imgScale = 1;
+let imgDisplayW = 0;
+let imgDisplayH = 0;
+let clipboard = null;
+let baseScale = 1;
+let zoomLevel = 1;
+
+// ===================== STORAGE =====================
+function loadStorage() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    if (s) {
+      const d = JSON.parse(s);
+      const z = (d.zones || []).map(z => ({...z, rot: z.rot || 0}));
+      const r = d.roads && d.roads.length ? d.roads : JSON.parse(JSON.stringify(initialRoads));
+      return { zones: z.length ? z : JSON.parse(JSON.stringify(initialZones)), roads: r, showZones: d.showZones !== false, showRoads: d.showRoads !== false };
+    }
+  } catch(e) {}
+  return { zones: JSON.parse(JSON.stringify(initialZones)), roads: JSON.parse(JSON.stringify(initialRoads)), showZones: true, showRoads: true };
+}
+
+function saveStorage() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({zones, roads, showZones, showRoads}));
+}
+
+// ===================== HELPERS =====================
+function clamp(v, mn, mx) { return Math.max(mn, Math.min(mx, v)); }
+function escapeHtml(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function escapeAttr(s) { return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function round(v, d) { const p=Math.pow(10,d); return Math.round(v*p)/p; }
+function hexToRgba(h, a) {
+  const c=parseInt(h.replace('#',''),16);
+  return `rgba(${(c>>16)&255},${(c>>8)&255},${c&255},${a})`;
+}
+function randomColor() {
+  const colors=['#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#FF6F61','#C084FC','#F472B6','#34D399','#FBBF24','#60A5FA'];
+  return colors[Math.floor(Math.random()*colors.length)];
+}
+
+// ===================== MICROZONAS =====================
+// GND_W/GND_D computed inline inside each function (SCALE/IMG_W_2D defined later)
+
+function loadMicrozonas() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY_MICRO);
+    if (s) {
+      const overrides = JSON.parse(s);
+      BLOCKOUT.objects.forEach(o => {
+        const ov = overrides[o.id];
+        if (ov) {
+          o.footprint.cx = ov.cx; o.footprint.cz = ov.cz;
+          o.footprint.w = ov.w; o.footprint.d = ov.d;
+          if (ov.rotation_deg != null) o.rotation_deg = ov.rotation_deg;
+    }
+    e.stopPropagation();
+  });
+    }
+  } catch(e) {}
+}
+function saveMicrozonas() {
+  const overrides = {};
+  BLOCKOUT.objects.forEach(o => {
+    if (o.source === 'microzone' && o.render_mode === 'building') {
+      overrides[o.id] = { cx: o.footprint.cx, cz: o.footprint.cz, w: o.footprint.w, d: o.footprint.d, rotation_deg: o.rotation_deg || 0 };
+    }
+  });
+  localStorage.setItem(STORAGE_KEY_MICRO, JSON.stringify(overrides));
+}
+function blockoutToNorm2D(o) {
+  const t = blockoutToGround(o.footprint.cx, o.footprint.cz, o.footprint.w, o.footprint.d);
+  const gw = IMG_W_2D * SCALE, gd = IMG_H_2D * SCALE;
+  return {
+    id: o.id, label: o.label || o.id, color: o.color || '#cccccc',
+    x: (t.cx - t.w/2) / gw, y: (t.cz - t.d/2) / gd,
+    w: t.w / gw, h: t.d / gd,
+    rot: o.rotation_deg || 0,
+    footprint: { cx: t.cx, cz: t.cz, w: t.w, d: t.d }
+  };
+}
+function updateBLOCKOUTfromNorm2D(mz) {
+  const gw = IMG_W_2D * SCALE, gd = IMG_H_2D * SCALE;
+  const cx_g = (mz.x + mz.w/2) * gw, cz_g = (mz.y + mz.h/2) * gd;
+  const w_g = mz.w * gw, d_g = mz.h * gd;
+  const o = BLOCKOUT.objects.find(x => x.id === mz.id);
+  if (!o) return;
+  o.footprint.cx = (cx_g - GND_CX) / SCALE_X + BLOCKOUT_CX;
+  o.footprint.cz = (cz_g - GND_CZ) / SCALE_Z + BLOCKOUT_CZ;
+  o.footprint.w = w_g / SCALE_X;
+  o.footprint.d = d_g / SCALE_Z;
+  o.rotation_deg = mz.rot || 0;
+}
+function updateMicrozona3DMesh(id) {
+  const o = BLOCKOUT.objects.find(x => x.id === id);
+  if (!o) return;
+  const mz = blockoutToNorm2D(o);
+  const cx_norm = mz.x + mz.w / 2;
+  const cz_norm = mz.y + mz.h / 2;
+
+  let mesh = buildingGroup.children.find(c => c.userData && c.userData.id === id);
+  if (!mesh) {
+    for (const child of buildingGroup.children) {
+      if (child.isGroup && child.userData && child.userData.isParentGroup) {
+        mesh = child.children.find(c => c.userData && c.userData.id === id);
+        if (mesh) break;
+      }
+    }
+  }
+  if (!mesh) return;
+
+  let localX = cx_norm, localZ = cz_norm;
+  if (o.parent_zone) {
+    const parentZone = zones.find(z => z.id === o.parent_zone);
+    if (parentZone) {
+      localX = cx_norm - (parentZone.x + parentZone.w / 2);
+      localZ = cz_norm - (parentZone.y + parentZone.h / 2);
+    }
+  }
+  const GND_W = IMG_W_2D * SCALE, GND_D = IMG_H_2D * SCALE;
+  mesh.position.x = localX * GND_W;
+  mesh.position.z = localZ * GND_D;
+
+  const orig = mesh.userData.obj;
+  if (orig && orig.footprint) {
+    const sx = (mz.w * GND_W) / (orig.footprint.w || 0.001);
+    const sz = (mz.h * GND_D) / (orig.footprint.d || 0.001);
+    if (mesh.type === 'Group' || mesh.isGroup) {
+      mesh.scale.x = sx; mesh.scale.z = sz;
+    } else {
+      if (o.shape === 'cylinder_tall' || o.shape === 'cylinder_low') {
+        const s = Math.min(sx, sz);
+        mesh.scale.x = s; mesh.scale.z = s;
+      } else {
+        mesh.scale.x = sx; mesh.scale.z = sz;
+      }
+    }
+  }
+  if (o.rotation_deg) mesh.rotation.y = -(o.rotation_deg * Math.PI / 180);
+}
+function showExportStatus(msg) {
+  const el=document.getElementById('export-status');
+  el.textContent=msg; setTimeout(()=>{if(el.textContent===msg)el.textContent='';},2000);
+}
+
+// ===================== ZOOM =====================
+function applyZoom() {
+  const img=document.getElementById('base-img');
+  if(!img.naturalWidth) return;
+  imgScale=baseScale*zoomLevel;
+  imgDisplayW=img.naturalWidth*imgScale;
+  imgDisplayH=img.naturalHeight*imgScale;
+  img.style.width=imgDisplayW+'px';
+  img.style.height=imgDisplayH+'px';
+  const wrap=document.getElementById('img-wrap');
+  wrap.style.width=imgDisplayW+'px';
+  wrap.style.height=imgDisplayH+'px';
+  const svg=document.getElementById('roads-svg');
+  svg.setAttribute('width',imgDisplayW);
+  svg.setAttribute('height',imgDisplayH);
+  svg.setAttribute('viewBox',`0 0 ${BASE_W} ${BASE_H}`);
+  document.getElementById('zoom-level').textContent=Math.round(zoomLevel*100)+'%';
+  renderAll();
+}
+window.zoomStep = function(delta) { zoomLevel=Math.max(0.1,Math.min(20,zoomLevel+delta*zoomLevel)); applyZoom(); }
+window.zoomReset = function() { zoomLevel=1; applyZoom(); document.getElementById('canvas-container').scrollTo(0,0); }
+
+// ===================== EDITOR 2D RENDER =====================
+function renderAll() { renderZones(); renderRoads(); renderPanel(); exportToTextarea(); sync3D(); }
+window.toggleLayer = function(layer,visible) {
+  if(layer==='zones') showZones=visible;
+  if(layer==='roads') showRoads=visible;
+  renderAll(); saveStorage();
+}
+
+function renderZones() {
+  const wrap=document.getElementById('img-wrap');
+  wrap.querySelectorAll('.zone').forEach(n=>n.remove());
+  wrap.querySelectorAll('.microzona').forEach(n=>n.remove());
+  if(!showZones) return;
+  zones.forEach(z=>{
+    const el=document.createElement('div');
+    el.className='zone'+(z.id===selectedZoneId||multiSelect.has(z.id)?' selected':'');
+    el.dataset.id=z.id;
+    const rot=z.rot||0;
+    const cx=(z.x+z.w/2)*imgDisplayW;
+    const cy=(z.y+z.h/2)*imgDisplayH;
+    const wPx=z.w*imgDisplayW;
+    const hPx=z.h*imgDisplayH;
+    el.style.left=(cx-wPx/2)+'px';
+    el.style.top=(cy-hPx/2)+'px';
+    el.style.width=wPx+'px';
+    el.style.height=hPx+'px';
+    el.style.borderColor=z.color;
+    el.style.backgroundColor=hexToRgba(z.color,0.15);
+    if(rot!==0){el.style.transform=`rotate(${rot}deg)`;el.style.transformOrigin='center center';}
+    el.innerHTML=
+      '<div class="zone-label" style="background:'+z.color+'">'+z.id+' · '+escapeHtml(z.name)+'</div>'+
+      '<div class="resize-handle rh-nw"></div><div class="resize-handle rh-ne"></div>'+
+      '<div class="resize-handle rh-sw"></div><div class="resize-handle rh-se"></div>'+
+      '<div class="resize-handle rh-n"></div><div class="resize-handle rh-s"></div>'+
+      '<div class="resize-handle rh-w"></div><div class="resize-handle rh-e"></div>'+
+      '<div class="rh-rotate" title="Arrastrar para rotar">↻</div>'+
+      '<div class="rot-indicator">'+rot+'°</div>';
+    el.addEventListener('mouseenter',(e)=>renderTooltip(z,e));
+    el.addEventListener('mousemove',(e)=>renderTooltip(z,e));
+    el.addEventListener('mouseleave',hideTooltip);
+    attachZoneInteraction(el);
+    wrap.appendChild(el);
+  });
+  const skippedIds = new Set(['Z18A_Conexion_Tubular']);
+  const microFilter = o => o.source === 'microzone' && o.render_mode === 'building' && !skippedIds.has(o.id);
+  BLOCKOUT.objects.filter(microFilter).forEach(o => {
+    const mz = blockoutToNorm2D(o);
+    const el = document.createElement('div');
+    el.className = 'microzona' + (mz.id === selectedMicrozonaId ? ' selected' : '');
+    el.dataset.mzId = mz.id;
+    const cxPx = (mz.x + mz.w / 2) * imgDisplayW;
+    const cyPx = (mz.y + mz.h / 2) * imgDisplayH;
+    const wPx = mz.w * imgDisplayW;
+    const hPx = mz.h * imgDisplayH;
+    el.style.left = (cxPx - wPx / 2) + 'px';
+    el.style.top = (cyPx - hPx / 2) + 'px';
+    el.style.width = wPx + 'px';
+    el.style.height = hPx + 'px';
+    el.style.borderColor = mz.color;
+    el.style.backgroundColor = hexToRgba(mz.color, 0.1);
+    if (mz.rot !== 0) { el.style.transform = `rotate(${mz.rot}deg)`; el.style.transformOrigin = 'center center'; }
+    el.innerHTML =
+      '<div class="microzona-label">' + mz.id + '</div>' +
+      '<div class="resize-handle rh-nw"></div><div class="resize-handle rh-ne"></div>' +
+      '<div class="resize-handle rh-sw"></div><div class="resize-handle rh-se"></div>' +
+      '<div class="resize-handle rh-n"></div><div class="resize-handle rh-s"></div>' +
+      '<div class="resize-handle rh-w"></div><div class="resize-handle rh-e"></div>' +
+      '<div class="rh-rotate" title="Arrastrar para rotar">↻</div>';
+    attachMicrozonaInteraction(el, mz);
+    wrap.appendChild(el);
+  });
+}
+
+function attachZoneInteraction(el) {
+  el.addEventListener('mousedown',e=>{
+    if(mode!=='zones') return;
+    const id=el.dataset.id;
+    const isRotate=e.target.classList.contains('rh-rotate');
+    if(e.shiftKey){if(multiSelect.has(id))multiSelect.delete(id);else multiSelect.add(id);selectedZoneId=id;}
+    else{multiSelect.clear();selectedZoneId=id;}
+    selectedMicrozonaId = null;
+    selectedRoadId=null;
+    renderZones();renderPanel();
+    focus3DCameraOnObject(id);
+    let m=isRotate?'rotate':'move';
+    if(!isRotate&&e.target.classList.contains('resize-handle')){
+      m=Array.from(e.target.classList).find(c=>c.startsWith('rh-')).replace('rh-','');
+    }
+    const z=zones.find(zz=>zz.id===id);
+    const sX=e.clientX,sY=e.clientY;
+    const s={x:z.x,y:z.y,w:z.w,h:z.h,rot:z.rot||0};
+    const groupIds=multiSelect.size>0&&m==='move'?[id,...multiSelect]:[id];
+    const groupOrig=groupIds.map(gid=>{const gz=zones.find(zz=>zz.id===gid);return gz?{id:gid,x:gz.x,y:gz.y}:null;}).filter(Boolean);
+    pushUndo();
+    e.preventDefault();e.stopPropagation();
+    const onMove=ev=>{
+      const dx=(ev.clientX-sX)/imgDisplayW;
+      const dy=(ev.clientY-sY)/imgDisplayH;
+      const t=zones.find(zz=>zz.id===id);
+      if(!t) return;
+      if(m==='move'){
+        groupOrig.forEach(go=>{
+          const gz=zones.find(zz=>zz.id===go.id);
+          if(gz){gz.x=clamp(go.x+dx,0,1-gz.w);gz.y=clamp(go.y+dy,0,1-gz.h);}
+        });
+      }
+      else if(m==='rotate'){
+        t.rot=(s.rot+dx*180+dy*180)%360;
+        if(t.rot<0)t.rot+=360;
+        t.rot=round(t.rot, 1);
+      }
+      else{
+        let {x,y,w,h}=s;
+        if(m.includes('w')){x=s.x+dx;w=s.w-dx;}
+        if(m.includes('e')){w=s.w+dx;}
+        if(m.includes('n')){y=s.y+dy;h=s.h-dy;}
+        if(m.includes('s')){h=s.h+dy;}
+        if(w<0.002){w=0.002;if(m.includes('w'))x=s.x+s.w-0.002;}
+        if(h<0.002){h=0.002;if(m.includes('n'))y=s.y+s.h-0.002;}
+        t.x=clamp(x,0,1);t.y=clamp(y,0,1);
+        t.w=clamp(w,0.002,1-t.x);t.h=clamp(h,0.002,1-t.y);
+      }
+      renderZones();exportToTextarea();sync3D();
+    };
+    const onUp=()=>{document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);saveStorage();renderPanel();focus3DCameraOnObject(id);};
+    document.addEventListener('mousemove',onMove);
+    document.addEventListener('mouseup',onUp);
+  });
+}
+
+function attachMicrozonaInteraction(el, mz) {
+  el.addEventListener('mousedown', e => {
+    if (mode !== 'zones') return;
+    const id = mz.id;
+    const isRotate = e.target.classList.contains('rh-rotate');
+    selectedMicrozonaId = id;
+    selectedZoneId = null;
+    selectedRoadId = null;
+    renderZones(); renderPanel();
+    focus3DCameraOnObject(id);
+    let moveMode = isRotate ? 'rotate' : 'move';
+    if (!isRotate && e.target.classList.contains('resize-handle')) {
+      moveMode = Array.from(e.target.classList).find(c => c.startsWith('rh-')).replace('rh-', '');
+    }
+    const s = { x: mz.x, y: mz.y, w: mz.w, h: mz.h, rot: mz.rot || 0 };
+    pushUndo();
+    e.preventDefault(); e.stopPropagation();
+    const onMove = ev => {
+      const dx = (ev.clientX - s.x0) / imgDisplayW;
+      const dy = (ev.clientY - s.y0) / imgDisplayH;
+      const nx = s.x, ny = s.y, nw = s.w, nh = s.h, nrot = s.rot;
+      if (moveMode === 'move') {
+        mz.x = clamp(nx + dx, 0, 1 - nw);
+        mz.y = clamp(ny + dy, 0, 1 - nh);
+      } else if (moveMode === 'rotate') {
+        mz.rot = (nrot + dx * 180 + dy * 180) % 360;
+        if (mz.rot < 0) mz.rot += 360;
+        mz.rot = round(mz.rot, 1);
+      } else {
+        let { x, y, w, h } = s;
+        if (moveMode.includes('w')) { x = s.x + dx; w = s.w - dx; }
+        if (moveMode.includes('e')) { w = s.w + dx; }
+        if (moveMode.includes('n')) { y = s.y + dy; h = s.h - dy; }
+        if (moveMode.includes('s')) { h = s.h + dy; }
+        if (w < 0.002) { w = 0.002; if (moveMode.includes('w')) x = s.x + s.w - 0.002; }
+        if (h < 0.002) { h = 0.002; if (moveMode.includes('n')) y = s.y + s.h - 0.002; }
+        mz.x = clamp(x, 0, 1); mz.y = clamp(y, 0, 1);
+        mz.w = clamp(w, 0.002, 1 - mz.x); mz.h = clamp(h, 0.002, 1 - mz.y);
+      }
+      if (moveMode === 'move') {
+        updateBLOCKOUTfromNorm2D(mz);
+        updateMicrozona3DMesh(id);
+        el.style.left = ((mz.x + mz.w / 2) * imgDisplayW - (mz.w * imgDisplayW) / 2) + 'px';
+        el.style.top = ((mz.y + mz.h / 2) * imgDisplayH - (mz.h * imgDisplayH) / 2) + 'px';
+      } else {
+        updateBLOCKOUTfromNorm2D(mz);
+        updateMicrozona3DMesh(id);
+        const cxPx = (mz.x + mz.w / 2) * imgDisplayW;
+        const cyPx = (mz.y + mz.h / 2) * imgDisplayH;
+        const wPx = mz.w * imgDisplayW;
+        const hPx = mz.h * imgDisplayH;
+        el.style.left = (cxPx - wPx / 2) + 'px';
+        el.style.top = (cyPx - hPx / 2) + 'px';
+        el.style.width = wPx + 'px';
+        el.style.height = hPx + 'px';
+        if (mz.rot !== 0) { el.style.transform = `rotate(${mz.rot}deg)`; el.style.transformOrigin = 'center center'; }
+        else el.style.transform = '';
+      }
+    };
+    s.x0 = ev.clientX; s.y0 = ev.clientY;
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      updateBLOCKOUTfromNorm2D(mz);
+      saveMicrozonas();
+      sync3D();
+      renderZones();
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+}
+
+function renderTooltip(z,e){
+  const tt=document.getElementById('tooltip');
+  const px={x1:Math.round(z.x*BASE_W),y1:Math.round(z.y*BASE_H),x2:Math.round((z.x+z.w)*BASE_W),y2:Math.round((z.y+z.h)*BASE_H),w:Math.round(z.w*BASE_W),h:Math.round(z.h*BASE_H)};
+  tt.innerHTML=`<div class="tt-row"><span class="tt-label">${z.id}</span><span class="tt-val"><b>${escapeHtml(z.name)}</b></span></div>
+    <div class="tt-row"><span class="tt-label">BBox</span><span class="tt-val">(${px.x1},${px.y1}) &rarr; (${px.x2},${px.y2})</span></div>
+    <div class="tt-row"><span class="tt-label">Tamaño</span><span class="tt-val">${px.w}&times;${px.h} px (${(z.w*100).toFixed(1)}&times;${(z.h*100).toFixed(1)} u)</span></div>
+    <div class="tt-row"><span class="tt-label">Rotación</span><span class="tt-val">${z.rot||0}&deg;</span></div>
+    ${z.description?`<div style="color:#aaa;font-size:10px;margin-top:6px;border-top:1px solid #333;padding-top:4px">${escapeHtml(z.description)}</div>`:''}`;
+  tt.style.display='block';tt.style.left=(e.clientX+16)+'px';tt.style.top=(e.clientY-10)+'px';
+  const tr=tt.getBoundingClientRect();if(tr.right>window.innerWidth)tt.style.left=(e.clientX-tr.width-16)+'px';if(tr.bottom>window.innerHeight)tt.style.top=(e.clientY-tr.height+10)+'px';
+}
+function hideTooltip(){document.getElementById('tooltip').style.display='none';}
+
+function renderRoads(){
+  const svg=document.getElementById('roads-svg');
+  svg.innerHTML='';
+  if(!showRoads) return;
+  roads.forEach(r=>{
+    const ptsStr=r.points.map(p=>(p.x*BASE_W)+','+(p.y*BASE_H)).join(' ');
+    const isSel=r.id===selectedRoadId;
+    const isBatch=selectAllRoads&&batchRoadType&&r.type===batchRoadType;
+    if((isSel||isBatch)&&r.points.length>=2){
+      const halo=document.createElementNS('http://www.w3.org/2000/svg','polyline');
+      halo.setAttribute('points',ptsStr);halo.setAttribute('stroke','#fff');
+      halo.setAttribute('stroke-width',r.width_px+18);halo.setAttribute('fill','none');halo.setAttribute('opacity','0.45');
+      svg.appendChild(halo);
+    }
+    const line=document.createElementNS('http://www.w3.org/2000/svg','polyline');
+    line.setAttribute('points',ptsStr);line.setAttribute('stroke',r.color);
+    line.setAttribute('stroke-width',r.width_px);line.setAttribute('fill','none');
+    line.setAttribute('stroke-linecap','round');line.setAttribute('stroke-linejoin','round');
+    if(r.type==='eliminar')line.setAttribute('stroke-dasharray','40,30');
+    if(r.type==='alambrado')line.setAttribute('stroke-dasharray','8,6');
+    if(!selectAllRoads||isBatch){
+      if((isSel||isBatch)&&!drawingRoad&&r.points.length>=2){
+        line.style.cursor='grab';
+        line.addEventListener('mousedown',e=>{e.stopPropagation();startRoadTranslate(e,r.id);});
+      }else if(r.points.length>=2){
+        line.style.cursor='pointer';
+        line.addEventListener('click',e=>{e.stopPropagation();selectRoad(r.id);});
+      }
+    }
+    svg.appendChild(line);
+    if((isSel||isBatch)&&!drawingRoad&&r.points.length>=2&&!(selectAllRoads&&!isBatch)){
+      r.points.forEach((p,i)=>{
+        const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        c.setAttribute('cx',p.x*BASE_W);c.setAttribute('cy',p.y*BASE_H);
+        c.setAttribute('r',15);c.setAttribute('fill','#fff');c.setAttribute('stroke','#000');c.setAttribute('stroke-width',3);
+        c.style.cursor='move';
+        c.addEventListener('mousedown',e=>{e.stopPropagation();startPointDrag(e,r.id,i);});
+        c.addEventListener('contextmenu',e=>{e.preventDefault();e.stopPropagation();if(r.points.length<=2)return;pushUndo();r.points.splice(i,1);renderRoads();saveStorage();sync3D();});
+        svg.appendChild(c);
+      });
+      const cx=r.points.reduce((s,p)=>s+p.x,0)/r.points.length*BASE_W;
+      const cy=r.points.reduce((s,p)=>s+p.y,0)/r.points.length*BASE_H;
+      const rh=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      rh.setAttribute('cx',cx);rh.setAttribute('cy',cy-55);rh.setAttribute('r',18);
+      rh.setAttribute('fill','#ffcc00');rh.setAttribute('stroke','#000');rh.setAttribute('stroke-width',3);
+      rh.style.cursor='grab';
+      rh.addEventListener('mousedown',e=>{e.stopPropagation();startRoadRotate(e,r.id);});
+      svg.appendChild(rh);
+      const rt=document.createElementNS('http://www.w3.org/2000/svg','text');
+      rt.setAttribute('x',cx);rt.setAttribute('y',cy-51);rt.setAttribute('text-anchor','middle');
+      rt.setAttribute('fill','#000');rt.setAttribute('font-size','26');rt.setAttribute('font-weight','700');
+      rt.textContent='↻';svg.appendChild(rt);
+    }
+    if(r.points.length>0){
+      const txt=document.createElementNS('http://www.w3.org/2000/svg','text');
+      txt.setAttribute('x',r.points[0].x*BASE_W+30);txt.setAttribute('y',r.points[0].y*BASE_H-10);
+      txt.setAttribute('fill',r.color);txt.setAttribute('stroke','#000');txt.setAttribute('stroke-width','2');
+      txt.setAttribute('paint-order','stroke');txt.setAttribute('font-size','55');txt.setAttribute('font-weight','700');
+      txt.textContent=r.id+' '+(r.name||'');svg.appendChild(txt);
+    }
+  });
+  if(drawingRoad&&drawingRoad.points.length>0){
+    const pts=drawingRoad.points.map(p=>(p.x*BASE_W)+','+(p.y*BASE_H)).join(' ');
+    const line=document.createElementNS('http://www.w3.org/2000/svg','polyline');
+    line.setAttribute('points',pts);line.setAttribute('stroke',drawingRoad.color);
+    line.setAttribute('stroke-width',drawingRoad.width_px);line.setAttribute('fill','none');
+    line.setAttribute('stroke-dasharray','40,25');line.setAttribute('stroke-linecap','round');line.setAttribute('opacity','0.85');
+    svg.appendChild(line);
+    drawingRoad.points.forEach((p,i)=>{
+      const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx',p.x*BASE_W);c.setAttribute('cy',p.y*BASE_H);
+      c.setAttribute('r',i===0?28:22);c.setAttribute('fill',i===0?'#0f0':'#fff');c.setAttribute('stroke','#000');c.setAttribute('stroke-width',4);
+      svg.appendChild(c);
+    });
+  }
+  if(selectAllRoads&&roads.length>0) renderRoadSelectionBox(svg);
+}
+
+function renderRoadSelectionBox(svg){
+  const selRoads=batchRoadType?roads.filter(r=>r.type===batchRoadType):roads;
+  if(selRoads.length===0)return;
+  let minX=1,minY=1,maxX=0,maxY=0;
+  selRoads.forEach(r=>r.points.forEach(p=>{if(p.x<minX)minX=p.x;if(p.y<minY)minY=p.y;if(p.x>maxX)maxX=p.x;if(p.y>maxY)maxY=p.y;}));
+  const pad=0.012;minX=clamp(minX-pad,0,1);minY=clamp(minY-pad,0,1);maxX=clamp(maxX+pad,0,1);maxY=clamp(maxY+pad,0,1);
+  const bx=minX*BASE_W,by=minY*BASE_H,bw=(maxX-minX)*BASE_W,bh=(maxY-minY)*BASE_H;
+  const sel=document.createElementNS('http://www.w3.org/2000/svg','rect');
+  sel.setAttribute('x',bx);sel.setAttribute('y',by);sel.setAttribute('width',bw);sel.setAttribute('height',bh);
+  sel.setAttribute('fill','none');sel.setAttribute('stroke','#fff');sel.setAttribute('stroke-width',4);sel.setAttribute('stroke-dasharray','12,8');sel.setAttribute('opacity','0.7');
+  svg.appendChild(sel);
+  const handles=[{x:bx,y:by,pos:'nw'},{x:bx+bw/2,y:by,pos:'n'},{x:bx+bw,y:by,pos:'ne'},{x:bx+bw,y:by+bh/2,pos:'e'},{x:bx+bw,y:by+bh,pos:'se'},{x:bx+bw/2,y:by+bh,pos:'s'},{x:bx,y:by+bh,pos:'sw'},{x:bx,y:by+bh/2,pos:'w'}];
+  handles.forEach(h=>{
+    const el=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    el.setAttribute('x',h.x-8);el.setAttribute('y',h.y-8);el.setAttribute('width',16);el.setAttribute('height',16);
+    el.setAttribute('fill','#fff');el.setAttribute('stroke','#000');el.setAttribute('stroke-width',2);el.setAttribute('rx',3);
+    el.style.cursor=h.pos==='n'||h.pos==='s'?'ns-resize':h.pos==='e'||h.pos==='w'?'ew-resize':h.pos==='nw'||h.pos==='se'?'nwse-resize':'nesw-resize';
+    el.addEventListener('mousedown',e=>{e.stopPropagation();startRoadBatchResize(e,minX,minY,maxX,maxY,h.pos);});
+    svg.appendChild(el);
+  });
+}
+
+function startRoadBatchResize(e,bMinX,bMinY,bMaxX,bMaxY,handlePos){
+  const svg=document.getElementById('roads-svg');
+  const rW=svg.getBoundingClientRect().width,rH=svg.getBoundingClientRect().height;
+  const bCx=(bMinX+bMaxX)/2,bCy=(bMinY+bMaxY)/2,bW=bMaxX-bMinX,bH=bMaxY-bMinY;
+  const batch=getBatchRoads();
+  const origRoads=batch.map(r=>({id:r.id,points:r.points.map(p=>({x:p.x,y:p.y}))}));
+  pushUndo();
+  const onMove=ev=>{
+    const dx=(ev.clientX-e.clientX)/rW,dy=(ev.clientY-e.clientY)/rH;
+    let sx=1,sy=1;
+    if(handlePos.includes('w')){const nw=bW-dx;sx=nw/bW;}
+    if(handlePos.includes('e')){const nw=bW+dx;sx=nw/bW;}
+    if(handlePos.includes('n')){const nh=bH-dy;sy=nh/bH;}
+    if(handlePos.includes('s')){const nh=bH+dy;sy=nh/bH;}
+    if(sx<0.05)sx=0.05;if(sy<0.05)sy=0.05;
+    if(handlePos.length===2){const avg=Math.sqrt(sx*sy);sx=avg;sy=avg;}
+    origRoads.forEach(o=>{
+      const r=roads.find(x=>x.id===o.id);
+      if(!r)return;
+      o.points.forEach((origPt,i)=>{
+        if(!r.points[i])return;
+        r.points[i].x=clamp(bCx+(origPt.x-bCx)*sx,0,1);
+        r.points[i].y=clamp(bCy+(origPt.y-bCy)*sy,0,1);
+      });
+    });
+    renderRoads();sync3D();
+  };
+  const onUp=()=>{document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);saveStorage();};
+  document.addEventListener('mousemove',onMove);document.addEventListener('mouseup',onUp);e.preventDefault();
+}
+
+function selectRoad(id){
+  selectedRoadId=id;selectedZoneId=null;multiSelect.clear();
+  if(selectAllRoads)toggleSelectAllRoads();
+  renderAll();
+}
+
+function startRoadTranslate(e,roadId){
+  const r=roads.find(x=>x.id===roadId);if(!r)return;
+  const svg=document.getElementById('roads-svg');
+  const rW=svg.getBoundingClientRect().width,rH=svg.getBoundingClientRect().height;
+  roadDrag={type:'translate',roadId,sx:e.clientX,sy:e.clientY,orig:r.points.map(p=>({x:p.x,y:p.y}))};
+  pushUndo();
+  const onMove=ev=>{
+    if(!roadDrag||roadDrag.type!=='translate')return;
+    const rr=roads.find(x=>x.id===roadDrag.roadId);if(!rr)return;
+    const dx=(ev.clientX-roadDrag.sx)/rW,dy=(ev.clientY-roadDrag.sy)/rH;
+    rr.points=roadDrag.orig.map(p=>({x:clamp(p.x+dx,0,1),y:clamp(p.y+dy,0,1)}));
+    renderRoads();sync3D();
+  };
+  const onUp=()=>{roadDrag=null;document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);saveStorage();};
+  document.addEventListener('mousemove',onMove);document.addEventListener('mouseup',onUp);e.preventDefault();
+}
+
+function startPointDrag(e,roadId,ptIndex){
+  const r=roads.find(x=>x.id===roadId);if(!r)return;
+  const svg=document.getElementById('roads-svg');
+  const rW=svg.getBoundingClientRect().width,rH=svg.getBoundingClientRect().height;
+  pushUndo();
+  const onMove=ev=>{
+    const rect=svg.getBoundingClientRect();
+    const x=(ev.clientX-rect.left)/rW;
+    const y=(ev.clientY-rect.top)/rH;
+    let px=round(x,4),py=round(y,4);
+    if(ev.shiftKey && r.points[ptIndex-1]){
+      const last=r.points[ptIndex-1];
+      if(Math.abs(x-last.x)<Math.abs(y-last.y))px=round(last.x,4);
+      else py=round(last.y,4);
+    }
+    r.points[ptIndex].x=clamp(px,0,1);
+    r.points[ptIndex].y=clamp(py,0,1);
+    renderRoads();sync3D();
+  };
+  const onUp=()=>{document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);saveStorage();};
+  document.addEventListener('mousemove',onMove);document.addEventListener('mouseup',onUp);e.preventDefault();
+}
+
+function startRoadRotate(e,roadId){
+  if(drawingRoad)return;
+  const r=roads.find(x=>x.id===roadId);if(!r)return;
+  const cx=r.points.reduce((s,p)=>s+p.x,0)/r.points.length;
+  const cy=r.points.reduce((s,p)=>s+p.y,0)/r.points.length;
+  const svg=document.getElementById('roads-svg');
+  const rect=svg.getBoundingClientRect();
+  const scx=cx*rect.width+rect.left;
+  const scy=cy*rect.height+rect.top;
+  roadDrag={type:'rotate',roadId,cx,cy,startAngle:Math.atan2(e.clientY-scy,e.clientX-scx),orig:r.points.map(p=>({x:p.x,y:p.y}))};
+  pushUndo();
+  const onMove=ev=>{
+    if(!roadDrag||roadDrag.type!=='rotate')return;
+    const rr=roads.find(x=>x.id===roadDrag.roadId);if(!rr)return;
+    const rect2=svg.getBoundingClientRect();
+    const scx2=roadDrag.cx*rect2.width+rect2.left;
+    const scy2=roadDrag.cy*rect2.height+rect2.top;
+    const angle=Math.atan2(ev.clientY-scy2,ev.clientX-scx2);
+    const da=angle-roadDrag.startAngle;
+    const cos=Math.cos(da),sin=Math.sin(da);
+    rr.points=roadDrag.orig.map(p=>{
+      const dx=p.x-roadDrag.cx,dy=p.y-roadDrag.cy;
+      return{x:clamp(roadDrag.cx+dx*cos-dy*sin,0,1),y:clamp(roadDrag.cy+dx*sin+dy*cos,0,1)};
+    });
+    renderRoads();sync3D();
+  };
+  const onUp=()=>{roadDrag=null;document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);saveStorage();};
+  document.addEventListener('mousemove',onMove);document.addEventListener('mouseup',onUp);e.preventDefault();
+}
+
+function getBatchRoads(){
+  return batchRoadType?roads.filter(r=>r.type===batchRoadType):roads;
+}
+
+window.toggleSelectAllRoads = function() {
+  selectAllRoads=!selectAllRoads;
+  const btn=document.getElementById('btn-select-all-roads');
+  if(selectAllRoads){btn.textContent='☒ Deseleccionar';btn.style.background='#c0392b';btn.style.borderColor='#a83224';}
+  else{btn.textContent='⊞ Seleccionar todo';btn.style.background='#2a6d9c';btn.style.borderColor='#4a8dbc';batchRoadType=null;}
+  selectedRoadId=null;
+  renderAll();
+}
+
+// ===================== ROAD DRAWING =====================
+window.addItem = function() {
+  if (mode === 'zones') addZone();
+  else startDrawingRoad();
+}
+
+function addZone() {
+  let n = zones.length + 1, id;
+  do { id = 'Z' + String(n).padStart(2,'0'); n++; } while (zones.find(z => z.id === id));
+  pushUndo();
+  zones.push({id,name:'Nueva zona',x:0.4,y:0.4,w:0.18,h:0.18,rot:0,color:randomColor(),description:''});
+  selectedZoneId = id;
+  multiSelect.clear();
+  renderAll(); saveStorage();
+}
+
+function startDrawingRoad() {
+  selectedRoadId = null;
+  multiSelect.clear();
+  if (placingCodo) { placingCodo = null; document.body.classList.remove('placing-codo'); }
+  let n = roads.length + 1, id;
+  do { id = 'C' + String(n).padStart(2,'0'); n++; } while (roads.find(r => r.id === id));
+  drawingRoad = {id,name:'Calle '+id,type:roadTemplate.type,width_px:roadTemplate.width_px,color:roadTemplate.color,description:'',points:[]};
+  document.body.classList.add('drawing');
+  document.getElementById('points-count').textContent = '0';
+  document.getElementById('drawing-title').textContent = 'Dibujando calle';
+  document.getElementById('drawing-hint').textContent = 'Clic en imagen para agregar punto. Shift=ángulo recto.';
+  document.getElementById('btn-finish').style.display = '';
+  document.getElementById('btn-undo-point').style.display = '';
+  renderAll();
+}
+
+window.finishDrawing = function() {
+  if (!drawingRoad) return;
+  if (drawingRoad.points.length < 2) { alert('La calle necesita al menos 2 puntos.'); return; }
+  pushUndo();
+  roads.push(drawingRoad);
+  selectedRoadId = drawingRoad.id;
+  drawingRoad = null;
+  document.body.classList.remove('drawing');
+  renderAll(); saveStorage();
+}
+
+window.cancelDrawing = function() {
+  if (drawingRoad) {
+    if (drawingRoad.points.length === 0) {
+      drawingRoad = null;
+      document.body.classList.remove('drawing');
+      if (placingCodo) { placingCodo = null; document.body.classList.remove('placing-codo'); }
+      resetDrawingUI(); renderAll(); return;
+    }
+    pushUndo();
+  }
+  drawingRoad = null;
+  document.body.classList.remove('drawing');
+  if (placingCodo) { placingCodo = null; document.body.classList.remove('placing-codo'); }
+  resetDrawingUI();
+  renderAll();
+}
+
+function resetDrawingUI() {
+  document.getElementById('drawing-title').textContent = 'Dibujando calle';
+  document.getElementById('drawing-hint').textContent = 'Clic en imagen para agregar punto. Shift=ángulo recto.';
+  document.getElementById('btn-finish').style.display = '';
+  document.getElementById('btn-undo-point').style.display = '';
+}
+
+window.undoPoint = function() {
+  if (drawingRoad && drawingRoad.points.length > 0) {
+    drawingRoad.points.pop();
+    document.getElementById('points-count').textContent = drawingRoad.points.length;
+    renderRoads();
+  }
+}
+
+window.setRoadTemplate = function(btn, type, width, color) {
+  roadTemplate = { type, width_px: width, color };
+  document.querySelectorAll('.road-preset-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+window.placeCodo = function(type) {
+  if (drawingRoad) cancelDrawing();
+  selectedRoadId = null;
+  const isPeri = type === 'perimetral';
+  const w = isPeri ? 20 : 74;
+  const arm = isPeri ? 0.04 : 0.08;
+  placingCodo = { width: w, color: '#FF6600', type, arm };
+  document.body.classList.add('placing-codo');
+  document.getElementById('drawing-title').textContent = 'Colocando codo ' + (isPeri ? 'Perimetral' : 'Externo');
+  document.getElementById('drawing-hint').textContent = 'Clic en el mapa para colocar el codo en la esquina.';
+  document.getElementById('points-count').textContent = '⟱';
+  document.getElementById('btn-finish').style.display = 'none';
+  document.getElementById('btn-undo-point').style.display = 'none';
+  renderAll();
+}
+
+// ===================== PANEL =====================
+window.setMode = function(m) {
+  mode = m;
+  document.body.classList.toggle('mode-roads', m === 'roads');
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === m));
+  if (m !== 'roads' && drawingRoad) cancelDrawing();
+  selectedZoneId = null;
+  selectedMicrozonaId = null;
+  selectedRoadId = null;
+  multiSelect.clear();
+  roadDrag = null;
+  allRoadsDrag = null;
+  if (selectAllRoads) toggleSelectAllRoads();
+  if (placingCodo) { placingCodo = null; document.body.classList.remove('placing-codo'); }
+  renderAll();
+}
+
+function renderPanel() {
+  const list = document.getElementById('items-list');
+  list.innerHTML = '';
+  const items = mode === 'zones' ? zones : roads;
+  const selId = mode === 'zones' ? selectedZoneId : selectedRoadId;
+  let displayItems = items;
+  if (selectAllRoads) {
+    if (batchRoadType) {
+      displayItems = items.filter(r => r.type === batchRoadType);
+      const badge = document.createElement('div');
+      badge.style.cssText = 'padding:6px 10px;margin-bottom:8px;background:#b91c1c;color:#fff;border-radius:4px;font-size:11px;font-weight:600';
+      badge.textContent = 'TODAS LAS ' + batchRoadType.toUpperCase() + 'S (' + displayItems.length + ')';
+      list.appendChild(badge);
+    } else {
+      const badge = document.createElement('div');
+      badge.style.cssText = 'padding:6px 10px;margin-bottom:8px;background:#b91c1c;color:#fff;border-radius:4px;font-size:11px;font-weight:600';
+      badge.textContent = 'TODAS LAS CALLES (' + displayItems.length + ')';
+      list.appendChild(badge);
+    }
+  } else if (multiSelect.size > 0) {
+    const badge = document.createElement('div');
+    badge.style.cssText = 'padding:6px 10px;margin-bottom:8px;background:#2563eb;color:#fff;border-radius:4px;font-size:11px;font-weight:600';
+    badge.textContent = multiSelect.size + ' zonas agrupadas';
+    list.appendChild(badge);
+  }
+
+  [...displayItems].reverse().forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'item-card' + (item.id === selId || multiSelect.has(item.id) ? ' selected' : '');
+    div.style.borderLeftColor = item.color;
+    if (mode === 'zones') { div.innerHTML = renderZoneCard(item); }
+    else { div.innerHTML = renderRoadCard(item); }
+
+    const editing = new Set();
+    div.querySelectorAll('[data-field]').forEach(inp => {
+      const evType = inp.tagName === 'SELECT' ? 'change' : 'input';
+      inp.addEventListener('focus', () => { if (!editing.has(inp)) { pushUndo(); editing.add(inp); } });
+      inp.addEventListener(evType, e => {
+        const f = e.target.dataset.field;
+        let v = e.target.value;
+        if (e.target.type === 'number') v = parseFloat(v) || 0;
+        if (selectAllRoads && batchRoadType) {
+          roads.forEach(r => { if (r.type === batchRoadType) r[f] = v; });
+        } else {
+          const target = items.find(x => x.id === item.id);
+          if (!target) return;
+          target[f] = v;
+        }
+        saveStorage(); renderZones(); renderRoads(); exportToTextarea(); sync3D();
+      });
+    });
+    list.appendChild(div);
+  });
+}
+
+function renderZoneCard(z) {
+  const rot = z.rot || 0;
+  return `<div class="row">
+    <input type="color" data-field="color" value="${z.color}">
+    <input type="text" data-field="id" value="${escapeAttr(z.id)}" placeholder="ID" style="width:65px">
+    <input type="text" data-field="name" value="${escapeAttr(z.name)}" placeholder="Nombre">
+  </div>
+  <div class="row" style="gap:4px">
+    <input type="number" data-field="x" value="${(+z.x).toFixed(4)}" min="0" max="1" step="0.001" title="X" style="width:65px">
+    <input type="number" data-field="y" value="${(+z.y).toFixed(4)}" min="0" max="1" step="0.001" title="Y" style="width:65px">
+    <input type="number" data-field="w" value="${(+z.w).toFixed(4)}" min="0.001" max="1" step="0.001" title="Ancho" style="width:65px">
+    <input type="number" data-field="h" value="${(+z.h).toFixed(4)}" min="0.001" max="1" step="0.001" title="Alto" style="width:65px">
+  </div>
+  <div class="row">
+    <input type="number" data-field="rot" value="${(+rot).toFixed(1)}" min="-360" max="360" step="0.5" title="Rotación" style="width:70px">
+    <input type="text" data-field="description" placeholder="Descripción..." value="${escapeAttr(z.description||'')}" style="flex:1">
+  </div>
+  <div class="meta">${Math.round(z.w*BASE_W)}x${Math.round(z.h*BASE_H)} px · ${rot}°</div>
+  <div class="actions">
+    <button onclick="selectItem('${z.id}')">Seleccionar</button>
+    <button onclick="duplicateItem('${z.id}')">Duplicar</button>
+    <button class="danger" onclick="deleteItem('${z.id}')">Eliminar</button>
+  </div>`;
+}
+
+function renderRoadCard(r) {
+  const typeOpts = ['interna','externa','perimetral','alambrado','eliminar']
+    .map(t => `<option value="${t}"${r.type===t?' selected':''}>${t}</option>`).join('');
+  return `<div class="row">
+    <input type="color" data-field="color" value="${r.color}">
+    <input type="text" data-field="id" value="${escapeAttr(r.id)}" placeholder="ID" style="width:65px">
+    <input type="text" data-field="name" value="${escapeAttr(r.name)}" placeholder="Nombre">
+  </div>
+  <div class="row">
+    <select data-field="type">${typeOpts}</select>
+    <input type="number" data-field="width_px" value="${r.width_px}" min="2" max="200" step="2" title="Ancho">
+  </div>
+  <textarea data-field="description" placeholder="Descripción...">${escapeHtml(r.description||'')}</textarea>
+  <div class="meta">${r.points.length} puntos · tipo: ${r.type} · ancho: ${r.width_px}px</div>
+  <div class="actions">
+    <button onclick="selectItem('${r.id}')">Seleccionar</button>
+    <button onclick="duplicateItem('${r.id}')">Duplicar</button>
+    <button class="danger" onclick="deleteItem('${r.id}')">Eliminar</button>
+  </div>`;
+}
+
+window.selectItem = function(id) {
+  if (mode === 'zones') { selectedZoneId = id; selectedRoadId = null; multiSelect.clear(); }
+  else { selectedRoadId = id; selectedZoneId = null; }
+  renderAll();
+  focus3DCameraOnObject(id);
+}
+
+window.duplicateItem = function(id) {
+  let src, items;
+  if (mode === 'zones') { items = zones; src = zones.find(z => z.id === id); if (!src) return; }
+  else { items = roads; src = roads.find(r => r.id === id); if (!src) return; }
+  pushUndo();
+  let n = items.length + 1, newId;
+  do { newId = mode === 'zones' ? 'Z' + String(n).padStart(2,'0') : 'C' + String(n).padStart(2,'0'); n++; } while (items.find(x => x.id === newId));
+  const copy = JSON.parse(JSON.stringify(src));
+  copy.id = newId; copy.name = 'Copia de ' + (src.name || src.id); items.push(copy);
+  if (mode === 'zones') selectedZoneId = newId; else selectedRoadId = newId;
+  if (selectAllRoads) toggleSelectAllRoads();
+  renderAll(); saveStorage();
+}
+
+window.deleteItem = function(id) {
+  if (!confirm('¿Eliminar ' + id + '?')) return;
+  pushUndo();
+  if (mode === 'zones') { zones = zones.filter(z => z.id !== id); if (selectedZoneId === id) selectedZoneId = null; }
+  else { roads = roads.filter(r => r.id !== id); if (selectedRoadId === id) selectedRoadId = null; }
+  if (selectAllRoads) toggleSelectAllRoads();
+  renderAll(); saveStorage();
+}
+
+// ===================== EXPORT / IMPORT / UNDO =====================
+function pushUndo() {
+  undoStack.push({zones: JSON.parse(JSON.stringify(zones)), roads: JSON.parse(JSON.stringify(roads))});
+  if (undoStack.length > MAX_UNDO) undoStack.shift();
+  redoStack.length = 0;
+}
+window.undo = function() {
+  if (undoStack.length === 0) { showExportStatus('Nada que deshacer'); return; }
+  const state = undoStack.pop();
+  redoStack.push({zones: JSON.parse(JSON.stringify(zones)), roads: JSON.parse(JSON.stringify(roads))});
+  zones = state.zones; roads = state.roads;
+  renderAll(); saveStorage(); showExportStatus('Deshecho');
+}
+window.redo = function() {
+  if (redoStack.length === 0) { showExportStatus('Nada que rehacer'); return; }
+  const state = redoStack.pop();
+  undoStack.push({zones: JSON.parse(JSON.stringify(zones)), roads: JSON.parse(JSON.stringify(roads))});
+  zones = state.zones; roads = state.roads;
+  renderAll(); saveStorage(); showExportStatus('Rehecho');
+}
+
+function buildExport() {
+  return {
+    project: 'Zalei Agropecuaria',
+    method: 'Atlas Consolidated',
+    base_image: 'base.jpg',
+    base_dimensions: { w: BASE_W, h: BASE_H },
+    timestamp: new Date().toISOString(),
+    zones: zones.map(z => ({
+      id: z.id, name: z.name, description: z.description || '', color: z.color, rotation_deg: z.rot || 0,
+      bbox_normalized: { x_min: round(z.x,4), y_min: round(z.y,4), x_max: round(z.x+z.w,4), y_max: round(z.y+z.h,4), w: round(z.w,4), h: round(z.h,4) },
+      bbox_pixels: { x_min: Math.round(z.x*BASE_W), y_min: Math.round(z.y*BASE_H), x_max: Math.round((z.x+z.w)*BASE_W), y_max: Math.round((z.y+z.h)*BASE_H), w: Math.round(z.w*BASE_W), h: Math.round(z.h*BASE_H) }
+    })),
+    roads: roads.map(r => ({
+      id: r.id, name: r.name || '', type: r.type, width_px: r.width_px, color: r.color, description: r.description || '',
+      points_normalized: r.points.map(p => ({ x: round(p.x,4), y: round(p.y,4) })),
+      points_pixels: r.points.map(p => ({ x: Math.round(p.x*BASE_W), y: Math.round(p.y*BASE_H) }))
+    }))
+  };
+}
+
+function exportToTextarea() {
+  document.getElementById('export-area').value = JSON.stringify(buildExport(), null, 2);
+  document.getElementById('export-status').textContent = zones.length + ' zonas · ' + roads.length + ' calles · autoguardado';
+}
+window.copyJSON = function() {
+  const ta = document.getElementById('export-area'); ta.select();
+  navigator.clipboard.writeText(ta.value).catch(() => document.execCommand('copy'));
+  showExportStatus('JSON copiado');
+}
+window.downloadJSON = function() {
+  const data = JSON.stringify(buildExport(), null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'atlas_zalei.json';
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  showExportStatus('Descargado');
+}
+window.loadJSON = function() {
+  const txt = prompt('Pega el JSON aquí:'); if (!txt) return;
+  try {
+    const d = JSON.parse(txt); pushUndo();
+    if (d.zones) {
+      zones = d.zones.map(z => ({
+        id: z.id, name: z.name, description: z.description || '', color: z.color || randomColor(), rot: z.rotation_deg || 0,
+        x: z.bbox_normalized.x_min, y: z.bbox_normalized.y_min, w: z.bbox_normalized.w || (z.bbox_normalized.x_max - z.bbox_normalized.x_min), h: z.bbox_normalized.h || (z.bbox_normalized.y_max - z.bbox_normalized.y_min)
+      }));
+    }
+    if (d.roads) {
+      roads = d.roads.map(r => ({
+        id: r.id, name: r.name || '', type: r.type || 'interna', width_px: r.width_px || 40, color: r.color || '#FF6600', description: r.description || '',
+        points: (r.points_normalized || []).map(p => ({ x: p.x, y: p.y }))
+      }));
+    }
+    selectedZoneId = null; selectedRoadId = null; multiSelect.clear();
+    renderAll(); saveStorage(); showExportStatus('JSON Importado exitosamente');
+  } catch(e) { alert('JSON inválido: ' + e.message); }
+}
+window.resetAll = function() {
+  if (!confirm('¿Resetear todos los datos? Se perderán los cambios locales.')) return;
+  pushUndo();
+  zones = JSON.parse(JSON.stringify(initialZones));
+  roads = JSON.parse(JSON.stringify(initialRoads));
+  selectedZoneId = null; selectedMicrozonaId = null; selectedRoadId = null; multiSelect.clear(); allRoadsDrag = null;
+  cancelDrawing(); renderAll(); saveStorage(); showExportStatus('Reset completo');
+}
+
+function scaleSelectedItems(factor) {
+  const selZone = selectedZoneId && zones.find(z => z.id === selectedZoneId);
+  const selRoad = selectedRoadId && roads.find(r => r.id === selectedRoadId);
+  if (mode === 'zones') {
+    const ids = multiSelect.size > 0 ? [...multiSelect] : (selZone ? [selectedZoneId] : []);
+    ids.forEach(id => {
+      const z = zones.find(zz => zz.id === id); if (!z) return;
+      const cx = z.x + z.w / 2, cy = z.y + z.h / 2;
+      let nw = z.w * factor, nh = z.h * factor;
+      if (nw < 0.002) nw = 0.002; if (nh < 0.002) nh = 0.002;
+      z.x = clamp(cx - nw / 2, 0, 1 - nw); z.y = clamp(cy - nh / 2, 0, 1 - nh);
+      z.w = nw; z.h = nh;
+    });
+  } else if (mode === 'roads') {
+    const targetRoads = selectAllRoads ? roads : (selRoad && selRoad.points.length > 0 ? [selRoad] : []);
+    if (targetRoads.length === 0) return;
+    let allCx = 0, allCy = 0, count = 0;
+    targetRoads.forEach(r => r.points.forEach(p => { allCx += p.x; allCy += p.y; count++; }));
+    if (count === 0) return; allCx /= count; allCy /= count;
+    targetRoads.forEach(r => r.points.forEach(p => {
+      p.x = clamp(allCx + (p.x - allCx) * factor, 0, 1);
+      p.y = clamp(allCy + (p.y - allCy) * factor, 0, 1);
+    }));
+  }
+  renderAll(); saveStorage();
+}
+
+// ===================== DOM & KEYBOARD EVENTS =====================
+document.addEventListener('DOMContentLoaded', () => {
+  // Draggable Split Pane
+  const rh = document.getElementById('resize-handle');
+  let dragging = false, startX, startW;
+  rh.addEventListener('mousedown', e => {
+    dragging = true; startX = e.clientX;
+    const panel = document.getElementById('panel');
+    startW = panel.getBoundingClientRect().width;
+    document.body.style.cursor = 'col-resize';
+    e.preventDefault(); e.stopPropagation();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const panel = document.getElementById('panel');
+    let w = startW + (startX - e.clientX);
+    w = Math.max(280, Math.min(650, w));
+    panel.style.width = w + 'px';
+    onResize3D();
+  });
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false; document.body.style.cursor = '';
+  });
+
+  // Base canvas interaction
+  document.getElementById('click-catcher').addEventListener('click', e => {
+    if (mode !== 'roads') return;
+    e.stopPropagation();
+    const wrap = document.getElementById('img-wrap');
+    const rect = wrap.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / imgDisplayW;
+    const y = (e.clientY - rect.top) / imgDisplayH;
+    if (placingCodo) {
+      pushUndo(); const arm = placingCodo.arm;
+      let n = roads.length + 1, id;
+      do { id = 'C' + String(n).padStart(2,'0'); n++; } while (roads.find(r => r.id === id));
+      roads.push({
+        id, name: 'Codo ' + (placingCodo.type === 'perimetral' ? 'Perimetral' : 'Externo'),
+        type: placingCodo.type, width_px: placingCodo.width, color: placingCodo.color,
+        description: 'Codo 90° ' + placingCodo.type,
+        points: [
+          { x: round(x - arm, 4), y: round(y, 4) },
+          { x: round(x, 4), y: round(y, 4) },
+          { x: round(x, 4), y: round(y - arm, 4) }
+        ]
+      });
+      selectedRoadId = id; placingCodo = null; document.body.classList.remove('placing-codo');
+      renderAll(); saveStorage(); showExportStatus('Codo creado: ' + id); return;
+    }
+    if (!drawingRoad) startDrawingRoad();
+    const pts = drawingRoad.points;
+    let px = round(x, 4), py = round(y, 4);
+    if (e.shiftKey && pts.length > 0) {
+      const last = pts[pts.length - 1];
+      if (Math.abs(x - last.x) < Math.abs(y - last.y)) px = round(last.x, 4);
+      else py = round(last.y, 4);
+    }
+    pts.push({ x: px, y: py });
+    document.getElementById('points-count').textContent = pts.length;
+    renderRoads();
+  });
+
+  document.getElementById('click-catcher').addEventListener('dblclick', e => {
+    if (mode === 'roads' && drawingRoad) { e.stopPropagation(); finishDrawing(); }
+  });
+
+  const svg = document.getElementById('roads-svg');
+  svg.addEventListener('click', e => {
+    if (mode !== 'roads' || drawingRoad) return;
+    if (e.target === svg) {
+      if (!selectAllRoads) { selectedRoadId = null; selectedZoneId = null; multiSelect.clear(); renderAll(); }
+    }
+    e.stopPropagation();
+  });
+
+  svg.addEventListener('mousedown', e => {
+    if (mode !== 'roads' || drawingRoad || !selectAllRoads) return;
+    const rW = svg.getBoundingClientRect().width, rH = svg.getBoundingClientRect().height;
+    const batch = getBatchRoads();
+    allRoadsDrag = {
+      sx: e.clientX, sy: e.clientY,
+      origRoads: batch.map(r => ({ id: r.id, points: r.points.map(p => ({ x: p.x, y: p.y })) }))
+    };
+    pushUndo();
+    const onMove = ev => {
+      if (!allRoadsDrag) return;
+      const dx = (ev.clientX - allRoadsDrag.sx) / rW, dy = (ev.clientY - allRoadsDrag.sy) / rH;
+      allRoadsDrag.origRoads.forEach(o => {
+        const r = roads.find(x => x.id === o.id); if (!r) return;
+        o.points.forEach((origPt, i) => {
+          if (r.points[i]) { r.points[i].x = clamp(origPt.x + dx, 0, 1); r.points[i].y = clamp(origPt.y + dy, 0, 1); }
+        });
+      });
+      renderAll();
+    };
+    const onUp = () => { allRoadsDrag = null; document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); saveStorage(); };
+    document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onUp); e.preventDefault(); e.stopPropagation();
+  });
+
+  const cc = document.getElementById('canvas-container');
+  cc.addEventListener('wheel', e => {
+    if (!e.ctrlKey) { e.stopPropagation(); return; }
+    e.preventDefault(); e.stopPropagation();
+    if (e.shiftKey) { pushUndo(); scaleSelectedItems(e.deltaY > 0 ? 0.92 : 1.08); renderAll(); saveStorage(); return; }
+    const rect = cc.getBoundingClientRect();
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    const cx = mx + cc.scrollLeft, cy = my + cc.scrollTop;
+    const normX = imgDisplayW > 0 ? cx / imgDisplayW : 0.5, normY = imgDisplayH > 0 ? cy / imgDisplayH : 0.5;
+    zoomLevel = Math.max(0.1, Math.min(20, zoomLevel + (e.deltaY > 0 ? -0.1 : 0.1) * zoomLevel));
+    applyZoom();
+    cc.scrollLeft = normX * imgDisplayW - mx; cc.scrollTop = normY * imgDisplayH - my;
+  }, { passive: false });
+
+  // Init logic
+  const d = loadStorage();
+  zones = d.zones; roads = d.roads; showZones = d.showZones; showRoads = d.showRoads;
+  loadMicrozonas();
+  document.getElementById('toggle-zones').checked = showZones;
+  document.getElementById('toggle-roads').checked = showRoads;
+
+  const img = document.getElementById('base-img');
+  if (img.complete && img.naturalWidth > 0) onImgLoad();
+  else img.onload = onImgLoad;
+});
+
+function onImgLoad() {
+  const img = document.getElementById('base-img');
+  baseScale = Math.min(1000, img.naturalWidth) / img.naturalWidth;
+  applyZoom();
+  init3D();
+}
+
+// Keyboard listener
+window.addEventListener('keydown', e => {
+  if (e.target.closest('input,textarea,select')) return;
+  if (e.key === 'Enter' && drawingRoad) { e.preventDefault(); finishDrawing(); }
+  else if (e.key === 'Escape') {
+    if (drawingRoad) cancelDrawing();
+    else if (placingCodo) { placingCodo = null; document.body.classList.remove('placing-codo'); renderAll(); }
+    else { selectedZoneId = null; selectedMicrozonaId = null; selectedRoadId = null; multiSelect.clear(); if (selectAllRoads) toggleSelectAllRoads(); renderAll(); }
+  }
+  else if ((e.key === 'z' || e.key === 'Z') && (e.ctrlKey || e.metaKey) && !e.shiftKey) { e.preventDefault(); undo(); }
+  else if ((e.key === 'y' || e.key === 'Y') && (e.ctrlKey || e.metaKey)) { e.preventDefault(); redo(); }
+  else if (e.key === 'r' || e.key === 'R') {
+    if (mode === 'zones' && selectedZoneId) {
+      pushUndo(); const z = zones.find(x => x.id === selectedZoneId);
+      if (z) { z.rot = round(((z.rot || 0) + 15) % 360, 1); renderAll(); saveStorage(); }
+    }
+  }
+  else if (e.key === 'g' || e.key === 'G') {
+    if (mode === 'zones' && selectedZoneId) {
+      const prefix = selectedZoneId.replace(/_\w+$/, '');
+      if (prefix.length >= 2) {
+        zones.forEach(z => { if (z.id.startsWith(prefix) && z.id !== selectedZoneId) multiSelect.add(z.id); });
+        renderAll(); showExportStatus('Agrupadas: ' + prefix + '*');
+      }
+    }
+  }
+  else if ((e.key === '+' || e.key === '=') && !e.ctrlKey) { pushUndo(); scaleSelectedItems(1.08); }
+  else if (e.key === '-' && !e.ctrlKey) { pushUndo(); scaleSelectedItems(0.92); }
+  else if (e.key === 'Delete' || e.key === 'Backspace') {
+    const sel = mode === 'zones' ? selectedZoneId : selectedRoadId;
+    if (sel) deleteItem(sel);
+  }
+  else if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+    const target = mode === 'zones' ? zones.find(x => x.id === selectedZoneId) : roads.find(x => x.id === selectedRoadId);
+    if (target) { clipboard = JSON.parse(JSON.stringify(target)); showExportStatus('Copiado: ' + target.id); }
+  }
+  else if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+    if (!clipboard) return; e.preventDefault(); pushUndo();
+    if (mode === 'zones' && clipboard.x !== undefined) {
+      let n = zones.length + 1, newId; do { newId = 'Z' + String(n).padStart(2,'0'); n++; } while (zones.find(x => x.id === newId));
+      const copy = JSON.parse(JSON.stringify(clipboard)); copy.id = newId; copy.x = clamp(copy.x + 0.03, 0, 1 - copy.w); copy.y = clamp(copy.y + 0.03, 0, 1 - copy.h);
+      zones.push(copy); selectedZoneId = newId; renderAll(); saveStorage();
+    } else if (mode === 'roads' && clipboard.points) {
+      let n = roads.length + 1, newId; do { newId = 'C' + String(n).padStart(2,'0'); n++; } while (roads.find(x => x.id === newId));
+      const copy = JSON.parse(JSON.stringify(clipboard)); copy.id = newId; copy.points = copy.points.map(p => ({ x: clamp(p.x + 0.03,0,1), y: clamp(p.y + 0.03,0,1) }));
+      roads.push(copy); selectedRoadId = newId; renderAll(); saveStorage();
+    }
+  }
+});
+
+// ===================== THREE.JS 3D VIEWER =====================
+let scene, camera, renderer, labelRenderer, controls;
+let buildingGroup, roadGroup, labelGroup, highlightMesh;
+let threeInitialized = false;
+
+const IMG_W = 5042, IMG_H = 4474;
+const SCALE = 0.01;
+const W_3D = BLOCKOUT.meta.image_w_units;
+const D_3D = BLOCKOUT.meta.image_d_units;
+const EXAG = BLOCKOUT.meta.vertical_exaggeration_default;
+const METERS_PER_UNIT = BLOCKOUT.meta.meters_per_unit;
+
+const shapeDefs = {};
+BLOCKOUT.objects.forEach(o => {
+  shapeDefs[o.id] = {
+    shape: o.shape || 'box',
+    height_m_estimated: o.height_m_estimated || 4,
+    rotation_deg: o.rotation_deg || 0,
+    color: o.color || '#cccccc',
+    render_mode: o.render_mode || 'building',
+    subtype: o.subtype || '',
+    validation_status: o.validation_status || '',
+  };
+});
+
+const zoneIdAlias = {
+  'Clasificadora': 'Z03_E03_clasif',
+  'Taller': 'Z03_E11_taller',
+  'Z04': 'Z04_E01',
+  'Z14': 'Z14_E01',
+  'Z17': 'Z17_D01',
+  'Z20': 'Z20_E01',
+  'Z21': 'Z21_E01',
+  'Z22': 'Z22_E01',
+};
+
+function lookupShapeProps(zoneId) {
+  return shapeDefs[zoneId] || (zoneIdAlias[zoneId] ? shapeDefs[zoneIdAlias[zoneId]] : null);
+}
+
+// BASE_W/BASE_H = 5042x4474 (base.jpg). Convert normalized coords to 3D world units.
+const IMG_W_2D = 5042, IMG_H_2D = 4474;
+const GND_CX = IMG_W_2D * SCALE / 2; // 25.21
+const GND_CZ = IMG_H_2D * SCALE / 2; // 22.37
+
+function normTo3D(nx, ny) {
+  return { x: nx * (IMG_W_2D * SCALE), z: ny * (IMG_H_2D * SCALE) };
+}
+
+// BLOCKOUT was measured on satellite.jpg (5245×4329 → world 52.45×43.29).
+// The ground plane uses base.jpg (5042×4474 → 50.42×44.74).
+// Map BLOCKOUT coords to match the ground.
+const BLOCKOUT_CX = 52.45 / 2, BLOCKOUT_CZ = 43.29 / 2;
+const SCALE_X = GND_CX * 2 / 52.45; // 50.42/52.45 ≈ 0.9613
+const SCALE_Z = GND_CZ * 2 / 43.29; // 44.74/43.29 ≈ 1.0335
+function blockoutToGround(cx, cz, w, d) {
+  return {
+    cx: (cx - BLOCKOUT_CX) * SCALE_X + GND_CX,
+    cz: (cz - BLOCKOUT_CZ) * SCALE_Z + GND_CZ,
+    w: w * SCALE_X,
+    d: d * SCALE_Z
+  };
+}
+
+function init3D() {
+  const container = document.getElementById('viewer3d');
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0a0a0f);
+
+  camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 200);
+  // Initial position — will be overridden below once GND_W/GND_D are known
+  camera.position.set(33, 20, 38);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.15;
+  container.appendChild(renderer.domElement);
+
+  labelRenderer = new CSS2DRenderer();
+  labelRenderer.setSize(container.clientWidth, container.clientHeight);
+  labelRenderer.domElement.style.position = 'absolute';
+  labelRenderer.domElement.style.top = '0';
+  labelRenderer.domElement.style.pointerEvents = 'none';
+  container.appendChild(labelRenderer.domElement);
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.target.set(25, 0, 22);  // Will be updated after ground init
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.maxPolarAngle = Math.PI / 2.05;
+  controls.minDistance = 1;
+  controls.maxDistance = 100;
+  controls.update();
+
+  // Lights
+  scene.add(new THREE.AmbientLight(0x2a2a44, 0.35));
+  scene.add(new THREE.HemisphereLight(0x446688, 0x11111a, 0.8));
+
+  const sun = new THREE.DirectionalLight(0xffddbb, 1.3);
+  sun.position.set(25, 45, 15); sun.castShadow = true;
+  sun.shadow.mapSize.width = 2048; sun.shadow.mapSize.height = 2048;
+  sun.shadow.camera.near = 0.5; sun.shadow.camera.far = 100;
+  sun.shadow.camera.left = -30; sun.shadow.camera.right = 30;
+  sun.shadow.camera.top = 30; sun.shadow.camera.bottom = -30;
+  sun.shadow.bias = -0.0005;
+  scene.add(sun); scene.add(sun.target);
+
+  const fill = new THREE.DirectionalLight(0x4455aa, 0.2);
+  fill.position.set(-25, 15, -25); scene.add(fill);
+
+  // Satellite ground — size matches base.jpg (5042×4474 at SCALE=0.01 → 50.42×44.74 units)
+  const GND_W = IMG_W_2D * SCALE;
+  const GND_D = IMG_H_2D * SCALE;
+  const groundTex = new THREE.TextureLoader().load('base.jpg');
+  groundTex.colorSpace = THREE.SRGBColorSpace;
+  const groundGeo = new THREE.PlaneGeometry(GND_W, GND_D);
+  const groundMat = new THREE.MeshStandardMaterial({
+    map: groundTex, roughness: 0.85, metalness: 0.02, side: THREE.DoubleSide
+  });
+  window.groundMat = groundMat;
+  const ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.set(GND_CX, 0, GND_CZ);
+  ground.receiveShadow = true;
+  scene.add(ground);
+  
+  // Update camera and controls target to use ground dimensions
+  camera.position.set(GND_W * 0.65, 10, GND_D * 0.85);
+  controls.target.set(GND_W / 2, 0, GND_D / 2);
+  controls.update();
+
+  buildingGroup = new THREE.Group();
+  roadGroup = new THREE.Group();
+  labelGroup = new THREE.Group();
+  scene.add(buildingGroup);
+  scene.add(roadGroup);
+  scene.add(labelGroup);
+
+  build3DObjects();
+  build3DLegend();
+  initRaycasting();
+
+  controls.addEventListener('change', () => {
+    const dist = camera.position.distanceTo(controls.target);
+    labelGroup.children.forEach(l => {
+      l.element.style.display = dist > 50 ? 'none' : 'block';
+    });
+  });
+
+  window.addEventListener('resize', onResize3D);
+
+  container.addEventListener('wheel', e => { e.stopPropagation(); }, { passive: true });
+
+  animate3D();
+  threeInitialized = true;
+}
+
+function build3DObjects() {
+  const usedBlockoutIds = new Set();
+
+  // First pass: discover parent-child relationships among BLOCKOUT microzonas
+  const parentToChildren = new Map();
+  BLOCKOUT.objects.forEach(o => {
+    if (o.source === 'microzone' && o.parent_zone) {
+      if (!parentToChildren.has(o.parent_zone)) parentToChildren.set(o.parent_zone, []);
+      parentToChildren.get(o.parent_zone).push(o);
+    }
+  });
+
+  // Create parent groups for zone parents that exist in the editor
+  const parentGroups = new Map();
+  parentToChildren.forEach((children, parentId) => {
+    const parentZone = zones.find(z => z.id === parentId);
+    if (!parentZone) return;
+    const pc = normTo3D(parentZone.x + parentZone.w/2, parentZone.y + parentZone.h/2);
+    const group = new THREE.Group();
+    group.position.set(pc.x, 0, pc.z);
+    group.userData = { id: parentId, isParentGroup: true };
+    buildingGroup.add(group);
+    parentGroups.set(parentId, group);
+  });
+
+  // Render zones from 2D Editor — only those with a BLOCKOUT building match
+  if (showZones) {
+    zones.forEach(z => {
+      const p = lookupShapeProps(z.id) || {};
+      const hasBlockoutMatch = !!p.shape;
+      if (!hasBlockoutMatch) return; // skip parent rectangles (Z06, Z07, Z10, Z12, Z15, Z16, Z18, Z19)
+      if (p.render_mode !== 'building') return; // skip flat_transparent / footprint (Z05)
+      if (zoneIdAlias[z.id]) usedBlockoutIds.add(zoneIdAlias[z.id]);
+      else usedBlockoutIds.add(z.id);
+
+      const c = normTo3D(z.x + z.w/2, z.y + z.h/2);
+      const w_3d = z.w * BLOCKOUT.meta.image_w_units;
+      const d_3d = z.h * BLOCKOUT.meta.image_d_units;
+      const hm = p.height_m_estimated || 4;
+      const h3d = hm / METERS_PER_UNIT;
+
+      const obj = {
+        id: z.id,
+        shape: p.shape || 'box',
+        footprint: { cx: c.x, cz: c.z, w: w_3d, d: d_3d },
+        height_m_estimated: hm,
+        height_3d_units: h3d,
+        rotation_deg: z.rot || p.rotation_deg || 0,
+        color: z.color || p.color || '#cccccc',
+        render_mode: p.render_mode,
+        subtype: p.subtype || 'estructura',
+        validation_status: p.validation_status || '',
+        label: z.name || z.id
+      };
+      const mesh = buildShapeMesh(obj);
+      if (mesh) {
+        mesh.userData = { id: obj.id, obj };
+        mesh.castShadow = true; mesh.receiveShadow = true;
+        buildingGroup.add(mesh);
+      }
+      addCSSLabel(obj, c.x, h3d * EXAG + 0.4, c.z);
+    });
+  }
+
+  // Render BLOCKOUT objects NOT covered by editor zones (microzones, silos, etc.)
+  // Microzonas with a parent group use LOCAL coords; others use global coords.
+  BLOCKOUT.objects.forEach(o => {
+    if (usedBlockoutIds.has(o.id)) return;
+    if (o.render_mode !== 'building') return;
+    if (o.skip_reason === 'has_renderable_microzones') return;
+    if (o.id === 'Z18A_Conexion_Tubular') return;
+
+    const mz = blockoutToNorm2D(o);
+    const cx_norm = mz.x + mz.w / 2, cz_norm = mz.y + mz.h / 2;
+    const h3d = o.height_3d_units || (o.height_m_estimated / METERS_PER_UNIT);
+
+    let localX = cx_norm, localZ = cz_norm;
+    const parentGroup = o.parent_zone ? parentGroups.get(o.parent_zone) : null;
+    if (parentGroup) {
+      const parentZone = zones.find(z => z.id === o.parent_zone);
+      if (parentZone) {
+        localX = cx_norm - (parentZone.x + parentZone.w / 2);
+        localZ = cz_norm - (parentZone.y + parentZone.h / 2);
+      }
+    }
+    const GND_W = IMG_W_2D * SCALE, GND_D = IMG_H_2D * SCALE;
+
+    const obj = {
+      id: o.id, shape: o.shape || 'box',
+      footprint: { cx: localX * GND_W, cz: localZ * GND_D, w: mz.w * GND_W, d: mz.h * GND_D },
+      height_m_estimated: o.height_m_estimated, height_3d_units: h3d,
+      rotation_deg: o.rotation_deg || 0, color: o.color || '#cccccc',
+      render_mode: o.render_mode, subtype: o.subtype || '',
+      validation_status: o.validation_status || '', label: o.label || o.id
+    };
+    const mesh = buildShapeMesh(obj);
+    if (mesh) {
+      mesh.userData = { id: obj.id, obj };
+      mesh.castShadow = true; mesh.receiveShadow = true;
+      if (parentGroup) parentGroup.add(mesh);
+      else buildingGroup.add(mesh);
+    }
+    addCSSLabel(obj, cx_norm * GND_W, h3d * EXAG + 0.4, cz_norm * GND_D);
+  });
+
+  // Render roads (independent of showZones/showRoads — the roadGroup is cleared in sync3D)
+  if (showRoads) {
+    const ROAD_CFG = {
+      externa:    { w_m: 8.0,  color: 0xFFD700 },
+      perimetral: { w_m: 5.0,  color: 0xFF6600 },
+      interna:    { w_m: 3.5,  color: 0x4488FF },
+      alambrado:  { w_m: 0.2,  color: 0x888899 }
+    };
+
+    roads.forEach(r => {
+      if (r.points.length < 2) return;
+      const cfg = ROAD_CFG[r.type] || ROAD_CFG.interna;
+      const isAlamb = r.type === 'alambrado';
+      const elev = isAlamb ? 0.005 : 0.05;
+
+      const pts = r.points.map(p => normTo3D(p.x, p.y));
+      const mat = new THREE.MeshStandardMaterial({
+        color: isAlamb ? 0x71717a : cfg.color,
+        roughness: isAlamb ? 0.4 : 0.95,
+        transparent: isAlamb,
+        opacity: isAlamb ? 0.6 : 1.0,
+        side: THREE.DoubleSide
+      });
+
+      const roadW = isAlamb ? 0.015 : cfg.w_m / METERS_PER_UNIT;
+
+      for (let i = 0; i < pts.length - 1; i++) {
+        const ax = pts[i].x, az = pts[i].z;
+        const bx = pts[i+1].x, bz = pts[i+1].z;
+        const dx = bx - ax, dz = bz - az;
+        const len = Math.sqrt(dx*dx+dz*dz);
+        if (len < 0.001) continue;
+
+        const ang = Math.atan2(dx, dz);
+        if (isAlamb) {
+          const tubeMat = new THREE.MeshStandardMaterial({ color: 0x71717a, roughness: 0.6, metalness: 0.3 });
+          for (let w = -0.003; w <= 0.003; w += 0.006) {
+            const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, len, 4), tubeMat);
+            tube.rotation.z = Math.PI / 2;
+            tube.position.set((ax+bx)/2 + w * -Math.cos(ang), elev, (az+bz)/2 + w * Math.sin(ang));
+            tube.lookAt(bx, elev, bz);
+            roadGroup.add(tube);
+          }
+          [[ax,az],[bx,bz]].forEach(([px,pz]) => {
+            const post = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.008, 0.08, 6), tubeMat);
+            post.position.set(px, 0.04, pz);
+            roadGroup.add(post);
+          });
+        } else {
+          const surf = new THREE.Mesh(new THREE.PlaneGeometry(roadW, len), mat);
+          surf.rotation.x = -Math.PI / 2; surf.rotation.y = ang;
+          surf.position.set((ax+bx)/2, elev, (az+bz)/2);
+          roadGroup.add(surf);
+
+          const edgeMat = new THREE.MeshBasicMaterial({ color: 0x71717a });
+          const edgeW = 0.012;
+          const hw = roadW/2 - edgeW/2;
+          const pxPerp = -Math.cos(ang), pzPerp = Math.sin(ang);
+          [-1, 1].forEach(s => {
+            const edge = new THREE.Mesh(new THREE.PlaneGeometry(edgeW, len), edgeMat);
+            edge.rotation.x = -Math.PI / 2; edge.rotation.y = ang;
+            edge.position.set((ax+bx)/2 + s*hw*pxPerp, elev + 0.0005, (az+bz)/2 + s*hw*pzPerp);
+            roadGroup.add(edge);
+          });
+        }
+      }
+
+      const mid = Math.floor(pts.length / 2);
+      const div = document.createElement('div');
+      div.textContent = r.name || r.id;
+      div.style.cssText = `color:#94a3b8; font-size:9px; font-weight:600; font-family:sans-serif; background:rgba(15,23,42,0.65); padding:2px 6px; border-radius:3px; white-space:nowrap; border:1px solid rgba(255,255,255,0.06);`;
+      const lbl = new CSS2DObject(div);
+      lbl.position.set(pts[mid].x, isAlamb ? 0.01 : 0.05, pts[mid].z);
+      roadGroup.add(lbl);
+    });
+  }
+}
+
+function buildShapeMesh(obj) {
+  const fp = obj.footprint;
+  const h = Math.max(obj.height_3d_units || 0.001, 0.001) * EXAG;
+  const color = parseInt((obj.color || '#cccccc').replace('#',''), 16);
+  const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.65, metalness: 0.08, transparent: true, opacity: 0.85 });
+  
+  let mesh;
+  switch (obj.shape) {
+    case 'cylinder_tall':
+    case 'cylinder_low': {
+      const r = Math.min(fp.w, fp.d) / 2;
+      mesh = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 24), mat);
+      mesh.position.set(fp.cx, h/2, fp.cz);
+      break;
+    }
+    case 'cylinder_long': {
+      const r = Math.min(fp.w, fp.d) / 2;
+      mesh = new THREE.Mesh(new THREE.CylinderGeometry(r, r, Math.max(fp.w, fp.d), 20), mat);
+      if (fp.w >= fp.d) mesh.rotation.z = Math.PI / 2; else mesh.rotation.x = Math.PI / 2;
+      mesh.position.set(fp.cx, Math.max(r, h/2), fp.cz);
+      break;
+    }
+    case 'gable_box': {
+      const group = new THREE.Group();
+      const wallH = h * 0.65, roofH = h * 0.35;
+      const halfW = fp.w / 2;
+
+      const walls = new THREE.Mesh(new THREE.BoxGeometry(fp.w, wallH, fp.d), mat);
+      walls.position.y = wallH / 2;
+      group.add(walls);
+
+      // Roof: triangular prism from the gable cross-section, extruded along Z
+      const roofMat = mat.clone();
+      const rc = new THREE.Color(color); rc.multiplyScalar(0.65);
+      roofMat.color.set(rc);
+      roofMat.opacity = 0.55;
+
+      const roofShape = new THREE.Shape();
+      roofShape.moveTo(-halfW, 0);
+      roofShape.lineTo(halfW, 0);
+      roofShape.lineTo(0, roofH);
+      roofShape.closePath();
+
+      const roofGeo = new THREE.ExtrudeGeometry(roofShape, {
+        steps: 1, depth: fp.d, bevelEnabled: false
+      });
+      roofGeo.translate(0, 0, -fp.d / 2);
+
+      const roof = new THREE.Mesh(roofGeo, roofMat);
+      roof.position.y = wallH;
+      group.add(roof);
+
+      group.position.set(fp.cx, 0, fp.cz);
+      mesh = group;
+      break;
+    }
+    case 'tower': {
+      const w = Math.min(fp.w, fp.d);
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, w), mat);
+      mesh.position.set(fp.cx, h/2, fp.cz);
+      break;
+    }
+    case 'flat_slab':
+    case 'flat_organic': {
+      const slab = Math.max(h, 0.05);
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(fp.w, slab, fp.d), mat);
+      mesh.position.set(fp.cx, slab/2, fp.cz);
+      break;
+    }
+    case 'elevated_beam': {
+      const w = Math.min(fp.w, fp.d);
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(fp.w, 0.2, fp.d), mat);
+      mesh.position.set(fp.cx, 1.2, fp.cz); // Elevated truss bridge
+      break;
+    }
+    default: {
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(fp.w, h, fp.d), mat);
+      mesh.position.set(fp.cx, h/2, fp.cz);
+    }
+  }
+
+  if (mesh && obj.rotation_deg) {
+    mesh.rotation.y = -(obj.rotation_deg * Math.PI / 180);
+  }
+  if (mesh) {
+    const addEdges = (m) => {
+      if (m.isMesh) {
+        const g = new THREE.EdgesGeometry(m.geometry);
+        const em = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 });
+        m.add(new THREE.LineSegments(g, em));
+      }
+      if (m.isGroup) m.children.forEach(addEdges);
+    };
+    addEdges(mesh);
+  }
+  return mesh;
+}
+
+function addCSSLabel(obj, x, y, z) {
+  const div = document.createElement('div');
+  div.textContent = obj.label;
+  div.style.cssText = `color:${obj.color}; font-size:8px; font-weight:600; background:rgba(13,13,17,0.55); padding:1px 4px; border-radius:3px; border:1px solid ${obj.color}66; white-space:nowrap; pointer-events:none; font-family:sans-serif; line-height:1.3;`;
+  const lbl = new CSS2DObject(div);
+  lbl.position.set(x, y, z);
+  lbl.userData = { id: obj.id };
+  labelGroup.add(lbl);
+}
+
+window.toggleLegend = function() {
+  const el = document.getElementById('legend3d');
+  el.classList.toggle('collapsed');
+  localStorage.setItem('legend_collapsed', el.classList.contains('collapsed'));
+}
+
+function build3DLegend() {
+  const el = document.getElementById('legend3d');
+  const list = document.getElementById('legend-list');
+  list.innerHTML = '';
+  
+  // Restore collapsed state
+  if (localStorage.getItem('legend_collapsed') === 'true') el.classList.add('collapsed');
+  else el.classList.remove('collapsed');
+  
+  const seen = {};
+  zones.forEach(z => {
+    const key = z.color;
+    if (seen[key]) return; seen[key] = true;
+    const entry = document.createElement('div');
+    entry.className = 'entry';
+    
+    const swatch = document.createElement('div');
+    swatch.className = 'swatch'; swatch.style.background = z.color;
+    
+    const lbl = document.createElement('div');
+    lbl.className = 'lbl'; lbl.innerHTML = `${z.id} <small>${escapeHtml(z.name)}</small>`;
+    
+    entry.appendChild(swatch); entry.appendChild(lbl);
+    entry.addEventListener('click', () => {
+      selectItem(z.id);
+    });
+    list.appendChild(entry);
+  });
+}
+
+function onResize3D() {
+  const container = document.getElementById('viewer3d');
+  if (!container || !camera || !renderer || !labelRenderer) return;
+  camera.aspect = container.clientWidth / container.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  labelRenderer.setSize(container.clientWidth, container.clientHeight);
+}
+
+function animate3D() {
+  requestAnimationFrame(animate3D);
+  if (controls) controls.update();
+  if (renderer && scene && camera) renderer.render(scene, camera);
+  if (labelRenderer && scene && camera) labelRenderer.render(scene, camera);
+}
+
+// Rebuilds 3D meshes and labels from the current 2D editor state
+function sync3D() {
+  if (!threeInitialized) return;
+  
+  // Clear old meshes
+  while (buildingGroup.children.length) buildingGroup.remove(buildingGroup.children[0]);
+  while (roadGroup.children.length) roadGroup.remove(roadGroup.children[0]);
+  while (labelGroup.children.length) labelGroup.remove(labelGroup.children[0]);
+  
+  if (highlightMesh) { scene.remove(highlightMesh); highlightMesh = null; }
+  
+  build3DObjects();
+  build3DLegend();
+}
+
+function focus3DCameraOnObject(id) {
+  if (!threeInitialized) return;
+  let targetX = GND_CX, targetZ = GND_CZ;
+  let found = false;
+
+  // 1. Search in building meshes
+  buildingGroup.children.forEach(c => {
+    if (c.userData && c.userData.obj && c.userData.obj.id === id) {
+      targetX = c.position.x;
+      targetZ = c.position.z;
+      found = true;
+      showHighlightMesh(c);
+    }
+  });
+
+  // 2. Search in road segments
+  if (!found) {
+    roadGroup.children.forEach(c => {
+      if (c.userData && c.userData.id === id) {
+        targetX = c.position.x;
+        targetZ = c.position.z;
+        found = true;
+      }
+    });
+  }
+
+  // 3. Fallback for zones without 3D mesh (Z05, Z06, Z07, etc.) — highlight footprint on ground
+  if (!found) {
+    const z = zones.find(zz => zz.id === id);
+    if (z) {
+      const c = normTo3D(z.x + z.w/2, z.y + z.h/2);
+      targetX = c.x; targetZ = c.z;
+      const w_3d = z.w * IMG_W_2D * SCALE;
+      const d_3d = z.h * IMG_H_2D * SCALE;
+      if (highlightMesh) { scene.remove(highlightMesh); highlightMesh = null; }
+      const geo = new THREE.BoxGeometry(w_3d + 0.1, 0.05, d_3d + 0.1);
+      const mat = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.6 });
+      highlightMesh = new THREE.Mesh(geo, mat);
+      highlightMesh.position.set(c.x, 0.01, c.z);
+      highlightMesh.userData = { id };
+      scene.add(highlightMesh);
+      found = true;
+    }
+  }
+
+  if (found && controls) {
+    controls.target.set(targetX, 0, targetZ);
+    camera.position.set(targetX + 8, 7, targetZ + 8);
+    controls.update();
+  }
+}
+
+// ===================== 3D RAYCASTING & INTERACTION =====================
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+const dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+const intersection = new THREE.Vector3();
+let selectedMesh3D = null;
+let isDragging3D = false;
+let dragStartMouse3D = new THREE.Vector2();
+let dragMoved3D = false;
+
+function initRaycasting() {
+  const dom = renderer.domElement;
+
+  function getMeshes() {
+    const list = [];
+    buildingGroup.children.forEach(c => {
+      if (c.isMesh) list.push(c);
+      else if (c.isGroup) c.children.forEach(ch => { if (ch.isMesh) list.push(ch); });
+    });
+    return list;
+  }
+
+  function getHitObject(intersects) {
+    for (const hit of intersects) {
+      let o = hit.object;
+      while (o) {
+        if (o.userData && o.userData.obj) return o;
+        o = o.parent;
+      }
+    }
+    return null;
+  }
+
+  dom.addEventListener('pointerdown', e => {
+    const rect = dom.getBoundingClientRect();
+    dragStartMouse3D.set(e.clientX, e.clientY);
+    pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+    raycaster.setFromCamera(pointer, camera);
+    const intersects = raycaster.intersectObjects(getMeshes());
+    const hitParent = getHitObject(intersects);
+
+    if (hitParent) {
+      selectedMesh3D = hitParent;
+      isDragging3D = false;
+      dragMoved3D = false;
+      controls.enabled = false;
+      dom.style.cursor = 'grabbing';
+    } else {
+      selectedMesh3D = null;
+    }
+  });
+
+  dom.addEventListener('pointermove', e => {
+    const rect = dom.getBoundingClientRect();
+    pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+    if (selectedMesh3D) {
+      const dx = e.clientX - dragStartMouse3D.x;
+      const dy = e.clientY - dragStartMouse3D.y;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+        isDragging3D = true;
+        dragMoved3D = true;
+      }
+
+      if (isDragging3D) {
+        raycaster.setFromCamera(pointer, camera);
+        if (raycaster.ray.intersectPlane(dragPlane, intersection)) {
+          selectedMesh3D.position.x = intersection.x;
+          selectedMesh3D.position.z = intersection.z;
+          
+          if (highlightMesh) {
+            highlightMesh.position.x = intersection.x;
+            highlightMesh.position.z = intersection.z;
+          }
+
+          // Move floating label synchronously
+          labelGroup.children.forEach(l => {
+            if (l.userData && l.userData.id === selectedMesh3D.userData.id) {
+              l.position.x = intersection.x;
+              l.position.z = intersection.z;
+            }
+          });
+        }
+      }
+      return;
+    }
+
+    // Hover highlight
+    raycaster.setFromCamera(pointer, camera);
+    const intersects = raycaster.intersectObjects(getMeshes());
+    const hitParent = getHitObject(intersects);
+    if (hitParent && !isDragging3D) {
+      dom.style.cursor = 'pointer';
+      showHighlightMesh(hitParent);
+    } else if (!isDragging3D) {
+      dom.style.cursor = 'default';
+      if (highlightMesh && (!selectedZoneId || selectedZoneId !== (highlightMesh.userData && highlightMesh.userData.id))) {
+        scene.remove(highlightMesh);
+        highlightMesh = null;
+      }
+    }
+  });
+
+  dom.addEventListener('pointerup', e => {
+    dom.style.cursor = 'default';
+    controls.enabled = true;
+
+    if (selectedMesh3D) {
+      const obj = selectedMesh3D.userData.obj;
+      
+      // Update coordinates in the 2D editor (sync back!)
+      const zone = zones.find(z => z.id === obj.id);
+      if (zone) {
+        const cx = selectedMesh3D.position.x / SCALE;
+        const cz = selectedMesh3D.position.z / SCALE;
+        const w_px = zone.w * BASE_W;
+        const h_px = zone.h * BASE_H;
+        
+        // Convert pixel back to normalized coordinate
+        zone.x = round((cx - w_px/2) / BASE_W, 4);
+        zone.y = round((cz - h_px/2) / BASE_H, 4);
+
+        saveStorage();
+        renderZones();
+        renderPanel();
+        exportToTextarea();
+      }
+
+      if (!dragMoved3D) {
+        // Simple click select
+        selectedZoneId = obj.id;
+        selectedRoadId = null;
+        multiSelect.clear();
+        renderZones();
+        renderPanel();
+        showInfoPanel3D(obj);
+      } else {
+        // Drag finished, update info panel
+        obj.footprint.cx = selectedMesh3D.position.x;
+        obj.footprint.cz = selectedMesh3D.position.z;
+        showInfoPanel3D(obj);
+      }
+    } else if (!dragMoved3D) {
+      // Clicked on empty space
+      const infoEl = document.getElementById('info3d');
+      infoEl.classList.remove('show');
+    }
+
+    isDragging3D = false;
+    selectedMesh3D = null;
+  });
+}
+
+function showHighlightMesh(mesh) {
+  if (highlightMesh) { scene.remove(highlightMesh); }
+  const fp = mesh.userData.obj.footprint;
+  const h = Math.max((mesh.userData.obj.height_3d_units || 0.001) * EXAG, 0.001);
+  const geo = new THREE.BoxGeometry(fp.w + 0.08, h + 0.08, fp.d + 0.08);
+  const mat = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.5 });
+  highlightMesh = new THREE.Mesh(geo, mat);
+  highlightMesh.position.copy(mesh.position);
+  highlightMesh.userData = { id: mesh.userData.obj.id };
+  if (mesh.rotation) highlightMesh.rotation.copy(mesh.rotation);
+  scene.add(highlightMesh);
+}
+
+function showInfoPanel3D(obj) {
+  const infoEl = document.getElementById('info3d');
+  const w_m = (obj.footprint.w * METERS_PER_UNIT).toFixed(1);
+  const d_m = (obj.footprint.d * METERS_PER_UNIT).toFixed(1);
+  const h_m = obj.height_m_estimated || 0;
+  const status = obj.validation_status || 'sin validar';
+  
+  infoEl.innerHTML = `
+    <div class="row"><b style="color:${obj.color}">${escapeHtml(obj.label)}</b> <span>(${obj.id})</span></div>
+    <div class="row"><span>Tipo</span><b>${obj.subtype}</b> | <span>Shape</span><b>${obj.shape}</b></div>
+    <div class="row"><span>Dimensiones</span><b>${w_m}m</b> &times; <b>${d_m}m</b> &times; <b>${h_m}m</b></div>
+    <div class="row"><span>3D Pos</span><b>(${obj.footprint.cx.toFixed(2)}, ${obj.footprint.cz.toFixed(2)})</b></div>
+    <div class="row"><span>Estado</span><b style="color:${status.includes('validated') ? '#00ff7f' : '#ffaa00'}">${status}</b></div>
+  `;
+  infoEl.classList.add('show');
+}
+</script>
+</body>
+</html>

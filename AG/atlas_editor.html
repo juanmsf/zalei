@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="../auth.js"></script>
+<meta charset="UTF-8">
+<title>Atlas Zalei — Editor Zonas + Calles</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #111; color: #eee; }
+  body { display: flex; height: 100vh; overflow: hidden; }
+
+  /* ===== Canvas side ===== */
+  #canvas-container { flex: 1; overflow: auto; background: #000; position: relative; }
+  #img-wrap { position: relative; display: inline-block; }
+  #base-img { display: block; max-width: none; user-select: none; -webkit-user-drag: none; }
+
+  /* SVG for roads overlay */
+  #roads-svg { position: absolute; top: 0; left: 0; pointer-events: none; }
+
+  /* Click-capture overlay for road drawing mode */
+  #click-catcher { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; display: none; z-index: 5; }
+  body.mode-roads #click-catcher { display: block; }
+
+  /* In roads mode, zones still visible but click-through (except handles when selected) */
+  body.mode-roads .zone { pointer-events: none; opacity: 0.5; }
+  body.mode-roads .zone.selected { opacity: 1; pointer-events: auto; }
+
+  .zone {
+    position: absolute; border: 3px solid; cursor: move; box-sizing: border-box;
+    transition: box-shadow 0.1s, opacity 0.2s;
+  }
+  .zone.selected { box-shadow: 0 0 0 3px rgba(255,255,255,0.95), 0 0 25px rgba(255,255,255,0.4); z-index: 10; }
+  .zone-label {
+    position: absolute; top: -28px; left: -3px; padding: 3px 9px;
+    font-size: 13px; font-weight: 700; white-space: nowrap; color: #000;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+  }
+  .resize-handle { position: absolute; width: 14px; height: 14px; background: #fff; border: 2px solid #000; display: none; z-index: 11; }
+  .zone.selected .resize-handle { display: block; }
+  .rh-nw { top: -8px; left: -8px; cursor: nw-resize; }
+  .rh-ne { top: -8px; right: -8px; cursor: ne-resize; }
+  .rh-sw { bottom: -8px; left: -8px; cursor: sw-resize; }
+  .rh-se { bottom: -8px; right: -8px; cursor: se-resize; }
+  .rh-n  { top: -8px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
+  .rh-s  { bottom: -8px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
+  .rh-w  { top: 50%; left: -8px; transform: translateY(-50%); cursor: w-resize; }
+  .rh-e  { top: 50%; right: -8px; transform: translateY(-50%); cursor: e-resize; }
+
+  /* ===== Side panel ===== */
+  #panel { width: 440px; background: #1c1c1c; border-left: 1px solid #333; display: flex; flex-direction: column; height: 100vh; }
+  #panel-header { padding: 12px 14px; border-bottom: 1px solid #333; }
+  #panel-header h2 { margin: 0 0 4px 0; font-size: 15px; }
+  #panel-header .sub { font-size: 11px; color: #888; }
+
+  /* Mode tabs */
+  .mode-tabs { display: flex; border-bottom: 1px solid #333; }
+  .mode-tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; background: #1c1c1c; border: none; color: #aaa; font-weight: 600; font-size: 13px; border-bottom: 3px solid transparent; }
+  .mode-tab.active { color: #fff; border-bottom-color: #06c; background: #232323; }
+  .mode-tab:hover:not(.active) { background: #232323; }
+
+  #toolbar { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 14px; border-bottom: 1px solid #333; }
+  #drawing-status { display: none; padding: 10px 14px; background: #2a3a4a; border-bottom: 1px solid #333; font-size: 12px; }
+  body.drawing #drawing-status { display: block; }
+
+  #items-list { flex: 1; overflow-y: auto; padding: 10px 14px; }
+  #export-section { border-top: 1px solid #333; padding: 10px 14px; }
+  #export-area { width: 100%; min-height: 120px; background: #000; color: #6f6; font-family: 'Consolas', monospace; font-size: 11px; border: 1px solid #333; padding: 6px; resize: vertical; }
+
+  button {
+    background: #2c2c2c; color: #ddd; border: 1px solid #444;
+    padding: 6px 10px; cursor: pointer; border-radius: 3px; font-size: 12px;
+  }
+  button:hover { background: #3a3a3a; }
+  button.primary { background: #06c; border-color: #08e; color: #fff; }
+  button.primary:hover { background: #08d; }
+  button.danger { background: #a22; border-color: #c44; }
+  button.danger:hover { background: #c33; }
+  button.success { background: #2a7; border-color: #4c9; color: #fff; }
+
+  .item-card { background: #262626; border-radius: 5px; margin-bottom: 10px; padding: 10px; border-left: 4px solid; }
+  .item-card.selected { background: #333; outline: 2px solid #fff; }
+  .item-card .row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
+  .item-card input[type="text"],
+  .item-card textarea,
+  .item-card select {
+    width: 100%; background: #1a1a1a; color: #eee; border: 1px solid #444;
+    padding: 5px 7px; border-radius: 3px; font-family: inherit; font-size: 12px;
+  }
+  .item-card textarea { resize: vertical; min-height: 45px; }
+  .item-card input[type="color"] { width: 36px; height: 28px; border: 1px solid #444; cursor: pointer; padding: 0; background: none; }
+  .item-card input[type="number"] { width: 90px; background: #1a1a1a; color: #eee; border: 1px solid #444; padding: 4px; border-radius: 3px; }
+  .item-card .meta { font-size: 10px; color: #888; margin: 6px 0; font-family: monospace; }
+  .item-card .actions { display: flex; gap: 5px; }
+  .item-card .actions button { flex: 1; }
+
+  .label-id { font-size: 10px; color: #999; margin-bottom: 2px; font-family: monospace; }
+
+  /* Road point indicators */
+  .road-point { fill: #fff; stroke: #000; stroke-width: 2; cursor: pointer; }
+  .road-point.dragging { fill: #ff0; }
+</style>
+</head>
+<body>
+
+<div id="canvas-container">
+  <div id="img-wrap">
+    <img id="base-img" src="zalei_satellite_5042x4474.png" alt="Zalei base satelital">
+    <svg id="roads-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div id="click-catcher"></div>
+  </div>
+</div>
+
+<div id="panel">
+  <div id="panel-header">
+    <h2>Atlas Zalei — Editor</h2>
+    <div class="sub">Base: zalei_satellite_5042x4474.png · Método Atlas</div>
+  </div>
+
+  <div class="mode-tabs">
+    <button class="mode-tab active" data-mode="zones" onclick="setMode('zones')">🟦 Zonas</button>
+    <button class="mode-tab" data-mode="roads" onclick="setMode('roads')">🛣️ Calles</button>
+  </div>
+
+  <div id="toolbar">
+    <button class="primary" id="btn-add" onclick="addItem()">+ Nuevo</button>
+    <button onclick="copyJSON()">📋 Copiar</button>
+    <button onclick="downloadJSON()">💾 JSON</button>
+    <button onclick="loadJSON()">📤 Importar</button>
+    <button class="danger" onclick="resetAll()">↺ Reset</button>
+  </div>
+
+  <div id="drawing-status">
+    <strong>✏️ Dibujando calle</strong>
+    — <span id="points-count">0</span> puntos.
+    Clic en imagen para agregar punto.
+    <div style="margin-top: 6px; display: flex; gap: 5px;">
+      <button class="success" onclick="finishDrawing()">✓ Finalizar (Enter)</button>
+      <button onclick="undoPoint()">↶ Deshacer último</button>
+      <button class="danger" onclick="cancelDrawing()">✗ Cancelar (Esc)</button>
+    </div>
+  </div>
+
+  <div id="items-list"></div>
+
+  <div id="export-section">
+    <div class="label-id">JSON (auto)</div>
+    <textarea id="export-area" readonly></textarea>
+  </div>
+</div>
+
+<script>
+const BASE_W = 5042;
+const BASE_H = 4474;
+const STORAGE_KEY = 'atlas_zalei_v2';
+
+const initialZones = [
+  { id: 'Z01', name: 'Recría Existente',                            x: 0.0191, y: 0.0297, w: 0.2418, h: 0.0488, color: '#FFD700', description: 'Galpón de recría existente, validado por Juan. 1 unidad.' },
+  { id: 'Z02', name: 'Guano',                                       x: 0.4327, y: 0.1215, w: 0.2582, h: 0.4688, color: '#A0522D', description: 'Sector de guano. Pendiente validación Chadi (seco / húmedo).' },
+  { id: 'Z03', name: 'Galpones de Ponedoras',                       x: 0.0464, y: 0.4541, w: 0.3136, h: 0.3952, color: '#00B4FF', description: '10 galpones validados por Chadi.' },
+  { id: 'Z04', name: 'Planta de alimento',                          x: 0.4600, y: 0.7395, w: 0.0318, h: 0.0965, color: '#C800FF', description: '' },
+  { id: 'Z05', name: 'Cintas Transportadoras',                      x: 0.1545, y: 0.4949, w: 0.0491, h: 0.2397, color: '#FFFFFF', description: 'Linear. CRÍTICO no romper conexiones.' },
+  { id: 'Z06', name: 'Silos secos',                                 x: 0.5445, y: 0.7165, w: 0.1400, h: 0.0965, color: '#FF1493', description: '7 silos.' },
+  { id: 'Z07', name: 'Terreno Nuevo',                               x: 0.7209, y: 0.0000, w: 0.2791, h: 0.9217, color: '#00FF7F', description: '2 galpones recría nuevos + silo-bolsas.' },
+  { id: 'Z08', name: 'Casa de gerencia',                            x: 0.6745, y: 0.8539, w: 0.0464, h: 0.0622, color: '#0B206B', description: 'Vivienda.' },
+  { id: 'Z09', name: 'Departamentos de empleados',                  x: 0.0791, y: 0.8610, w: 0.1245, h: 0.0458, color: '#6A5B19', description: 'Viviendas.' },
+  { id: 'Z10', name: 'Clasificadora',                               x: 0.1764, y: 0.5721, w: 0.1455, h: 0.0612, color: '#B3ABB0', description: 'Recibe y clasifica los huevos.' },
+  { id: 'Z11', name: 'Casa de mantenimiento (sur)',                 x: 0.3409, y: 0.8815, w: 0.0473, h: 0.0355, color: '#FF0F6D', description: '' },
+  { id: 'Z12', name: 'Taller',                                      x: 0.1391, y: 0.8098, w: 0.0509, h: 0.0530, color: '#347C65', description: '' },
+  { id: 'Z13', name: 'Casa de mantenimiento (norte)',               x: 0.3082, y: 0.0814, w: 0.0773, h: 0.0458, color: '#284695', description: '' },
+  { id: 'Z14', name: 'Aceitera',                                    x: 0.4891, y: 0.7668, w: 0.0264, h: 0.0642, color: '#F23DD7', description: '' },
+  { id: 'Z15', name: 'Silos húmedos',                               x: 0.5282, y: 0.6920, w: 0.0182, h: 0.0458, color: '#CB8F8D', description: '' },
+  { id: 'Z16', name: 'Silos almacenamiento consumo y expeller',     x: 0.4855, y: 0.7155, w: 0.0409, h: 0.0601, color: '#6010D0', description: '' },
+  { id: 'Z17', name: 'Planta de descarga de granos',                x: 0.4682, y: 0.6787, w: 0.0118, h: 0.0468, color: '#7A5B13', description: '' },
+  { id: 'Z18', name: 'Secado y limpieza de granos',                 x: 0.5282, y: 0.7258, w: 0.0409, h: 0.0530, color: '#FE2948', description: 'Estructura tubular.' },
+  { id: 'Z19', name: 'Tanques de aceite',                           x: 0.4836, y: 0.8180, w: 0.0391, h: 0.0171, color: '#E66981', description: '3 tanques. No confundir con sombras.' },
+  { id: 'Z20', name: 'Descarga de alimento',                        x: 0.4464, y: 0.7125, w: 0.0364, h: 0.0581, color: '#AF1BDF', description: '' },
+  { id: 'Z21', name: 'Oficinas',                                    x: 0.4100, y: 0.7114, w: 0.0245, h: 0.0796, color: '#B39BBD', description: '' },
+  { id: 'Z22', name: 'Balanza de camiones',                         x: 0.3964, y: 0.7125, w: 0.0145, h: 0.0796, color: '#4C3FAC', description: '' },
+];
+
+const initialRoads = [];
+
+let mode = 'zones';
+let zones = [];
+let roads = [];
+let selectedZoneId = null;
+let selectedRoadId = null;
+let drawingRoad = null;
+let imgScale = 1;
+let imgDisplayW = 0;
+let imgDisplayH = 0;
+
+const ROAD_TYPES = ['interna', 'externa', 'perimetral', 'entrada', 'corregir', 'eliminar'];
+
+function loadStorage() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    if (s) {
+      const d = JSON.parse(s);
+      return {
+        zones: d.zones || JSON.parse(JSON.stringify(initialZones)),
+        roads: d.roads || []
+      };
+    }
+  } catch(e) {}
+  return { zones: JSON.parse(JSON.stringify(initialZones)), roads: [] };
+}
+
+function saveStorage() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ zones, roads }));
+}
+
+function init() {
+  const d = loadStorage();
+  zones = d.zones;
+  roads = d.roads;
+  const img = document.getElementById('base-img');
+  if (img.complete && img.naturalWidth > 0) onImgLoad();
+  else img.onload = onImgLoad;
+}
+
+function onImgLoad() {
+  const img = document.getElementById('base-img');
+  const targetW = Math.min(1100, img.naturalWidth);
+  imgScale = targetW / img.naturalWidth;
+  imgDisplayW = img.naturalWidth * imgScale;
+  imgDisplayH = img.naturalHeight * imgScale;
+  img.style.width = imgDisplayW + 'px';
+  img.style.height = imgDisplayH + 'px';
+  const wrap = document.getElementById('img-wrap');
+  wrap.style.width = imgDisplayW + 'px';
+  wrap.style.height = imgDisplayH + 'px';
+  const svg = document.getElementById('roads-svg');
+  svg.setAttribute('width', imgDisplayW);
+  svg.setAttribute('height', imgDisplayH);
+  svg.setAttribute('viewBox', `0 0 ${BASE_W} ${BASE_H}`);
+  renderAll();
+}
+
+function setMode(m) {
+  mode = m;
+  document.body.classList.toggle('mode-roads', m === 'roads');
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === m));
+  if (m !== 'roads' && drawingRoad) cancelDrawing();
+  selectedZoneId = null;
+  selectedRoadId = null;
+  renderAll();
+}
+
+function addItem() {
+  if (mode === 'zones') addZone();
+  else startDrawingRoad();
+}
+
+function addZone() {
+  let n = zones.length + 1, id;
+  do { id = 'Z' + String(n).padStart(2,'0'); n++; } while (zones.find(z => z.id === id));
+  zones.push({ id, name: 'Nueva zona', x: 0.4, y: 0.4, w: 0.18, h: 0.18, color: randomColor(), description: '' });
+  selectedZoneId = id;
+  renderAll(); saveStorage();
+}
+
+function startDrawingRoad() {
+  let n = roads.length + 1, id;
+  do { id = 'C' + String(n).padStart(2,'0'); n++; } while (roads.find(r => r.id === id));
+  drawingRoad = { id, name: 'Calle ' + id, type: 'interna', width_px: 20, color: '#FF6600', description: '', points: [] };
+  document.body.classList.add('drawing');
+  document.getElementById('points-count').textContent = '0';
+  renderAll();
+}
+
+function finishDrawing() {
+  if (!drawingRoad) return;
+  if (drawingRoad.points.length < 2) {
+    alert('La calle necesita al menos 2 puntos.');
+    return;
+  }
+  roads.push(drawingRoad);
+  selectedRoadId = drawingRoad.id;
+  drawingRoad = null;
+  document.body.classList.remove('drawing');
+  renderAll(); saveStorage();
+}
+
+function cancelDrawing() {
+  drawingRoad = null;
+  document.body.classList.remove('drawing');
+  renderAll();
+}
+
+function undoPoint() {
+  if (drawingRoad && drawingRoad.points.length > 0) {
+    drawingRoad.points.pop();
+    document.getElementById('points-count').textContent = drawingRoad.points.length;
+    renderRoads();
+  }
+}
+
+// Click on image (in road mode) → add point
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('click-catcher').addEventListener('click', e => {
+    if (mode !== 'roads') return;
+    const wrap = document.getElementById('img-wrap');
+    const rect = wrap.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / imgDisplayW;
+    const y = (e.clientY - rect.top) / imgDisplayH;
+    if (!drawingRoad) startDrawingRoad();
+    drawingRoad.points.push({ x: round(x, 4), y: round(y, 4) });
+    document.getElementById('points-count').textContent = drawingRoad.points.length;
+    renderRoads();
+  });
+  document.getElementById('click-catcher').addEventListener('dblclick', e => {
+    if (mode === 'roads' && drawingRoad) finishDrawing();
+  });
+});
+
+function renderAll() {
+  renderZones();
+  renderRoads();
+  renderPanel();
+  exportToTextarea();
+}
+
+function renderZones() {
+  const wrap = document.getElementById('img-wrap');
+  wrap.querySelectorAll('.zone').forEach(n => n.remove());
+  zones.forEach(z => {
+    const el = document.createElement('div');
+    el.className = 'zone' + (z.id === selectedZoneId ? ' selected' : '');
+    el.dataset.id = z.id;
+    el.style.left = (z.x * imgDisplayW) + 'px';
+    el.style.top = (z.y * imgDisplayH) + 'px';
+    el.style.width = (z.w * imgDisplayW) + 'px';
+    el.style.height = (z.h * imgDisplayH) + 'px';
+    el.style.borderColor = z.color;
+    el.style.backgroundColor = hexToRgba(z.color, 0.18);
+    el.innerHTML =
+      '<div class="zone-label" style="background:' + z.color + '">' + z.id + ' · ' + escapeHtml(z.name) + '</div>' +
+      '<div class="resize-handle rh-nw"></div><div class="resize-handle rh-ne"></div>' +
+      '<div class="resize-handle rh-sw"></div><div class="resize-handle rh-se"></div>' +
+      '<div class="resize-handle rh-n"></div><div class="resize-handle rh-s"></div>' +
+      '<div class="resize-handle rh-w"></div><div class="resize-handle rh-e"></div>';
+    attachZoneInteraction(el);
+    wrap.appendChild(el);
+  });
+}
+
+function attachZoneInteraction(el) {
+  el.addEventListener('mousedown', e => {
+    if (mode !== 'zones') return;
+    const id = el.dataset.id;
+    selectedZoneId = id;
+    selectedRoadId = null;
+    renderZones(); renderPanel();
+    let m = 'move';
+    if (e.target.classList.contains('resize-handle')) {
+      m = Array.from(e.target.classList).find(c => c.startsWith('rh-')).replace('rh-','');
+    }
+    const z = zones.find(zz => zz.id === id);
+    const sX = e.clientX, sY = e.clientY;
+    const s = { x: z.x, y: z.y, w: z.w, h: z.h };
+    e.preventDefault(); e.stopPropagation();
+    const onMove = ev => {
+      const dx = (ev.clientX - sX) / imgDisplayW;
+      const dy = (ev.clientY - sY) / imgDisplayH;
+      const t = zones.find(zz => zz.id === id);
+      if (m === 'move') {
+        t.x = clamp(s.x + dx, 0, 1 - s.w);
+        t.y = clamp(s.y + dy, 0, 1 - s.h);
+      } else {
+        let { x, y, w, h } = s;
+        if (m.includes('w')) { x = s.x + dx; w = s.w - dx; }
+        if (m.includes('e')) { w = s.w + dx; }
+        if (m.includes('n')) { y = s.y + dy; h = s.h - dy; }
+        if (m.includes('s')) { h = s.h + dy; }
+        if (w < 0.01) { w = 0.01; if (m.includes('w')) x = s.x + s.w - 0.01; }
+        if (h < 0.01) { h = 0.01; if (m.includes('n')) y = s.y + s.h - 0.01; }
+        t.x = clamp(x, 0, 1); t.y = clamp(y, 0, 1);
+        t.w = clamp(w, 0.01, 1 - t.x); t.h = clamp(h, 0.01, 1 - t.y);
+      }
+      renderZones(); updateMeta(id); exportToTextarea();
+    };
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      saveStorage(); renderPanel();
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+}
+
+function renderRoads() {
+  const svg = document.getElementById('roads-svg');
+  svg.innerHTML = '';
+  // existing roads
+  roads.forEach(r => {
+    const pts = r.points.map(p => (p.x * BASE_W) + ',' + (p.y * BASE_H)).join(' ');
+    const isSel = r.id === selectedRoadId;
+    // outer (highlight if selected)
+    if (isSel) {
+      const halo = document.createElementNS('http://www.w3.org/2000/svg','polyline');
+      halo.setAttribute('points', pts);
+      halo.setAttribute('stroke','#fff');
+      halo.setAttribute('stroke-width', r.width_px + 18);
+      halo.setAttribute('fill','none');
+      halo.setAttribute('opacity','0.45');
+      svg.appendChild(halo);
+    }
+    const line = document.createElementNS('http://www.w3.org/2000/svg','polyline');
+    line.setAttribute('points', pts);
+    line.setAttribute('stroke', r.color);
+    line.setAttribute('stroke-width', r.width_px);
+    line.setAttribute('fill','none');
+    line.setAttribute('stroke-linecap','round');
+    line.setAttribute('stroke-linejoin','round');
+    if (r.type === 'eliminar') line.setAttribute('stroke-dasharray', '40,30');
+    line.style.pointerEvents = 'stroke';
+    line.style.cursor = 'pointer';
+    line.addEventListener('click', () => { selectedRoadId = r.id; selectedZoneId = null; renderAll(); });
+    svg.appendChild(line);
+    // small label at first point
+    if (r.points.length > 0) {
+      const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+      txt.setAttribute('x', r.points[0].x * BASE_W + 30);
+      txt.setAttribute('y', r.points[0].y * BASE_H - 10);
+      txt.setAttribute('fill', r.color);
+      txt.setAttribute('stroke', '#000');
+      txt.setAttribute('stroke-width', '2');
+      txt.setAttribute('paint-order','stroke');
+      txt.setAttribute('font-size','55');
+      txt.setAttribute('font-weight','700');
+      txt.textContent = r.id + ' ' + r.name;
+      svg.appendChild(txt);
+    }
+  });
+  // current drawing road (dashed preview)
+  if (drawingRoad && drawingRoad.points.length > 0) {
+    const pts = drawingRoad.points.map(p => (p.x * BASE_W) + ',' + (p.y * BASE_H)).join(' ');
+    const line = document.createElementNS('http://www.w3.org/2000/svg','polyline');
+    line.setAttribute('points', pts);
+    line.setAttribute('stroke', drawingRoad.color);
+    line.setAttribute('stroke-width', drawingRoad.width_px);
+    line.setAttribute('fill','none');
+    line.setAttribute('stroke-dasharray','40,25');
+    line.setAttribute('stroke-linecap','round');
+    line.setAttribute('opacity','0.85');
+    svg.appendChild(line);
+    // points
+    drawingRoad.points.forEach((p, i) => {
+      const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx', p.x * BASE_W);
+      c.setAttribute('cy', p.y * BASE_H);
+      c.setAttribute('r', i === 0 ? 28 : 22);
+      c.setAttribute('fill', i === 0 ? '#0f0' : '#fff');
+      c.setAttribute('stroke', '#000');
+      c.setAttribute('stroke-width', 4);
+      svg.appendChild(c);
+    });
+  }
+}
+
+function renderPanel() {
+  const list = document.getElementById('items-list');
+  list.innerHTML = '';
+  const items = mode === 'zones' ? zones : roads;
+  const selId = mode === 'zones' ? selectedZoneId : selectedRoadId;
+
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'item-card' + (item.id === selId ? ' selected' : '');
+    div.style.borderLeftColor = item.color;
+    if (mode === 'zones') {
+      div.innerHTML = renderZoneCard(item);
+    } else {
+      div.innerHTML = renderRoadCard(item);
+    }
+    div.querySelectorAll('[data-field]').forEach(inp => {
+      inp.addEventListener('input', e => {
+        const f = e.target.dataset.field;
+        const target = items.find(x => x.id === item.id);
+        if (!target) return;
+        let v = e.target.value;
+        if (e.target.type === 'number') v = parseFloat(v) || 0;
+        target[f] = v;
+        renderAll(); saveStorage();
+      });
+    });
+    list.appendChild(div);
+  });
+}
+
+function renderZoneCard(z) {
+  return '<div class="row">' +
+    '<input type="color" data-field="color" value="' + z.color + '">' +
+    '<input type="text" data-field="id" value="' + escapeAttr(z.id) + '" placeholder="ID" style="width:70px">' +
+    '<input type="text" data-field="name" value="' + escapeAttr(z.name) + '" placeholder="Nombre">' +
+    '</div>' +
+    '<textarea data-field="description" placeholder="Descripción...">' + escapeHtml(z.description || '') + '</textarea>' +
+    '<div class="meta">px ' + Math.round(z.x*BASE_W) + ',' + Math.round(z.y*BASE_H) +
+    ' → ' + Math.round((z.x+z.w)*BASE_W) + ',' + Math.round((z.y+z.h)*BASE_H) + '</div>' +
+    '<div class="actions">' +
+      '<button onclick="selectItem(\'' + z.id + '\')">Seleccionar</button>' +
+      '<button class="danger" onclick="deleteItem(\'' + z.id + '\')">Eliminar</button>' +
+    '</div>';
+}
+
+function renderRoadCard(r) {
+  const typeOpts = ROAD_TYPES.map(t => '<option value="' + t + '"' + (r.type === t ? ' selected' : '') + '>' + t + '</option>').join('');
+  return '<div class="row">' +
+    '<input type="color" data-field="color" value="' + r.color + '">' +
+    '<input type="text" data-field="id" value="' + escapeAttr(r.id) + '" placeholder="ID" style="width:70px">' +
+    '<input type="text" data-field="name" value="' + escapeAttr(r.name) + '" placeholder="Nombre">' +
+    '</div>' +
+    '<div class="row">' +
+      '<select data-field="type">' + typeOpts + '</select>' +
+      '<input type="number" data-field="width_px" value="' + r.width_px + '" min="2" max="200" step="2" title="Ancho (px en imagen base)">' +
+    '</div>' +
+    '<textarea data-field="description" placeholder="Descripción / instrucciones Chadi...">' + escapeHtml(r.description || '') + '</textarea>' +
+    '<div class="meta">' + r.points.length + ' puntos · tipo: ' + r.type + ' · ancho: ' + r.width_px + 'px</div>' +
+    '<div class="actions">' +
+      '<button onclick="selectItem(\'' + r.id + '\')">Seleccionar</button>' +
+      '<button class="danger" onclick="deleteItem(\'' + r.id + '\')">Eliminar</button>' +
+    '</div>';
+}
+
+function selectItem(id) {
+  if (mode === 'zones') { selectedZoneId = id; selectedRoadId = null; }
+  else { selectedRoadId = id; selectedZoneId = null; }
+  renderAll();
+  const card = document.querySelector('.item-card.selected');
+  if (card) card.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function deleteItem(id) {
+  if (!confirm('¿Eliminar ' + id + '?')) return;
+  if (mode === 'zones') {
+    zones = zones.filter(z => z.id !== id);
+    if (selectedZoneId === id) selectedZoneId = null;
+  } else {
+    roads = roads.filter(r => r.id !== id);
+    if (selectedRoadId === id) selectedRoadId = null;
+  }
+  renderAll(); saveStorage();
+}
+
+function updateMeta(id) {
+  // Just re-render panel for simplicity
+  renderPanel();
+}
+
+function buildExport() {
+  return {
+    project: 'Zalei Agropecuaria',
+    method: 'Atlas',
+    base_image: 'zalei_satellite_5042x4474.png',
+    base_dimensions: { w: BASE_W, h: BASE_H },
+    timestamp: new Date().toISOString(),
+    zones: zones.map(z => ({
+      id: z.id, name: z.name, description: z.description || '', color: z.color,
+      bbox_normalized: { x_min: round(z.x,4), y_min: round(z.y,4), x_max: round(z.x+z.w,4), y_max: round(z.y+z.h,4), w: round(z.w,4), h: round(z.h,4) },
+      bbox_pixels: { x_min: Math.round(z.x*BASE_W), y_min: Math.round(z.y*BASE_H), x_max: Math.round((z.x+z.w)*BASE_W), y_max: Math.round((z.y+z.h)*BASE_H), w: Math.round(z.w*BASE_W), h: Math.round(z.h*BASE_H) }
+    })),
+    roads: roads.map(r => ({
+      id: r.id, name: r.name, type: r.type, width_px: r.width_px,
+      color: r.color, description: r.description || '',
+      points_normalized: r.points.map(p => ({ x: round(p.x,4), y: round(p.y,4) })),
+      points_pixels: r.points.map(p => ({ x: Math.round(p.x*BASE_W), y: Math.round(p.y*BASE_H) }))
+    }))
+  };
+}
+
+function exportToTextarea() {
+  document.getElementById('export-area').value = JSON.stringify(buildExport(), null, 2);
+}
+
+function downloadJSON() {
+  const data = JSON.stringify(buildExport(), null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'atlas_zalei.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function copyJSON() {
+  const ta = document.getElementById('export-area');
+  ta.select();
+  navigator.clipboard.writeText(ta.value).catch(() => document.execCommand('copy'));
+  alert('JSON copiado al portapapeles');
+}
+
+function loadJSON() {
+  const txt = prompt('Pegá el JSON aquí:');
+  if (!txt) return;
+  try {
+    const d = JSON.parse(txt);
+    if (d.zones) {
+      zones = d.zones.map(z => ({
+        id: z.id, name: z.name, description: z.description || '', color: z.color || randomColor(),
+        x: z.bbox_normalized.x_min, y: z.bbox_normalized.y_min,
+        w: z.bbox_normalized.w || (z.bbox_normalized.x_max - z.bbox_normalized.x_min),
+        h: z.bbox_normalized.h || (z.bbox_normalized.y_max - z.bbox_normalized.y_min)
+      }));
+    }
+    if (d.roads) {
+      roads = d.roads.map(r => ({
+        id: r.id, name: r.name, type: r.type || 'interna', width_px: r.width_px || 20,
+        color: r.color || '#FF6600', description: r.description || '',
+        points: (r.points_normalized || []).map(p => ({ x: p.x, y: p.y }))
+      }));
+    }
+    selectedZoneId = null; selectedRoadId = null;
+    renderAll(); saveStorage();
+    alert('Importado: ' + zones.length + ' zonas + ' + roads.length + ' calles');
+  } catch (e) { alert('JSON inválido: ' + e.message); }
+}
+
+function resetAll() {
+  if (!confirm('¿Resetear TODO? Se pierden cambios.')) return;
+  zones = JSON.parse(JSON.stringify(initialZones));
+  roads = JSON.parse(JSON.stringify(initialRoads));
+  selectedZoneId = null; selectedRoadId = null;
+  cancelDrawing();
+  renderAll(); saveStorage();
+}
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+function round(v, d) { return Math.round(v * Math.pow(10,d)) / Math.pow(10,d); }
+function hexToRgba(hex, a) {
+  const m = hex.replace('#','');
+  const r = parseInt(m.substr(0,2),16), g = parseInt(m.substr(2,2),16), b = parseInt(m.substr(4,2),16);
+  return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+}
+function randomColor() { return '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'); }
+function escapeHtml(s) { return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeAttr(s) { return escapeHtml(s).replace(/"/g,'&quot;'); }
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && drawingRoad) { e.preventDefault(); finishDrawing(); }
+  else if (e.key === 'Escape') {
+    if (drawingRoad) cancelDrawing();
+    else { selectedZoneId = null; selectedRoadId = null; renderAll(); }
+  }
+  else if (e.key === 'Delete') {
+    const sel = mode === 'zones' ? selectedZoneId : selectedRoadId;
+    if (sel) deleteItem(sel);
+  }
+  else if ((e.key === 'z' || e.key === 'Z') && drawingRoad) undoPoint();
+});
+
+init();
+</script>
+</body>
+</html>

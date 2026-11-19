@@ -1,0 +1,1219 @@
+{
+  "meta": {
+    "description": "Micro-Atlas de Zalei - detalle fino por zona. Cada microzona es un elemento discreto dentro de una zona padre.",
+    "method": "Atlas",
+    "image_base": "zalei_satellite_5042x4474.png",
+    "image_width_px": 5042,
+    "image_height_px": 4474,
+    "last_updated": "2026-05-28",
+    "phase": 3,
+    "phase_status": "FASE 3 PARCIAL - Z06 names+bbox corrected, Z19 refined (high/validated), Z18 marked geometry_questioned, Z15+Z16 still pending Chadi",
+    "source_of_truth": "atlas_zalei.md + scripts/measure_microzones.py + scripts/build_microzones.py",
+    "validation_status_legend": {
+      "validated": "Geometria medida y verificada visualmente",
+      "probable": "Geometria derivada de fuente validada pero sin cross-check directo",
+      "ambiguous": "Geometria aproximada, requiere refinamiento manual",
+      "requires_chadi_validation": "Necesita instruccion explicita de Chadi",
+      "bbox_pending": "Microzona declarada, bbox aun no medido",
+      "planned_position_pending": "Elemento futuro; ubicacion exacta a definir"
+    },
+    "confidence_legend": {
+      "high": "Geometria medida directamente sobre el crop",
+      "medium": "Geometria derivada analiticamente de un padre validado",
+      "low": "Geometria heuristica, debe refinarse",
+      "n/a": "Sin bbox aun"
+    }
+  },
+  "microzones": [
+    {
+      "id": "Z06_S01",
+      "parent_zone": "Z06",
+      "name": "Silo Seco Norte 1",
+      "description": "Silo seco fila norte, posicion 1 de 3. Acero galvanizado corrugado, techo conico.",
+      "color": "#FF1493",
+      "bbox_pixels": {
+        "x1": 2752,
+        "y1": 3215,
+        "x2": 2890,
+        "y2": 3353,
+        "w": 138,
+        "h": 138
+      },
+      "bbox_normalized": {
+        "x1": 0.54582,
+        "y1": 0.7186,
+        "x2": 0.57319,
+        "y2": 0.74944
+      },
+      "element_type": "silo_seco_cilindrico",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "hough_detection_visually_verified",
+      "requires_chadi_validation": false,
+      "notes": "Detectado por Hough; cluster norte (3 silos) confirmado visualmente."
+    },
+    {
+      "id": "Z06_S02",
+      "parent_zone": "Z06",
+      "name": "Silo Seco Norte 2",
+      "description": "Silo seco fila norte, posicion 2 de 3. Acero galvanizado corrugado, techo conico.",
+      "color": "#FF1493",
+      "bbox_pixels": {
+        "x1": 2905,
+        "y1": 3214,
+        "x2": 3043,
+        "y2": 3352,
+        "w": 138,
+        "h": 138
+      },
+      "bbox_normalized": {
+        "x1": 0.57616,
+        "y1": 0.71837,
+        "x2": 0.60353,
+        "y2": 0.74922
+      },
+      "element_type": "silo_seco_cilindrico",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "hough_detection_visually_verified",
+      "requires_chadi_validation": false,
+      "notes": "Detectado por Hough; cluster norte (3 silos) confirmado visualmente."
+    },
+    {
+      "id": "Z06_S03",
+      "parent_zone": "Z06",
+      "name": "Silo Seco Norte 3",
+      "description": "Silo seco fila norte, posicion 3 de 3. Acero galvanizado corrugado, techo conico.",
+      "color": "#FF1493",
+      "bbox_pixels": {
+        "x1": 3060,
+        "y1": 3220,
+        "x2": 3190,
+        "y2": 3350,
+        "w": 130,
+        "h": 130
+      },
+      "bbox_normalized": {
+        "x1": 0.6069,
+        "y1": 0.71971,
+        "x2": 0.63269,
+        "y2": 0.74877
+      },
+      "element_type": "silo_seco_cilindrico",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "hough_multipass_phase3_review_2026-05-28",
+      "requires_chadi_validation": false,
+      "notes": "Phase 3 review: posicion previa estaba mal (estaba en row Sur). Reubicado al silo Norte 3 real detectado por Hough multipass (cx=3125, cy=3285, r=65)."
+    },
+    {
+      "id": "Z06_S04",
+      "parent_zone": "Z06",
+      "name": "Silo Seco Sur 1",
+      "description": "Silo seco fila sur, posicion 1 de 4. Acero galvanizado corrugado, techo conico.",
+      "color": "#FF1493",
+      "bbox_pixels": {
+        "x1": 2754,
+        "y1": 3392,
+        "x2": 2892,
+        "y2": 3530,
+        "w": 138,
+        "h": 138
+      },
+      "bbox_normalized": {
+        "x1": 0.54621,
+        "y1": 0.75816,
+        "x2": 0.57358,
+        "y2": 0.789
+      },
+      "element_type": "silo_seco_cilindrico",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "hough_detection_visually_verified",
+      "requires_chadi_validation": false,
+      "notes": "Detectado por Hough; cluster sur (4 silos) confirmado visualmente."
+    },
+    {
+      "id": "Z06_S05",
+      "parent_zone": "Z06",
+      "name": "Silo Seco Sur 2",
+      "description": "Silo seco fila sur, posicion 2 de 4. Acero galvanizado corrugado, techo conico.",
+      "color": "#FF1493",
+      "bbox_pixels": {
+        "x1": 2906,
+        "y1": 3391,
+        "x2": 3044,
+        "y2": 3529,
+        "w": 138,
+        "h": 138
+      },
+      "bbox_normalized": {
+        "x1": 0.57636,
+        "y1": 0.75793,
+        "x2": 0.60373,
+        "y2": 0.78878
+      },
+      "element_type": "silo_seco_cilindrico",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "hough_detection_visually_verified",
+      "requires_chadi_validation": false,
+      "notes": "Detectado por Hough; cluster sur (4 silos) confirmado visualmente."
+    },
+    {
+      "id": "Z06_S06",
+      "parent_zone": "Z06",
+      "name": "Silo Seco Sur 3",
+      "description": "Silo seco fila sur, posicion 3 de 4. Acero galvanizado corrugado, techo conico.",
+      "color": "#FF1493",
+      "bbox_pixels": {
+        "x1": 3060,
+        "y1": 3389,
+        "x2": 3198,
+        "y2": 3527,
+        "w": 138,
+        "h": 138
+      },
+      "bbox_normalized": {
+        "x1": 0.6069,
+        "y1": 0.75749,
+        "x2": 0.63427,
+        "y2": 0.78833
+      },
+      "element_type": "silo_seco_cilindrico",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "hough_detection_visually_verified",
+      "requires_chadi_validation": false,
+      "notes": "Detectado por Hough; cluster sur (4 silos) confirmado visualmente."
+    },
+    {
+      "id": "Z06_S07",
+      "parent_zone": "Z06",
+      "name": "Silo Seco Sur 4",
+      "description": "Silo seco fila sur, posicion 4 de 4. Acero galvanizado corrugado, techo conico.",
+      "color": "#FF1493",
+      "bbox_pixels": {
+        "x1": 3211,
+        "y1": 3388,
+        "x2": 3349,
+        "y2": 3526,
+        "w": 138,
+        "h": 138
+      },
+      "bbox_normalized": {
+        "x1": 0.63685,
+        "y1": 0.75726,
+        "x2": 0.66422,
+        "y2": 0.78811
+      },
+      "element_type": "silo_seco_cilindrico",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "hough_multipass_phase3_review_2026-05-28",
+      "requires_chadi_validation": false,
+      "notes": "Phase 3 review: posicion previa (y=3545) apuntaba a sombra/area sin silo. Reubicado al silo Sur 4 real (cx=3277, cy=3457, r=71)."
+    },
+    {
+      "id": "Z19_T01",
+      "parent_zone": "Z19",
+      "name": "Tanque Aceite 1",
+      "description": "Tanque de aceite cilindrico bajo, posicion 1 de 3.",
+      "color": "#e66981",
+      "bbox_pixels": {
+        "x1": 2482,
+        "y1": 3678,
+        "x2": 2512,
+        "y2": 3710,
+        "w": 30,
+        "h": 32
+      },
+      "bbox_normalized": {
+        "x1": 0.49226,
+        "y1": 0.82208,
+        "x2": 0.49821,
+        "y2": 0.82924
+      },
+      "element_type": "tanque_aceite_cilindrico",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "hough_smallcircle_phase3_review_2026-05-28",
+      "requires_chadi_validation": false,
+      "notes": "Phase 3 review: bbox tightened to actual tank top via Hough small-circle (center 2497,3695 r=15)."
+    },
+    {
+      "id": "Z19_T02",
+      "parent_zone": "Z19",
+      "name": "Tanque Aceite 2",
+      "description": "Tanque de aceite cilindrico bajo, posicion 2 de 3.",
+      "color": "#e66981",
+      "bbox_pixels": {
+        "x1": 2517,
+        "y1": 3676,
+        "x2": 2547,
+        "y2": 3706,
+        "w": 30,
+        "h": 30
+      },
+      "bbox_normalized": {
+        "x1": 0.49921,
+        "y1": 0.82164,
+        "x2": 0.50516,
+        "y2": 0.82834
+      },
+      "element_type": "tanque_aceite_cilindrico",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "hough_smallcircle_phase3_review_2026-05-28",
+      "requires_chadi_validation": false,
+      "notes": "Phase 3 review: bbox tightened to actual tank top via Hough small-circle (center 2532,3691 r=15)."
+    },
+    {
+      "id": "Z19_T03",
+      "parent_zone": "Z19",
+      "name": "Tanque Aceite 3",
+      "description": "Tanque de aceite cilindrico bajo, posicion 3 de 3.",
+      "color": "#e66981",
+      "bbox_pixels": {
+        "x1": 2550,
+        "y1": 3685,
+        "x2": 2580,
+        "y2": 3715,
+        "w": 30,
+        "h": 30
+      },
+      "bbox_normalized": {
+        "x1": 0.50575,
+        "y1": 0.82365,
+        "x2": 0.5117,
+        "y2": 0.83035
+      },
+      "element_type": "tanque_aceite_cilindrico",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "hough_smallcircle_phase3_review_2026-05-28",
+      "requires_chadi_validation": false,
+      "notes": "Phase 3 review: bbox tightened to actual tank top via Hough small-circle (center 2565,3700 r=15)."
+    },
+    {
+      "id": "Z15_H01",
+      "parent_zone": "Z15",
+      "name": "Silo Humedo 1",
+      "description": "Silo humedo detectado, posicion 1. Conteo total no fijado por Chadi.",
+      "color": "#cb8f8d",
+      "bbox_pixels": {
+        "x1": 2625,
+        "y1": 3076,
+        "x2": 2703,
+        "y2": 3154,
+        "w": 78,
+        "h": 78
+      },
+      "bbox_normalized": {
+        "x1": 0.52063,
+        "y1": 0.68753,
+        "x2": 0.5361,
+        "y2": 0.70496
+      },
+      "element_type": "silo_humedo",
+      "validation_status": "probable",
+      "confidence": "medium",
+      "source": "hough_detection_top3_by_radius",
+      "requires_chadi_validation": true,
+      "notes": "Hough detecto 8 candidatos. Quedan los 3 mas grandes. Confirmar conteo y posiciones con Chadi."
+    },
+    {
+      "id": "Z15_H02",
+      "parent_zone": "Z15",
+      "name": "Silo Humedo 2",
+      "description": "Silo humedo detectado, posicion 2. Conteo total no fijado por Chadi.",
+      "color": "#cb8f8d",
+      "bbox_pixels": {
+        "x1": 2679,
+        "y1": 3201,
+        "x2": 2757,
+        "y2": 3279,
+        "w": 78,
+        "h": 78
+      },
+      "bbox_normalized": {
+        "x1": 0.53134,
+        "y1": 0.71547,
+        "x2": 0.54681,
+        "y2": 0.7329
+      },
+      "element_type": "silo_humedo",
+      "validation_status": "probable",
+      "confidence": "medium",
+      "source": "hough_detection_top3_by_radius",
+      "requires_chadi_validation": true,
+      "notes": "Hough detecto 8 candidatos. Quedan los 3 mas grandes. Confirmar conteo y posiciones con Chadi."
+    },
+    {
+      "id": "Z15_H03",
+      "parent_zone": "Z15",
+      "name": "Silo Humedo 3",
+      "description": "Silo humedo detectado, posicion 3. Conteo total no fijado por Chadi.",
+      "color": "#cb8f8d",
+      "bbox_pixels": {
+        "x1": 2686,
+        "y1": 3257,
+        "x2": 2764,
+        "y2": 3335,
+        "w": 78,
+        "h": 78
+      },
+      "bbox_normalized": {
+        "x1": 0.53273,
+        "y1": 0.72798,
+        "x2": 0.5482,
+        "y2": 0.74542
+      },
+      "element_type": "silo_humedo",
+      "validation_status": "probable",
+      "confidence": "medium",
+      "source": "hough_detection_top3_by_radius",
+      "requires_chadi_validation": true,
+      "notes": "Hough detecto 8 candidatos. Quedan los 3 mas grandes. Confirmar conteo y posiciones con Chadi."
+    },
+    {
+      "id": "Z16_E01",
+      "parent_zone": "Z16",
+      "name": "Silo Consumo/Expeller 1",
+      "description": "Silo de almacenamiento (consumo o expeller), posicion 1. Conteo final pendiente Chadi.",
+      "color": "#6010d0",
+      "bbox_pixels": {
+        "x1": 2473,
+        "y1": 3194,
+        "x2": 2535,
+        "y2": 3256,
+        "w": 62,
+        "h": 62
+      },
+      "bbox_normalized": {
+        "x1": 0.49048,
+        "y1": 0.7139,
+        "x2": 0.50278,
+        "y2": 0.72776
+      },
+      "element_type": "silo_consumo",
+      "validation_status": "probable",
+      "confidence": "low",
+      "source": "hough_detection_top4_by_radius",
+      "requires_chadi_validation": true,
+      "notes": "Hough detecto 51 candidatos (alta densidad). Quedan los 4 mayores. Necesita validacion Chadi."
+    },
+    {
+      "id": "Z16_E02",
+      "parent_zone": "Z16",
+      "name": "Silo Consumo/Expeller 2",
+      "description": "Silo de almacenamiento (consumo o expeller), posicion 2. Conteo final pendiente Chadi.",
+      "color": "#6010d0",
+      "bbox_pixels": {
+        "x1": 2444,
+        "y1": 3230,
+        "x2": 2506,
+        "y2": 3292,
+        "w": 62,
+        "h": 62
+      },
+      "bbox_normalized": {
+        "x1": 0.48473,
+        "y1": 0.72195,
+        "x2": 0.49702,
+        "y2": 0.73581
+      },
+      "element_type": "silo_consumo",
+      "validation_status": "probable",
+      "confidence": "low",
+      "source": "hough_detection_top4_by_radius",
+      "requires_chadi_validation": true,
+      "notes": "Hough detecto 51 candidatos (alta densidad). Quedan los 4 mayores. Necesita validacion Chadi."
+    },
+    {
+      "id": "Z16_E03",
+      "parent_zone": "Z16",
+      "name": "Silo Consumo/Expeller 3",
+      "description": "Silo de almacenamiento (consumo o expeller), posicion 3. Conteo final pendiente Chadi.",
+      "color": "#6010d0",
+      "bbox_pixels": {
+        "x1": 2465,
+        "y1": 3259,
+        "x2": 2527,
+        "y2": 3321,
+        "w": 62,
+        "h": 62
+      },
+      "bbox_normalized": {
+        "x1": 0.48889,
+        "y1": 0.72843,
+        "x2": 0.50119,
+        "y2": 0.74229
+      },
+      "element_type": "silo_consumo",
+      "validation_status": "probable",
+      "confidence": "low",
+      "source": "hough_detection_top4_by_radius",
+      "requires_chadi_validation": true,
+      "notes": "Hough detecto 51 candidatos (alta densidad). Quedan los 4 mayores. Necesita validacion Chadi."
+    },
+    {
+      "id": "Z16_E04",
+      "parent_zone": "Z16",
+      "name": "Silo Consumo/Expeller 4",
+      "description": "Silo de almacenamiento (consumo o expeller), posicion 4. Conteo final pendiente Chadi.",
+      "color": "#6010d0",
+      "bbox_pixels": {
+        "x1": 2468,
+        "y1": 3423,
+        "x2": 2530,
+        "y2": 3485,
+        "w": 62,
+        "h": 62
+      },
+      "bbox_normalized": {
+        "x1": 0.48949,
+        "y1": 0.76509,
+        "x2": 0.50179,
+        "y2": 0.77895
+      },
+      "element_type": "silo_consumo",
+      "validation_status": "probable",
+      "confidence": "low",
+      "source": "hough_detection_top4_by_radius",
+      "requires_chadi_validation": true,
+      "notes": "Hough detecto 51 candidatos (alta densidad). Quedan los 4 mayores. Necesita validacion Chadi."
+    },
+    {
+      "id": "Z18A_Conexion_Tubular",
+      "parent_zone": "Z18",
+      "name": "Conexion Tubular (Pasarela Superior)",
+      "description": "Estructura tubular/pasarela superior que conecta planta de alimento con silos. NO es 'Secado y Limpieza'. Geometria diagonal en la parte superior del bbox padre Z18.",
+      "color": "#fe8a48",
+      "bbox_pixels": {
+        "x1": 2510,
+        "y1": 3210,
+        "x2": 2870,
+        "y2": 3370,
+        "w": 360,
+        "h": 160
+      },
+      "bbox_normalized": {
+        "x1": 0.49782,
+        "y1": 0.71748,
+        "x2": 0.56922,
+        "y2": 0.75324
+      },
+      "element_type": "infraestructura_tubular",
+      "validation_status": "ambiguous",
+      "confidence": "low",
+      "source": "manual_split_per_phase3_rule",
+      "requires_chadi_validation": true,
+      "notes": "Phase 3 review (2026-05-28): bbox ampliado al oeste para capturar la pasarela tubular diagonal completa que viene desde planta de alimento. Chadi debe confirmar limites exactos.",
+      "split_rationale": "Phase3 rule #7 - Secado != pasarela tubular"
+    },
+    {
+      "id": "Z18B_Secado_Y_Limpieza",
+      "parent_zone": "Z18",
+      "name": "Secado Y Limpieza De Granos (Estructura Inferior)",
+      "description": "Estructura inferior de secado y limpieza de granos. Esta es la 'verdadera' Z18 segun la regla Phase 3: esta debajo de la conexion tubular hacia los silos.",
+      "color": "#fe2948",
+      "bbox_pixels": {
+        "x1": 2663,
+        "y1": 3377,
+        "x2": 2869,
+        "y2": 3484,
+        "w": 206,
+        "h": 107
+      },
+      "bbox_normalized": {
+        "x1": 0.52816,
+        "y1": 0.75481,
+        "x2": 0.56902,
+        "y2": 0.77872
+      },
+      "element_type": "secado_limpieza",
+      "validation_status": "requires_chadi_validation",
+      "confidence": "low",
+      "source": "manual_split_per_phase3_rule",
+      "requires_chadi_validation": true,
+      "notes": "Phase 3 review (2026-05-28): La estructura inferior real debe ser marcada por Chadi; no confirmar sobre pasarela superior. Bbox actual NO validado.",
+      "split_rationale": "Phase3 rule #7 - Secado != pasarela tubular"
+    },
+    {
+      "id": "Z04_E01",
+      "parent_zone": "Z04",
+      "name": "Planta De Alimento (Estructura Principal)",
+      "description": "Elemento principal (microzona unica) dentro de Planta De Alimento. Bbox = bbox del padre.",
+      "color": "#C800FF",
+      "bbox_pixels": {
+        "x1": 2319,
+        "y1": 3309,
+        "x2": 2480,
+        "y2": 3740,
+        "w": 161,
+        "h": 431
+      },
+      "bbox_normalized": {
+        "x1": 0.45994,
+        "y1": 0.73961,
+        "x2": 0.49187,
+        "y2": 0.83594
+      },
+      "element_type": "planta_industrial",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "passthrough_from_validated_parent",
+      "requires_chadi_validation": false,
+      "notes": "Zona padre es un unico elemento discreto; la microzona refleja el bbox padre 1:1."
+    },
+    {
+      "id": "Z14_E01",
+      "parent_zone": "Z14",
+      "name": "Aceitera (Estructura Principal)",
+      "description": "Elemento principal (microzona unica) dentro de Aceitera. Bbox = bbox del padre.",
+      "color": "#f23dd7",
+      "bbox_pixels": {
+        "x1": 2466,
+        "y1": 3431,
+        "x2": 2599,
+        "y2": 3718,
+        "w": 133,
+        "h": 287
+      },
+      "bbox_normalized": {
+        "x1": 0.48909,
+        "y1": 0.76688,
+        "x2": 0.51547,
+        "y2": 0.83102
+      },
+      "element_type": "planta_industrial",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "passthrough_from_validated_parent",
+      "requires_chadi_validation": false,
+      "notes": "Zona padre es un unico elemento discreto; la microzona refleja el bbox padre 1:1."
+    },
+    {
+      "id": "Z17_D01",
+      "parent_zone": "Z17",
+      "name": "Planta De Descarga De Granos (Estructura Principal)",
+      "description": "Elemento principal (microzona unica) dentro de Planta De Descarga De Granos. Bbox = bbox del padre.",
+      "color": "#7a5b13",
+      "bbox_pixels": {
+        "x1": 2361,
+        "y1": 3036,
+        "x2": 2420,
+        "y2": 3246,
+        "w": 59,
+        "h": 210
+      },
+      "bbox_normalized": {
+        "x1": 0.46827,
+        "y1": 0.67859,
+        "x2": 0.47997,
+        "y2": 0.72553
+      },
+      "element_type": "descarga_granos",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "passthrough_from_validated_parent",
+      "requires_chadi_validation": false,
+      "notes": "Zona padre es un unico elemento discreto; la microzona refleja el bbox padre 1:1."
+    },
+    {
+      "id": "Z20_E01",
+      "parent_zone": "Z20",
+      "name": "Descarga De Alimento (Estructura Principal)",
+      "description": "Elemento principal (microzona unica) dentro de Descarga De Alimento. Bbox = bbox del padre.",
+      "color": "#af1bdf",
+      "bbox_pixels": {
+        "x1": 2251,
+        "y1": 3188,
+        "x2": 2434,
+        "y2": 3447,
+        "w": 183,
+        "h": 259
+      },
+      "bbox_normalized": {
+        "x1": 0.44645,
+        "y1": 0.71256,
+        "x2": 0.48274,
+        "y2": 0.77045
+      },
+      "element_type": "descarga_alimento",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "passthrough_from_validated_parent",
+      "requires_chadi_validation": false,
+      "notes": "Zona padre es un unico elemento discreto; la microzona refleja el bbox padre 1:1."
+    },
+    {
+      "id": "Z21_E01",
+      "parent_zone": "Z21",
+      "name": "Oficinas (Estructura Principal)",
+      "description": "Elemento principal (microzona unica) dentro de Oficinas. Bbox = bbox del padre.",
+      "color": "#b39bbd",
+      "bbox_pixels": {
+        "x1": 2067,
+        "y1": 3183,
+        "x2": 2191,
+        "y2": 3539,
+        "w": 124,
+        "h": 356
+      },
+      "bbox_normalized": {
+        "x1": 0.40996,
+        "y1": 0.71144,
+        "x2": 0.43455,
+        "y2": 0.79101
+      },
+      "element_type": "oficinas",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "passthrough_from_validated_parent",
+      "requires_chadi_validation": false,
+      "notes": "Zona padre es un unico elemento discreto; la microzona refleja el bbox padre 1:1."
+    },
+    {
+      "id": "Z22_E01",
+      "parent_zone": "Z22",
+      "name": "Balanza De Camiones (Estructura Principal)",
+      "description": "Elemento principal (microzona unica) dentro de Balanza De Camiones. Bbox = bbox del padre.",
+      "color": "#4c3fac",
+      "bbox_pixels": {
+        "x1": 1998,
+        "y1": 3188,
+        "x2": 2072,
+        "y2": 3544,
+        "w": 74,
+        "h": 356
+      },
+      "bbox_normalized": {
+        "x1": 0.39627,
+        "y1": 0.71256,
+        "x2": 0.41095,
+        "y2": 0.79213
+      },
+      "element_type": "balanza_camiones",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "passthrough_from_validated_parent",
+      "requires_chadi_validation": false,
+      "notes": "Zona padre es un unico elemento discreto; la microzona refleja el bbox padre 1:1."
+    },
+    {
+      "id": "Z03_E01",
+      "parent_zone": "Z03",
+      "name": "Galpon Ponedoras 01",
+      "description": "Galpón 01 de Z03. Medido individualmente.",
+      "color": "#00B4FF",
+      "bbox_pixels": {
+        "x1": 955,
+        "y1": 2157,
+        "x2": 1744,
+        "y2": 2333,
+        "w": 789,
+        "h": 176
+      },
+      "bbox_normalized": {
+        "x_min": 0.1894,
+        "y_min": 0.4821,
+        "x_max": 0.3459,
+        "y_max": 0.5214,
+        "w": 0.1565,
+        "h": 0.0393
+      },
+      "element_type": "galpon_ponedoras",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "manual_crop_measurement",
+      "requires_chadi_validation": false,
+      "notes": "Bbox medido desde crop Z03 con herramienta measure_z03.html",
+      "rotation_deg": 0
+    },
+    {
+      "id": "Z03_E02",
+      "parent_zone": "Z03",
+      "name": "Galpon Ponedoras 02",
+      "description": "Galpón 02 de Z03. Medido individualmente.",
+      "color": "#00B4FF",
+      "bbox_pixels": {
+        "x1": 953,
+        "y1": 2445,
+        "x2": 1740,
+        "y2": 2563,
+        "w": 787,
+        "h": 118
+      },
+      "bbox_normalized": {
+        "x_min": 0.189,
+        "y_min": 0.5465,
+        "x_max": 0.3451,
+        "y_max": 0.5729,
+        "w": 0.1561,
+        "h": 0.0264
+      },
+      "element_type": "galpon_ponedoras",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "manual_crop_measurement",
+      "requires_chadi_validation": false,
+      "notes": "Bbox medido desde crop Z03 con herramienta measure_z03.html",
+      "rotation_deg": 0
+    },
+    {
+      "id": "Z03_E03",
+      "parent_zone": "Z03",
+      "name": "Galpon Ponedoras 3",
+      "description": "Galpón 03 de Z03. Medido individualmente.",
+      "color": "#00B4FF",
+      "bbox_pixels": {
+        "x1": 889,
+        "y1": 2560,
+        "x2": 1623,
+        "y2": 2833,
+        "w": 734,
+        "h": 273
+      },
+      "bbox_normalized": {
+        "x_min": 0.1763,
+        "y_min": 0.5722,
+        "x_max": 0.3219,
+        "y_max": 0.6332
+      },
+      "element_type": "galpon_ponedoras",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "phase3_pending_chadi_or_manual",
+      "requires_chadi_validation": false,
+      "notes": "Medir desde crop Z03 con atlas_editor.html o seguimiento manual."
+    },
+    {
+      "id": "Z03_E04",
+      "parent_zone": "Z03",
+      "name": "Galpon Ponedoras 04",
+      "description": "Galpón 04 de Z03. Medido individualmente.",
+      "color": "#00B4FF",
+      "bbox_pixels": {
+        "x1": 958,
+        "y1": 2829,
+        "x2": 1723,
+        "y2": 2967,
+        "w": 765,
+        "h": 138
+      },
+      "bbox_normalized": {
+        "x_min": 0.19,
+        "y_min": 0.6323,
+        "x_max": 0.3417,
+        "y_max": 0.6631,
+        "w": 0.1517,
+        "h": 0.0308
+      },
+      "element_type": "galpon_ponedoras",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "manual_crop_measurement",
+      "requires_chadi_validation": false,
+      "notes": "Bbox medido desde crop Z03 con herramienta measure_z03.html",
+      "rotation_deg": 0
+    },
+    {
+      "id": "Z03_E05",
+      "parent_zone": "Z03",
+      "name": "Galpon Ponedoras 05",
+      "description": "Galpón 05 de Z03. Medido individualmente.",
+      "color": "#00B4FF",
+      "bbox_pixels": {
+        "x1": 964,
+        "y1": 3073,
+        "x2": 1747,
+        "y2": 3274,
+        "w": 783,
+        "h": 201
+      },
+      "bbox_normalized": {
+        "x_min": 0.1912,
+        "y_min": 0.6869,
+        "x_max": 0.3465,
+        "y_max": 0.7318,
+        "w": 0.1553,
+        "h": 0.0449
+      },
+      "element_type": "galpon_ponedoras",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "manual_crop_measurement",
+      "requires_chadi_validation": false,
+      "notes": "Bbox medido desde crop Z03 con herramienta measure_z03.html",
+      "rotation_deg": 0
+    },
+    {
+      "id": "Z03_E06",
+      "parent_zone": "Z03",
+      "name": "Galpon Ponedoras 06",
+      "description": "Galpón 06 de Z03. Medido individualmente.",
+      "color": "#00B4FF",
+      "bbox_pixels": {
+        "x1": 963,
+        "y1": 3274,
+        "x2": 1752,
+        "y2": 3559,
+        "w": 789,
+        "h": 285
+      },
+      "bbox_normalized": {
+        "x_min": 0.1909,
+        "y_min": 0.7317,
+        "x_max": 0.3474,
+        "y_max": 0.7955,
+        "w": 0.1565,
+        "h": 0.0638
+      },
+      "element_type": "galpon_ponedoras",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "manual_crop_measurement",
+      "requires_chadi_validation": false,
+      "notes": "Bbox medido desde crop Z03 con herramienta measure_z03.html",
+      "rotation_deg": 0
+    },
+    {
+      "id": "Z03_E07",
+      "parent_zone": "Z03",
+      "name": "Galpon Ponedoras 07",
+      "description": "Galpón 07 de Z03. Medido individualmente.",
+      "color": "#00B4FF",
+      "bbox_pixels": {
+        "x1": 453,
+        "y1": 2062,
+        "x2": 695,
+        "y2": 2889,
+        "w": 242,
+        "h": 827
+      },
+      "bbox_normalized": {
+        "x_min": 0.0899,
+        "y_min": 0.4609,
+        "x_max": 0.1378,
+        "y_max": 0.6458,
+        "w": 0.0479,
+        "h": 0.1849
+      },
+      "element_type": "galpon_ponedoras",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "manual_crop_measurement",
+      "requires_chadi_validation": false,
+      "notes": "Bbox medido desde crop Z03 con herramienta measure_z03.html",
+      "rotation_deg": 45.4052
+    },
+    {
+      "id": "Z03_E08",
+      "parent_zone": "Z03",
+      "name": "Galpon Ponedoras 08",
+      "description": "Galpón 08 de Z03. Medido individualmente.",
+      "color": "#00B4FF",
+      "bbox_pixels": {
+        "x1": 475,
+        "y1": 2398,
+        "x2": 704,
+        "y2": 3248,
+        "w": 229,
+        "h": 850
+      },
+      "bbox_normalized": {
+        "x_min": 0.0943,
+        "y_min": 0.5359,
+        "x_max": 0.1397,
+        "y_max": 0.7259,
+        "w": 0.0454,
+        "h": 0.19
+      },
+      "element_type": "galpon_ponedoras",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "manual_crop_measurement",
+      "requires_chadi_validation": false,
+      "notes": "Bbox medido desde crop Z03 con herramienta measure_z03.html",
+      "rotation_deg": 45
+    },
+    {
+      "id": "Z03_E09",
+      "parent_zone": "Z03",
+      "name": "Galpon Ponedoras 09",
+      "description": "Galpón 09 de Z03. Medido individualmente.",
+      "color": "#00B4FF",
+      "bbox_pixels": {
+        "x1": 520,
+        "y1": 3078,
+        "x2": 755,
+        "y2": 3859,
+        "w": 234,
+        "h": 781
+      },
+      "bbox_normalized": {
+        "x_min": 0.1032,
+        "y_min": 0.688,
+        "x_max": 0.1497,
+        "y_max": 0.8626,
+        "w": 0.0465,
+        "h": 0.1746
+      },
+      "element_type": "galpon_ponedoras",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "manual_crop_measurement",
+      "requires_chadi_validation": false,
+      "notes": "Bbox medido desde crop Z03 con herramienta measure_z03.html",
+      "rotation_deg": 45.2067
+    },
+    {
+      "id": "Z03_E10",
+      "parent_zone": "Z03",
+      "name": "Galpon Ponedoras 10",
+      "description": "Galpón 10 de Z03. Medido individualmente.",
+      "color": "#00B4FF",
+      "bbox_pixels": {
+        "x1": 536,
+        "y1": 2784,
+        "x2": 728,
+        "y2": 3521,
+        "w": 191,
+        "h": 737
+      },
+      "bbox_normalized": {
+        "x_min": 0.1064,
+        "y_min": 0.6222,
+        "x_max": 0.1443,
+        "y_max": 0.787,
+        "w": 0.0379,
+        "h": 0.1648
+      },
+      "element_type": "galpon_ponedoras",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "manual_crop_measurement",
+      "requires_chadi_validation": false,
+      "notes": "Bbox medido desde crop Z03 con herramienta measure_z03.html",
+      "rotation_deg": 45
+    },
+    {
+      "id": "Z05_C01",
+      "parent_zone": "Z05",
+      "name": "Conexion Cinta Galpon 1",
+      "description": "Punto de conexion cinta-galpon en G1. CRITICO: no romper.",
+      "color": "#FFFFFF",
+      "bbox_pixels": null,
+      "bbox_normalized": null,
+      "element_type": "cinta_conexion",
+      "validation_status": "bbox_pending",
+      "confidence": "n/a",
+      "source": "phase3_pending_chadi",
+      "requires_chadi_validation": true,
+      "notes": "Chadi marco 5-6 puntos. Confirmar coords exactas en proxima sesion."
+    },
+    {
+      "id": "Z05_C02",
+      "parent_zone": "Z05",
+      "name": "Conexion Cinta Galpon 2",
+      "description": "Punto de conexion cinta-galpon en G2. CRITICO: no romper.",
+      "color": "#FFFFFF",
+      "bbox_pixels": null,
+      "bbox_normalized": null,
+      "element_type": "cinta_conexion",
+      "validation_status": "bbox_pending",
+      "confidence": "n/a",
+      "source": "phase3_pending_chadi",
+      "requires_chadi_validation": true,
+      "notes": "Chadi marco 5-6 puntos. Confirmar coords exactas en proxima sesion."
+    },
+    {
+      "id": "Z05_C03",
+      "parent_zone": "Z05",
+      "name": "Conexion Cinta Galpon 3",
+      "description": "Punto de conexion cinta-galpon en G3. CRITICO: no romper.",
+      "color": "#FFFFFF",
+      "bbox_pixels": null,
+      "bbox_normalized": null,
+      "element_type": "cinta_conexion",
+      "validation_status": "bbox_pending",
+      "confidence": "n/a",
+      "source": "phase3_pending_chadi",
+      "requires_chadi_validation": true,
+      "notes": "Chadi marco 5-6 puntos. Confirmar coords exactas en proxima sesion."
+    },
+    {
+      "id": "Z07_G_NEW_01",
+      "parent_zone": "Z07",
+      "name": "Galpon Recria Nuevo 1",
+      "description": "Futuro galpon recria, mismo tipo/tamano que Z01. Ubicacion pendiente Chadi.",
+      "color": "#00FF7F",
+      "bbox_pixels": {
+        "x1": 3840,
+        "y1": 226,
+        "x2": 4058,
+        "y2": 1445,
+        "w": 218,
+        "h": 1219
+      },
+      "bbox_normalized": {
+        "x": 0.7616,
+        "y": 0.0505,
+        "w": 0.0432,
+        "h": 0.2725
+      },
+      "element_type": "galpon_recria_futuro",
+      "validation_status": "planned_in_crop_editor",
+      "confidence": "medium",
+      "source": "manual_crop_measurement",
+      "requires_chadi_validation": true,
+      "notes": "Posicion planificada desde crop Z07 con measure_z07.html. Rotado 90° (vertical). Requiere validacion Chadi.",
+      "rotation_deg": 0,
+      "subtype": "galpon_recria_futuro",
+      "shape": "gable_box",
+      "height_m_estimated": 5,
+      "height_confidence": "medium",
+      "is_heuristic_height": false,
+      "attributes": {
+        "subtype": "galpon_recria_futuro",
+        "rotation_deg": 90,
+        "crop_bbox": {
+          "x1": 285,
+          "y1": 226,
+          "x2": 503,
+          "y2": 1445,
+          "w": 218,
+          "h": 1219
+        },
+        "center_crop": {
+          "cx": 394,
+          "cy": 836
+        }
+      }
+    },
+    {
+      "id": "Z07_G_NEW_02",
+      "parent_zone": "Z07",
+      "name": "Galpon Recria Nuevo 2",
+      "description": "Futuro galpon recria 2. Ubicacion pendiente.",
+      "color": "#00FF7F",
+      "bbox_pixels": {
+        "x1": 4141,
+        "y1": 222,
+        "x2": 4359,
+        "y2": 1441,
+        "w": 218,
+        "h": 1219
+      },
+      "bbox_normalized": {
+        "x": 0.8213,
+        "y": 0.0496,
+        "w": 0.0432,
+        "h": 0.2725
+      },
+      "element_type": "galpon_recria_futuro",
+      "validation_status": "planned_in_crop_editor",
+      "confidence": "medium",
+      "source": "manual_crop_measurement",
+      "requires_chadi_validation": true,
+      "notes": "Posicion planificada desde crop Z07 con measure_z07.html. Rotado 90° (vertical). Requiere validacion Chadi.",
+      "rotation_deg": 0,
+      "subtype": "galpon_recria_futuro",
+      "shape": "gable_box",
+      "height_m_estimated": 5,
+      "height_confidence": "medium",
+      "is_heuristic_height": false,
+      "attributes": {
+        "subtype": "galpon_recria_futuro",
+        "rotation_deg": 90,
+        "crop_bbox": {
+          "x1": 586,
+          "y1": 222,
+          "x2": 804,
+          "y2": 1441,
+          "w": 218,
+          "h": 1219
+        },
+        "center_crop": {
+          "cx": 695,
+          "cy": 831
+        }
+      }
+    },
+    {
+      "id": "Z07_SILO_BOLSAS",
+      "parent_zone": "Z07",
+      "name": "Silo Bolsas",
+      "description": "Futuro silo bolsas en terreno nuevo. Cantidad y posicion pendiente.",
+      "color": "#00FF7F",
+      "bbox_pixels": null,
+      "bbox_normalized": null,
+      "element_type": "silo_bolsas_futuro",
+      "validation_status": "planned_count_and_position_pending",
+      "confidence": "n/a",
+      "source": "phase3_pending_chadi",
+      "requires_chadi_validation": true,
+      "notes": null
+    },
+    {
+      "id": "Z03_E03_clasif",
+      "parent_zone": "Z03",
+      "name": "Galpon Ponedoras Clasificadora",
+      "description": "Galpón 03_clasif de Z03. Medido individualmente.",
+      "color": "#b3abb0",
+      "bbox_pixels": {
+        "x1": 913,
+        "y1": 2560,
+        "x2": 1506,
+        "y2": 2861,
+        "w": 593,
+        "h": 301
+      },
+      "bbox_normalized": {
+        "x_min": 0.1811,
+        "y_min": 0.5722,
+        "x_max": 0.2987,
+        "y_max": 0.6395,
+        "w": 0.1176,
+        "h": 0.0673
+      },
+      "element_type": "galpon_ponedoras",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "manual_crop_measurement",
+      "requires_chadi_validation": false,
+      "notes": "Bbox medido desde crop Z03 con herramienta measure_z03.html"
+    },
+    {
+      "id": "Z03_E11_taller",
+      "parent_zone": "Z03",
+      "name": "Galpon Ponedoras Taller",
+      "description": "Galpón 11_taller de Z03. Medido individualmente.",
+      "color": "#347c65",
+      "bbox_pixels": {
+        "x1": 750,
+        "y1": 3642,
+        "x2": 902,
+        "y2": 3855,
+        "w": 152,
+        "h": 213
+      },
+      "bbox_normalized": {
+        "x_min": 0.1488,
+        "y_min": 0.814,
+        "x_max": 0.1789,
+        "y_max": 0.8616,
+        "w": 0.0301,
+        "h": 0.0476
+      },
+      "element_type": "galpon_ponedoras",
+      "validation_status": "validated",
+      "confidence": "high",
+      "source": "manual_crop_measurement",
+      "requires_chadi_validation": false,
+      "notes": "Bbox medido desde crop Z03 con herramienta measure_z03.html"
+    }
+  ]
+}

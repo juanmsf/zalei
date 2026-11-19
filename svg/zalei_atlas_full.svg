@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" viewBox="0 0 5042 4474" width="5042" height="4474" id="zalei-atlas">
+  <desc>Zalei Agropecuaria - Atlas SVG. Source: atlas/zones.json + atlas/microzones.json</desc>
+
+  <g id="layer-satellite" inkscape:label="Satellite Base">
+    <rect id="satellite-bg" x="0" y="0" width="5042" height="4474" fill="#111111"/>
+  </g>
+  <g id="layer-zones" inkscape:label="Atlas Zones">
+    <rect id="Z01" x="96" y="133" width="1219" height="218" fill="rgba(255,215,0,0.2)" stroke="#FFD700" stroke-width="3"  data-zone="Z01" data-name="Recría Existente" data-certainty="high" data-status="validated" data-pending="false"><title>Z01: Recría Existente (x1)</title></rect>
+    <rect id="Z02" x="2182" y="544" width="1302" height="2097" fill="rgba(160,82,45,0.2)" stroke="#A0522D" stroke-width="3" stroke-dasharray="12,6" data-zone="Z02" data-name="Guano" data-certainty="medium" data-status="geometry_ok_subtype_pending" data-pending="true"><title>Z02: Guano [CHADI PENDING]</title></rect>
+    <rect id="Z03" x="234" y="2032" width="1581" height="1768" fill="rgba(0,180,255,0.2)" stroke="#00B4FF" stroke-width="3"  data-zone="Z03" data-name="Galpones De Ponedoras" data-certainty="high_count_medium_individual" data-status="count_validated_individual_bbox_pending" data-pending="false"><title>Z03: Galpones De Ponedoras (x10)</title></rect>
+    <rect id="Z04" x="2319" y="3309" width="160" height="432" fill="rgba(200,0,255,0.2)" stroke="#C800FF" stroke-width="3"  data-zone="Z04" data-name="Planta De Alimento" data-certainty="high" data-status="validated" data-pending="false"><title>Z04: Planta De Alimento (x1)</title></rect>
+    <rect id="Z05" x="779" y="2214" width="248" height="1072" fill="rgba(255,255,255,0.2)" stroke="#FFFFFF" stroke-width="3"  data-zone="Z05" data-name="Cintas Transportadoras" data-certainty="high_trajectory_medium_connections" data-status="trajectory_validated_connections_pending" data-pending="false"><title>Z05: Cintas Transportadoras</title></rect>
+    <rect id="Z06" x="2746" y="3206" width="706" height="432" fill="rgba(255,20,147,0.2)" stroke="#FF1493" stroke-width="3"  data-zone="Z06" data-name="Silos Secos" data-certainty="high" data-status="validated" data-pending="false"><title>Z06: Silos Secos (x7)</title></rect>
+    <rect id="Z07" x="3635" y="0" width="1407" height="4124" fill="rgba(0,255,127,0.2)" stroke="#00FF7F" stroke-width="3" stroke-dasharray="12,6" data-zone="Z07" data-name="Terreno Nuevo" data-certainty="high_perimeter_pending_content" data-status="perimeter_validated_content_pending" data-pending="true"><title>Z07: Terreno Nuevo [CHADI PENDING]</title></rect>
+    <rect id="Z08" x="3401" y="3820" width="234" height="278" fill="rgba(11,32,107,0.2)" stroke="#0b206b" stroke-width="3"  data-zone="Z08" data-name="Casa De Gerencia" data-certainty="high" data-status="validated" data-pending="false"><title>Z08: Casa De Gerencia (x1)</title></rect>
+    <rect id="Z09" x="399" y="3852" width="628" height="205" fill="rgba(106,91,25,0.2)" stroke="#6a5b19" stroke-width="3"  data-zone="Z09" data-name="Departamentos De Empleados" data-certainty="high" data-status="validated" data-pending="false"><title>Z09: Departamentos De Empleados</title></rect>
+    <rect id="Z10" x="889" y="2560" width="733" height="274" fill="rgba(179,171,176,0.2)" stroke="#b3abb0" stroke-width="3"  data-zone="Z10" data-name="Clasificadora" data-certainty="high" data-status="validated" data-pending="false"><title>Z10: Clasificadora (x1)</title></rect>
+    <rect id="Z11" x="1719" y="3944" width="238" height="159" fill="rgba(255,15,109,0.2)" stroke="#ff0f6d" stroke-width="3" stroke-dasharray="12,6" data-zone="Z11" data-name="Casa De Mantenimiento Sur" data-certainty="high" data-status="geometry_ok_name_conflict_pending" data-pending="true"><title>Z11: Casa De Mantenimiento Sur (x1) [CHADI PENDING]</title></rect>
+    <rect id="Z12" x="701" y="3623" width="257" height="237" fill="rgba(52,124,101,0.2)" stroke="#347c65" stroke-width="3"  data-zone="Z12" data-name="Taller" data-certainty="high" data-status="validated" data-pending="false"><title>Z12: Taller (x1)</title></rect>
+    <rect id="Z13" x="1554" y="364" width="390" height="205" fill="rgba(40,70,149,0.2)" stroke="#284695" stroke-width="3" stroke-dasharray="12,6" data-zone="Z13" data-name="Casa De Mantenimiento Norte" data-certainty="high" data-status="geometry_ok_name_conflict_pending" data-pending="true"><title>Z13: Casa De Mantenimiento Norte (x1) [CHADI PENDING]</title></rect>
+    <rect id="Z14" x="2466" y="3431" width="133" height="287" fill="rgba(242,61,215,0.2)" stroke="#f23dd7" stroke-width="3"  data-zone="Z14" data-name="Aceitera" data-certainty="high" data-status="validated" data-pending="false"><title>Z14: Aceitera (x1)</title></rect>
+    <rect id="Z15" x="2663" y="3096" width="92" height="205" fill="rgba(203,143,141,0.2)" stroke="#cb8f8d" stroke-width="3"  data-zone="Z15" data-name="Silos Húmedos" data-certainty="high" data-status="validated" data-pending="false"><title>Z15: Silos Húmedos</title></rect>
+    <rect id="Z16" x="2448" y="3201" width="206" height="269" fill="rgba(96,16,208,0.2)" stroke="#6010d0" stroke-width="3"  data-zone="Z16" data-name="Silos De Almacenamiento Consumo Y Expeller" data-certainty="high" data-status="validated" data-pending="false"><title>Z16: Silos De Almacenamiento Consumo Y Expeller</title></rect>
+    <rect id="Z17" x="2361" y="3036" width="60" height="209" fill="rgba(122,91,19,0.2)" stroke="#7a5b13" stroke-width="3"  data-zone="Z17" data-name="Planta De Descarga De Granos" data-certainty="high" data-status="validated" data-pending="false"><title>Z17: Planta De Descarga De Granos (x1)</title></rect>
+    <rect id="Z18" x="2663" y="3247" width="206" height="237" fill="rgba(254,41,72,0.2)" stroke="#fe2948" stroke-width="3" stroke-dasharray="12,6" data-zone="Z18" data-name="Secado Y Limpieza De Granos" data-certainty="low" data-status="requires_chadi_validation" data-pending="true"><title>Z18: Secado Y Limpieza De Granos (x1) [CHADI PENDING]</title></rect>
+    <rect id="Z19" x="2482" y="3676" width="98" height="40" fill="rgba(230,105,129,0.2)" stroke="#e66981" stroke-width="3"  data-zone="Z19" data-name="Tanques De Aceite" data-certainty="high" data-status="validated" data-pending="false"><title>Z19: Tanques De Aceite (x3)</title></rect>
+    <rect id="Z20" x="2251" y="3188" width="183" height="260" fill="rgba(175,27,223,0.2)" stroke="#af1bdf" stroke-width="3"  data-zone="Z20" data-name="Descarga De Alimento" data-certainty="high" data-status="validated" data-pending="false"><title>Z20: Descarga De Alimento (x1)</title></rect>
+    <rect id="Z21" x="2067" y="3183" width="124" height="356" fill="rgba(179,155,189,0.2)" stroke="#b39bbd" stroke-width="3"  data-zone="Z21" data-name="Oficinas" data-certainty="high" data-status="validated" data-pending="false"><title>Z21: Oficinas (x1)</title></rect>
+    <rect id="Z22" x="1998" y="3188" width="73" height="356" fill="rgba(76,63,172,0.2)" stroke="#4c3fac" stroke-width="3"  data-zone="Z22" data-name="Balanza De Camiones" data-certainty="high" data-status="validated" data-pending="false"><title>Z22: Balanza De Camiones (x1)</title></rect>
+  </g>
+  <g id="layer-microzones" inkscape:label="Atlas Microzones">
+    <rect id="Z06_S01" x="2752" y="3215" width="138" height="138" fill="rgba(255,20,147,0.45)" stroke="#FF1493" stroke-width="1.5"  data-microzone="Z06_S01" data-parent="Z06" data-name="Silo Seco Norte 1" data-status="validated" data-confidence="high" data-pending="false"><title>Z06_S01: Silo Seco Norte 1 | parent=Z06 | validated (high)</title></rect>
+    <rect id="Z06_S02" x="2905" y="3214" width="138" height="138" fill="rgba(255,20,147,0.45)" stroke="#FF1493" stroke-width="1.5"  data-microzone="Z06_S02" data-parent="Z06" data-name="Silo Seco Norte 2" data-status="validated" data-confidence="high" data-pending="false"><title>Z06_S02: Silo Seco Norte 2 | parent=Z06 | validated (high)</title></rect>
+    <rect id="Z06_S03" x="3060" y="3220" width="130" height="130" fill="rgba(255,20,147,0.45)" stroke="#FF1493" stroke-width="1.5"  data-microzone="Z06_S03" data-parent="Z06" data-name="Silo Seco Norte 3" data-status="validated" data-confidence="high" data-pending="false"><title>Z06_S03: Silo Seco Norte 3 | parent=Z06 | validated (high)</title></rect>
+    <rect id="Z06_S04" x="2754" y="3392" width="138" height="138" fill="rgba(255,20,147,0.45)" stroke="#FF1493" stroke-width="1.5"  data-microzone="Z06_S04" data-parent="Z06" data-name="Silo Seco Sur 1" data-status="validated" data-confidence="high" data-pending="false"><title>Z06_S04: Silo Seco Sur 1 | parent=Z06 | validated (high)</title></rect>
+    <rect id="Z06_S05" x="2906" y="3391" width="138" height="138" fill="rgba(255,20,147,0.45)" stroke="#FF1493" stroke-width="1.5"  data-microzone="Z06_S05" data-parent="Z06" data-name="Silo Seco Sur 2" data-status="validated" data-confidence="high" data-pending="false"><title>Z06_S05: Silo Seco Sur 2 | parent=Z06 | validated (high)</title></rect>
+    <rect id="Z06_S06" x="3060" y="3389" width="138" height="138" fill="rgba(255,20,147,0.45)" stroke="#FF1493" stroke-width="1.5"  data-microzone="Z06_S06" data-parent="Z06" data-name="Silo Seco Sur 3" data-status="validated" data-confidence="high" data-pending="false"><title>Z06_S06: Silo Seco Sur 3 | parent=Z06 | validated (high)</title></rect>
+    <rect id="Z06_S07" x="3211" y="3388" width="138" height="138" fill="rgba(255,20,147,0.45)" stroke="#FF1493" stroke-width="1.5"  data-microzone="Z06_S07" data-parent="Z06" data-name="Silo Seco Sur 4" data-status="validated" data-confidence="high" data-pending="false"><title>Z06_S07: Silo Seco Sur 4 | parent=Z06 | validated (high)</title></rect>
+    <rect id="Z19_T01" x="2482" y="3678" width="30" height="32" fill="rgba(230,105,129,0.45)" stroke="#e66981" stroke-width="1.5"  data-microzone="Z19_T01" data-parent="Z19" data-name="Tanque Aceite 1" data-status="validated" data-confidence="high" data-pending="false"><title>Z19_T01: Tanque Aceite 1 | parent=Z19 | validated (high)</title></rect>
+    <rect id="Z19_T02" x="2517" y="3676" width="30" height="30" fill="rgba(230,105,129,0.45)" stroke="#e66981" stroke-width="1.5"  data-microzone="Z19_T02" data-parent="Z19" data-name="Tanque Aceite 2" data-status="validated" data-confidence="high" data-pending="false"><title>Z19_T02: Tanque Aceite 2 | parent=Z19 | validated (high)</title></rect>
+    <rect id="Z19_T03" x="2550" y="3685" width="30" height="30" fill="rgba(230,105,129,0.45)" stroke="#e66981" stroke-width="1.5"  data-microzone="Z19_T03" data-parent="Z19" data-name="Tanque Aceite 3" data-status="validated" data-confidence="high" data-pending="false"><title>Z19_T03: Tanque Aceite 3 | parent=Z19 | validated (high)</title></rect>
+    <rect id="Z15_H01" x="2625" y="3076" width="78" height="78" fill="rgba(203,143,141,0.3)" stroke="#cb8f8d" stroke-width="1.5"  data-microzone="Z15_H01" data-parent="Z15" data-name="Silo Humedo 1" data-status="probable" data-confidence="medium" data-pending="true"><title>Z15_H01: Silo Humedo 1 | parent=Z15 | probable (medium) [CHADI PENDING]</title></rect>
+    <rect id="Z15_H02" x="2679" y="3201" width="78" height="78" fill="rgba(203,143,141,0.3)" stroke="#cb8f8d" stroke-width="1.5"  data-microzone="Z15_H02" data-parent="Z15" data-name="Silo Humedo 2" data-status="probable" data-confidence="medium" data-pending="true"><title>Z15_H02: Silo Humedo 2 | parent=Z15 | probable (medium) [CHADI PENDING]</title></rect>
+    <rect id="Z15_H03" x="2686" y="3257" width="78" height="78" fill="rgba(203,143,141,0.3)" stroke="#cb8f8d" stroke-width="1.5"  data-microzone="Z15_H03" data-parent="Z15" data-name="Silo Humedo 3" data-status="probable" data-confidence="medium" data-pending="true"><title>Z15_H03: Silo Humedo 3 | parent=Z15 | probable (medium) [CHADI PENDING]</title></rect>
+    <rect id="Z16_E01" x="2473" y="3194" width="62" height="62" fill="rgba(96,16,208,0.3)" stroke="#6010d0" stroke-width="1.5"  data-microzone="Z16_E01" data-parent="Z16" data-name="Silo Consumo/Expeller 1" data-status="probable" data-confidence="low" data-pending="true"><title>Z16_E01: Silo Consumo/Expeller 1 | parent=Z16 | probable (low) [CHADI PENDING]</title></rect>
+    <rect id="Z16_E02" x="2444" y="3230" width="62" height="62" fill="rgba(96,16,208,0.3)" stroke="#6010d0" stroke-width="1.5"  data-microzone="Z16_E02" data-parent="Z16" data-name="Silo Consumo/Expeller 2" data-status="probable" data-confidence="low" data-pending="true"><title>Z16_E02: Silo Consumo/Expeller 2 | parent=Z16 | probable (low) [CHADI PENDING]</title></rect>
+    <rect id="Z16_E03" x="2465" y="3259" width="62" height="62" fill="rgba(96,16,208,0.3)" stroke="#6010d0" stroke-width="1.5"  data-microzone="Z16_E03" data-parent="Z16" data-name="Silo Consumo/Expeller 3" data-status="probable" data-confidence="low" data-pending="true"><title>Z16_E03: Silo Consumo/Expeller 3 | parent=Z16 | probable (low) [CHADI PENDING]</title></rect>
+    <rect id="Z16_E04" x="2468" y="3423" width="62" height="62" fill="rgba(96,16,208,0.3)" stroke="#6010d0" stroke-width="1.5"  data-microzone="Z16_E04" data-parent="Z16" data-name="Silo Consumo/Expeller 4" data-status="probable" data-confidence="low" data-pending="true"><title>Z16_E04: Silo Consumo/Expeller 4 | parent=Z16 | probable (low) [CHADI PENDING]</title></rect>
+    <rect id="Z18A_Conexion_Tubular" x="2510" y="3210" width="360" height="160" fill="rgba(254,138,72,0.18)" stroke="#fe8a48" stroke-width="1.5" stroke-dasharray="6,4" data-microzone="Z18A_Conexion_Tubular" data-parent="Z18" data-name="Conexion Tubular (Pasarela Superior)" data-status="ambiguous" data-confidence="low" data-pending="true"><title>Z18A_Conexion_Tubular: Conexion Tubular (Pasarela Superior) | parent=Z18 | ambiguous (low) [CHADI PENDING]</title></rect>
+    <rect id="Z18B_Secado_Y_Limpieza" x="2663" y="3377" width="206" height="107" fill="none" stroke="#fe2948" stroke-width="1.5" stroke-dasharray="3,3" data-microzone="Z18B_Secado_Y_Limpieza" data-parent="Z18" data-name="Secado Y Limpieza De Granos (Estructura Inferior)" data-status="requires_chadi_validation" data-confidence="low" data-pending="true"><title>Z18B_Secado_Y_Limpieza: Secado Y Limpieza De Granos (Estructura Inferior) | parent=Z18 | requires_chadi_validation (low) [CHADI PENDING]</title></rect>
+    <rect id="Z04_E01" x="2319" y="3309" width="161" height="431" fill="rgba(200,0,255,0.45)" stroke="#C800FF" stroke-width="1.5"  data-microzone="Z04_E01" data-parent="Z04" data-name="Planta De Alimento (Estructura Principal)" data-status="validated" data-confidence="high" data-pending="false"><title>Z04_E01: Planta De Alimento (Estructura Principal) | parent=Z04 | validated (high)</title></rect>
+    <rect id="Z14_E01" x="2466" y="3431" width="133" height="287" fill="rgba(242,61,215,0.45)" stroke="#f23dd7" stroke-width="1.5"  data-microzone="Z14_E01" data-parent="Z14" data-name="Aceitera (Estructura Principal)" data-status="validated" data-confidence="high" data-pending="false"><title>Z14_E01: Aceitera (Estructura Principal) | parent=Z14 | validated (high)</title></rect>
+    <rect id="Z17_D01" x="2361" y="3036" width="59" height="210" fill="rgba(122,91,19,0.45)" stroke="#7a5b13" stroke-width="1.5"  data-microzone="Z17_D01" data-parent="Z17" data-name="Planta De Descarga De Granos (Estructura Principal)" data-status="validated" data-confidence="high" data-pending="false"><title>Z17_D01: Planta De Descarga De Granos (Estructura Principal) | parent=Z17 | validated (high)</title></rect>
+    <rect id="Z20_E01" x="2251" y="3188" width="183" height="259" fill="rgba(175,27,223,0.45)" stroke="#af1bdf" stroke-width="1.5"  data-microzone="Z20_E01" data-parent="Z20" data-name="Descarga De Alimento (Estructura Principal)" data-status="validated" data-confidence="high" data-pending="false"><title>Z20_E01: Descarga De Alimento (Estructura Principal) | parent=Z20 | validated (high)</title></rect>
+    <rect id="Z21_E01" x="2067" y="3183" width="124" height="356" fill="rgba(179,155,189,0.45)" stroke="#b39bbd" stroke-width="1.5"  data-microzone="Z21_E01" data-parent="Z21" data-name="Oficinas (Estructura Principal)" data-status="validated" data-confidence="high" data-pending="false"><title>Z21_E01: Oficinas (Estructura Principal) | parent=Z21 | validated (high)</title></rect>
+    <rect id="Z22_E01" x="1998" y="3188" width="74" height="356" fill="rgba(76,63,172,0.45)" stroke="#4c3fac" stroke-width="1.5"  data-microzone="Z22_E01" data-parent="Z22" data-name="Balanza De Camiones (Estructura Principal)" data-status="validated" data-confidence="high" data-pending="false"><title>Z22_E01: Balanza De Camiones (Estructura Principal) | parent=Z22 | validated (high)</title></rect>
+    <rect id="Z03_E01" x="955" y="2157" width="789" height="176" fill="none" stroke="#00B4FF" stroke-width="1.5" stroke-dasharray="3,3" data-microzone="Z03_E01" data-parent="Z03" data-name="Galpon Ponedoras 01" data-status="measured_from_crop" data-confidence="high" data-pending="true"><title>Z03_E01: Galpon Ponedoras 01 | parent=Z03 | measured_from_crop (high) [CHADI PENDING]</title></rect>
+    <rect id="Z03_E02" x="953" y="2445" width="787" height="118" fill="none" stroke="#00B4FF" stroke-width="1.5" stroke-dasharray="3,3" data-microzone="Z03_E02" data-parent="Z03" data-name="Galpon Ponedoras 02" data-status="measured_from_crop" data-confidence="high" data-pending="true"><title>Z03_E02: Galpon Ponedoras 02 | parent=Z03 | measured_from_crop (high) [CHADI PENDING]</title></rect>
+    <rect id="Z03_E03" x="889" y="2560" width="734" height="273" fill="none" stroke="#00B4FF" stroke-width="1.5" stroke-dasharray="3,3" data-microzone="Z03_E03" data-parent="Z03" data-name="Galpon Ponedoras 3" data-status="validated_by_chadi_and_juan" data-confidence="n/a" data-pending="false"><title>Z03_E03: Galpon Ponedoras 3 | parent=Z03 | validated_by_chadi_and_juan (n/a)</title></rect>
+    <rect id="Z03_E04" x="966" y="2826" width="765" height="138" fill="none" stroke="#00B4FF" stroke-width="1.5" stroke-dasharray="3,3" data-microzone="Z03_E04" data-parent="Z03" data-name="Galpon Ponedoras 04" data-status="measured_from_crop" data-confidence="high" data-pending="true"><title>Z03_E04: Galpon Ponedoras 04 | parent=Z03 | measured_from_crop (high) [CHADI PENDING]</title></rect>
+    <rect id="Z03_E05" x="964" y="3073" width="783" height="201" fill="none" stroke="#00B4FF" stroke-width="1.5" stroke-dasharray="3,3" data-microzone="Z03_E05" data-parent="Z03" data-name="Galpon Ponedoras 05" data-status="measured_from_crop" data-confidence="high" data-pending="true"><title>Z03_E05: Galpon Ponedoras 05 | parent=Z03 | measured_from_crop (high) [CHADI PENDING]</title></rect>
+    <rect id="Z03_E06" x="964" y="3285" width="789" height="234" fill="none" stroke="#00B4FF" stroke-width="1.5" stroke-dasharray="3,3" data-microzone="Z03_E06" data-parent="Z03" data-name="Galpon Ponedoras 06" data-status="measured_from_crop" data-confidence="high" data-pending="true"><title>Z03_E06: Galpon Ponedoras 06 | parent=Z03 | measured_from_crop (high) [CHADI PENDING]</title></rect>
+    <rect id="Z03_E07" x="212" y="2111" width="726" height="726" fill="none" stroke="#00B4FF" stroke-width="1.5" stroke-dasharray="3,3" data-microzone="Z03_E07" data-parent="Z03" data-name="Galpon Ponedoras 07" data-status="measured_from_crop" data-confidence="high" data-pending="true"><title>Z03_E07: Galpon Ponedoras 07 | parent=Z03 | measured_from_crop (high) [CHADI PENDING]</title></rect>
+    <rect id="Z03_E08" x="207" y="2440" width="756" height="756" fill="none" stroke="#00B4FF" stroke-width="1.5" stroke-dasharray="3,3" data-microzone="Z03_E08" data-parent="Z03" data-name="Galpon Ponedoras 08" data-status="measured_from_crop" data-confidence="high" data-pending="true"><title>Z03_E08: Galpon Ponedoras 08 | parent=Z03 | measured_from_crop (high) [CHADI PENDING]</title></rect>
+    <rect id="Z03_E09" x="233" y="2719" width="747" height="746" fill="none" stroke="#00B4FF" stroke-width="1.5" stroke-dasharray="3,3" data-microzone="Z03_E09" data-parent="Z03" data-name="Galpon Ponedoras 09" data-status="measured_from_crop" data-confidence="high" data-pending="true"><title>Z03_E09: Galpon Ponedoras 09 | parent=Z03 | measured_from_crop (high) [CHADI PENDING]</title></rect>
+    <rect id="Z03_E10" x="292" y="3120" width="704" height="704" fill="none" stroke="#00B4FF" stroke-width="1.5" stroke-dasharray="3,3" data-microzone="Z03_E10" data-parent="Z03" data-name="Galpon Ponedoras 10" data-status="measured_from_crop" data-confidence="high" data-pending="true"><title>Z03_E10: Galpon Ponedoras 10 | parent=Z03 | measured_from_crop (high) [CHADI PENDING]</title></rect>
+    <rect id="Z07_G_NEW_01" x="3840" y="226" width="218" height="1219" fill="none" stroke="#00FF7F" stroke-width="1.5" stroke-dasharray="3,3" data-microzone="Z07_G_NEW_01" data-parent="Z07" data-name="Galpon Recria Nuevo 1" data-status="planned_in_crop_editor" data-confidence="medium" data-pending="true"><title>Z07_G_NEW_01: Galpon Recria Nuevo 1 | parent=Z07 | planned_in_crop_editor (medium) [CHADI PENDING]</title></rect>
+    <rect id="Z07_G_NEW_02" x="4141" y="222" width="218" height="1219" fill="none" stroke="#00FF7F" stroke-width="1.5" stroke-dasharray="3,3" data-microzone="Z07_G_NEW_02" data-parent="Z07" data-name="Galpon Recria Nuevo 2" data-status="planned_in_crop_editor" data-confidence="medium" data-pending="true"><title>Z07_G_NEW_02: Galpon Recria Nuevo 2 | parent=Z07 | planned_in_crop_editor (medium) [CHADI PENDING]</title></rect>
+    <rect id="Z03_E03_clasif" x="913" y="2560" width="593" height="301" fill="none" stroke="#b3abb0" stroke-width="1.5" stroke-dasharray="3,3" data-microzone="Z03_E03_clasif" data-parent="Z03" data-name="Galpon Ponedoras Clasificadora" data-status="measured_from_crop" data-confidence="high" data-pending="true"><title>Z03_E03_clasif: Galpon Ponedoras Clasificadora | parent=Z03 | measured_from_crop (high) [CHADI PENDING]</title></rect>
+    <rect id="Z03_E11_taller" x="750" y="3642" width="152" height="213" fill="none" stroke="#347c65" stroke-width="1.5" stroke-dasharray="3,3" data-microzone="Z03_E11_taller" data-parent="Z03" data-name="Galpon Ponedoras Taller" data-status="measured_from_crop" data-confidence="high" data-pending="true"><title>Z03_E11_taller: Galpon Ponedoras Taller | parent=Z03 | measured_from_crop (high) [CHADI PENDING]</title></rect>
+  </g>
+  <g id="layer-labels" inkscape:label="Zone Labels">
+    <g id="label-Z01" class="zone-label" data-zone="Z01">
+      <rect x="472" y="213" width="465" height="58" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="705" y="259" text-anchor="middle" font-family="Arial,sans-serif" font-size="48" font-weight="bold" fill="#FFD700">Recría Existente</text>
+      <text x="705" y="298" text-anchor="middle" font-family="Arial,sans-serif" font-size="33" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z02" class="zone-label" data-zone="Z02">
+      <rect x="2753" y="1563" width="159" height="58" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2833" y="1609" text-anchor="middle" font-family="Arial,sans-serif" font-size="48" font-weight="bold" fill="#A0522D">Guano</text>
+      <text x="2833" y="1544" text-anchor="middle" font-family="Arial,sans-serif" font-size="33" fill="#FFAA00">[CHADI PENDING]</text>
+    </g>
+    <g id="label-Z03" class="zone-label" data-zone="Z03">
+      <rect x="722" y="2887" width="605" height="58" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="1024" y="2933" text-anchor="middle" font-family="Arial,sans-serif" font-size="48" font-weight="bold" fill="#00B4FF">Galpones De Ponedoras</text>
+      <text x="1024" y="2972" text-anchor="middle" font-family="Arial,sans-serif" font-size="33" fill="#CCCCCC">x10</text>
+    </g>
+    <g id="label-Z04" class="zone-label" data-zone="Z04">
+      <rect x="2295" y="3511" width="208" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2399" y="3531" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#C800FF">Planta De Alimento</text>
+      <text x="2399" y="3551" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z05" class="zone-label" data-zone="Z05">
+      <rect x="778" y="2736" width="250" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="903" y="2756" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF">Cintas Transportadoras</text>
+    </g>
+    <g id="label-Z06" class="zone-label" data-zone="Z06">
+      <rect x="2945" y="3394" width="307" height="55" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="3099" y="3438" text-anchor="middle" font-family="Arial,sans-serif" font-size="45" font-weight="bold" fill="#FF1493">Silos Secos</text>
+      <text x="3099" y="3475" text-anchor="middle" font-family="Arial,sans-serif" font-size="31" fill="#CCCCCC">x7</text>
+    </g>
+    <g id="label-Z07" class="zone-label" data-zone="Z07">
+      <rect x="4147" y="2033" width="382" height="58" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="4338" y="2079" text-anchor="middle" font-family="Arial,sans-serif" font-size="48" font-weight="bold" fill="#00FF7F">Terreno Nuevo</text>
+      <text x="4338" y="2014" text-anchor="middle" font-family="Arial,sans-serif" font-size="33" fill="#FFAA00">[CHADI PENDING]</text>
+    </g>
+    <g id="label-Z08" class="zone-label" data-zone="Z08">
+      <rect x="3424" y="3945" width="187" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="3518" y="3965" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#0b206b">Casa De Gerencia</text>
+      <text x="3518" y="3985" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z09" class="zone-label" data-zone="Z09">
+      <rect x="401" y="3929" width="623" height="50" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="713" y="3968" text-anchor="middle" font-family="Arial,sans-serif" font-size="40" font-weight="bold" fill="#6a5b19">Departamentos De Empleados</text>
+    </g>
+    <g id="label-Z10" class="zone-label" data-zone="Z10">
+      <rect x="1068" y="2668" width="374" height="57" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="1255" y="2713" text-anchor="middle" font-family="Arial,sans-serif" font-size="47" font-weight="bold" fill="#b3abb0">Clasificadora</text>
+      <text x="1255" y="2752" text-anchor="middle" font-family="Arial,sans-serif" font-size="32" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z11" class="zone-label" data-zone="Z11">
+      <rect x="1698" y="4009" width="281" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="1838" y="4029" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#ff0f6d">Casa De Mantenimiento Sur</text>
+      <text x="1838" y="4049" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+      <text x="1838" y="4005" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#FFAA00">[CHADI PENDING]</text>
+    </g>
+    <g id="label-Z12" class="zone-label" data-zone="Z12">
+      <rect x="788" y="3727" width="83" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="829" y="3747" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#347c65">Taller</text>
+      <text x="829" y="3767" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z13" class="zone-label" data-zone="Z13">
+      <rect x="1543" y="448" width="412" height="35" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="1749" y="475" text-anchor="middle" font-family="Arial,sans-serif" font-size="25" font-weight="bold" fill="#284695">Casa De Mantenimiento Norte</text>
+      <text x="1749" y="499" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#CCCCCC">x1</text>
+      <text x="1749" y="441" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#FFAA00">[CHADI PENDING]</text>
+    </g>
+    <g id="label-Z14" class="zone-label" data-zone="Z14">
+      <rect x="2480" y="3560" width="104" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2532" y="3580" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#f23dd7">Aceitera</text>
+      <text x="2532" y="3600" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z15" class="zone-label" data-zone="Z15">
+      <rect x="2631" y="3184" width="156" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2709" y="3204" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#cb8f8d">Silos Húmedos</text>
+    </g>
+    <g id="label-Z16" class="zone-label" data-zone="Z16">
+      <rect x="2322" y="3321" width="458" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2551" y="3341" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#6010d0">Silos De Almacenamiento Consumo Y Expeller</text>
+    </g>
+    <g id="label-Z17" class="zone-label" data-zone="Z17">
+      <rect x="2235" y="3126" width="312" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2391" y="3146" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#7a5b13">Planta De Descarga De Granos</text>
+      <text x="2391" y="3166" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z18" class="zone-label" data-zone="Z18">
+      <rect x="2615" y="3351" width="302" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2766" y="3371" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#fe2948">Secado Y Limpieza De Granos</text>
+      <text x="2766" y="3391" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+      <text x="2766" y="3347" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#FFAA00">[CHADI PENDING]</text>
+    </g>
+    <g id="label-Z19" class="zone-label" data-zone="Z19">
+      <rect x="2432" y="3682" width="197" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2531" y="3702" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#e66981">Tanques De Aceite</text>
+      <text x="2531" y="3722" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x3</text>
+    </g>
+    <g id="label-Z20" class="zone-label" data-zone="Z20">
+      <rect x="2228" y="3304" width="229" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2342" y="3324" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#af1bdf">Descarga De Alimento</text>
+      <text x="2342" y="3344" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z21" class="zone-label" data-zone="Z21">
+      <rect x="2077" y="3347" width="104" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2129" y="3367" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#b39bbd">Oficinas</text>
+      <text x="2129" y="3387" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z22" class="zone-label" data-zone="Z22">
+      <rect x="1925" y="3352" width="218" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2034" y="3372" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#4c3fac">Balanza De Camiones</text>
+      <text x="2034" y="3392" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+    </g>
+  </g>
+  <g id="layer-microzone-labels" inkscape:label="Atlas Microzone Labels">
+    <g id="mzlabel-Z06_S01" data-microzone="Z06_S01">
+      <text x="2821" y="3289" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">S01</text>
+    </g>
+    <g id="mzlabel-Z06_S02" data-microzone="Z06_S02">
+      <text x="2974" y="3288" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">S02</text>
+    </g>
+    <g id="mzlabel-Z06_S03" data-microzone="Z06_S03">
+      <text x="3125" y="3290" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">S03</text>
+    </g>
+    <g id="mzlabel-Z06_S04" data-microzone="Z06_S04">
+      <text x="2823" y="3466" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">S04</text>
+    </g>
+    <g id="mzlabel-Z06_S05" data-microzone="Z06_S05">
+      <text x="2975" y="3465" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">S05</text>
+    </g>
+    <g id="mzlabel-Z06_S06" data-microzone="Z06_S06">
+      <text x="3129" y="3463" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">S06</text>
+    </g>
+    <g id="mzlabel-Z06_S07" data-microzone="Z06_S07">
+      <text x="3280" y="3462" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">S07</text>
+    </g>
+    <g id="mzlabel-Z19_T01" data-microzone="Z19_T01">
+      <text x="2497" y="3699" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">T01</text>
+    </g>
+    <g id="mzlabel-Z19_T02" data-microzone="Z19_T02">
+      <text x="2532" y="3696" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">T02</text>
+    </g>
+    <g id="mzlabel-Z19_T03" data-microzone="Z19_T03">
+      <text x="2565" y="3705" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">T03</text>
+    </g>
+    <g id="mzlabel-Z15_H01" data-microzone="Z15_H01">
+      <text x="2664" y="3120" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">H01</text>
+    </g>
+    <g id="mzlabel-Z15_H02" data-microzone="Z15_H02">
+      <text x="2718" y="3245" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">H02</text>
+    </g>
+    <g id="mzlabel-Z15_H03" data-microzone="Z15_H03">
+      <text x="2725" y="3301" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">H03</text>
+    </g>
+    <g id="mzlabel-Z16_E01" data-microzone="Z16_E01">
+      <text x="2504" y="3230" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E01</text>
+    </g>
+    <g id="mzlabel-Z16_E02" data-microzone="Z16_E02">
+      <text x="2475" y="3266" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E02</text>
+    </g>
+    <g id="mzlabel-Z16_E03" data-microzone="Z16_E03">
+      <text x="2496" y="3295" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E03</text>
+    </g>
+    <g id="mzlabel-Z16_E04" data-microzone="Z16_E04">
+      <text x="2499" y="3459" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E04</text>
+    </g>
+    <g id="mzlabel-Z18A_Conexion_Tubular" data-microzone="Z18A_Conexion_Tubular">
+      <text x="2690" y="3295" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">Conexion_Tubular</text>
+    </g>
+    <g id="mzlabel-Z18B_Secado_Y_Limpieza" data-microzone="Z18B_Secado_Y_Limpieza">
+      <text x="2766" y="3435" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">Secado_Y_Limpieza</text>
+    </g>
+    <g id="mzlabel-Z04_E01" data-microzone="Z04_E01">
+      <text x="2399" y="3529" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E01</text>
+    </g>
+    <g id="mzlabel-Z14_E01" data-microzone="Z14_E01">
+      <text x="2532" y="3579" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E01</text>
+    </g>
+    <g id="mzlabel-Z17_D01" data-microzone="Z17_D01">
+      <text x="2390" y="3146" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">D01</text>
+    </g>
+    <g id="mzlabel-Z20_E01" data-microzone="Z20_E01">
+      <text x="2342" y="3322" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E01</text>
+    </g>
+    <g id="mzlabel-Z21_E01" data-microzone="Z21_E01">
+      <text x="2129" y="3366" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E01</text>
+    </g>
+    <g id="mzlabel-Z22_E01" data-microzone="Z22_E01">
+      <text x="2035" y="3371" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E01</text>
+    </g>
+    <g id="mzlabel-Z03_E01" data-microzone="Z03_E01">
+      <text x="1349" y="2250" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E01</text>
+    </g>
+    <g id="mzlabel-Z03_E02" data-microzone="Z03_E02">
+      <text x="1346" y="2509" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E02</text>
+    </g>
+    <g id="mzlabel-Z03_E03" data-microzone="Z03_E03">
+      <text x="1256" y="2701" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E03</text>
+    </g>
+    <g id="mzlabel-Z03_E04" data-microzone="Z03_E04">
+      <text x="1348" y="2900" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E04</text>
+    </g>
+    <g id="mzlabel-Z03_E05" data-microzone="Z03_E05">
+      <text x="1355" y="3178" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E05</text>
+    </g>
+    <g id="mzlabel-Z03_E06" data-microzone="Z03_E06">
+      <text x="1358" y="3407" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E06</text>
+    </g>
+    <g id="mzlabel-Z03_E07" data-microzone="Z03_E07">
+      <text x="575" y="2479" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E07</text>
+    </g>
+    <g id="mzlabel-Z03_E08" data-microzone="Z03_E08">
+      <text x="585" y="2823" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E08</text>
+    </g>
+    <g id="mzlabel-Z03_E09" data-microzone="Z03_E09">
+      <text x="606" y="3097" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E09</text>
+    </g>
+    <g id="mzlabel-Z03_E10" data-microzone="Z03_E10">
+      <text x="644" y="3477" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E10</text>
+    </g>
+    <g id="mzlabel-Z07_G_NEW_01" data-microzone="Z07_G_NEW_01">
+      <text x="3949" y="840" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">G_NEW_01</text>
+    </g>
+    <g id="mzlabel-Z07_G_NEW_02" data-microzone="Z07_G_NEW_02">
+      <text x="4250" y="836" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">G_NEW_02</text>
+    </g>
+    <g id="mzlabel-Z03_E03_clasif" data-microzone="Z03_E03_clasif">
+      <text x="1209" y="2715" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E03_clasif</text>
+    </g>
+    <g id="mzlabel-Z03_E11_taller" data-microzone="Z03_E11_taller">
+      <text x="826" y="3753" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E11_taller</text>
+    </g>
+  </g>
+  <g id="layer-legend" inkscape:label="Legend">
+    <rect x="20" y="20" width="20" height="16" fill="#FFD700" stroke="#FFD700" stroke-width="1"/>
+    <text x="48" y="33" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z01: Recría Existente</text>
+    <rect x="20" y="48" width="20" height="16" fill="#A0522D" stroke="#A0522D" stroke-width="1"/>
+    <text x="48" y="61" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z02: Guano</text>
+    <rect x="20" y="76" width="20" height="16" fill="#00B4FF" stroke="#00B4FF" stroke-width="1"/>
+    <text x="48" y="89" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z03: Galpones De Ponedoras</text>
+    <rect x="20" y="104" width="20" height="16" fill="#C800FF" stroke="#C800FF" stroke-width="1"/>
+    <text x="48" y="117" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z04: Planta De Alimento</text>
+    <rect x="20" y="132" width="20" height="16" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1"/>
+    <text x="48" y="145" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z05: Cintas Transportadoras</text>
+    <rect x="20" y="160" width="20" height="16" fill="#FF1493" stroke="#FF1493" stroke-width="1"/>
+    <text x="48" y="173" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z06: Silos Secos</text>
+    <rect x="20" y="188" width="20" height="16" fill="#00FF7F" stroke="#00FF7F" stroke-width="1"/>
+    <text x="48" y="201" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z07: Terreno Nuevo</text>
+    <rect x="20" y="216" width="20" height="16" fill="#0b206b" stroke="#0b206b" stroke-width="1"/>
+    <text x="48" y="229" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z08: Casa De Gerencia</text>
+    <rect x="20" y="244" width="20" height="16" fill="#6a5b19" stroke="#6a5b19" stroke-width="1"/>
+    <text x="48" y="257" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z09: Departamentos De Empleados</text>
+    <rect x="20" y="272" width="20" height="16" fill="#b3abb0" stroke="#b3abb0" stroke-width="1"/>
+    <text x="48" y="285" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z10: Clasificadora</text>
+    <rect x="20" y="300" width="20" height="16" fill="#ff0f6d" stroke="#ff0f6d" stroke-width="1"/>
+    <text x="48" y="313" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z11: Casa De Mantenimiento Sur</text>
+    <rect x="20" y="328" width="20" height="16" fill="#347c65" stroke="#347c65" stroke-width="1"/>
+    <text x="48" y="341" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z12: Taller</text>
+    <rect x="20" y="356" width="20" height="16" fill="#284695" stroke="#284695" stroke-width="1"/>
+    <text x="48" y="369" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z13: Casa De Mantenimiento Norte</text>
+    <rect x="20" y="384" width="20" height="16" fill="#f23dd7" stroke="#f23dd7" stroke-width="1"/>
+    <text x="48" y="397" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z14: Aceitera</text>
+    <rect x="20" y="412" width="20" height="16" fill="#cb8f8d" stroke="#cb8f8d" stroke-width="1"/>
+    <text x="48" y="425" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z15: Silos Húmedos</text>
+    <rect x="20" y="440" width="20" height="16" fill="#6010d0" stroke="#6010d0" stroke-width="1"/>
+    <text x="48" y="453" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z16: Silos De Almacenamiento Consumo Y Expeller</text>
+    <rect x="20" y="468" width="20" height="16" fill="#7a5b13" stroke="#7a5b13" stroke-width="1"/>
+    <text x="48" y="481" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z17: Planta De Descarga De Granos</text>
+    <rect x="20" y="496" width="20" height="16" fill="#fe2948" stroke="#fe2948" stroke-width="1"/>
+    <text x="48" y="509" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z18: Secado Y Limpieza De Granos</text>
+    <rect x="20" y="524" width="20" height="16" fill="#e66981" stroke="#e66981" stroke-width="1"/>
+    <text x="48" y="537" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z19: Tanques De Aceite</text>
+    <rect x="20" y="552" width="20" height="16" fill="#af1bdf" stroke="#af1bdf" stroke-width="1"/>
+    <text x="48" y="565" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z20: Descarga De Alimento</text>
+    <rect x="20" y="580" width="20" height="16" fill="#b39bbd" stroke="#b39bbd" stroke-width="1"/>
+    <text x="48" y="593" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z21: Oficinas</text>
+    <rect x="20" y="608" width="20" height="16" fill="#4c3fac" stroke="#4c3fac" stroke-width="1"/>
+    <text x="48" y="621" font-family="Arial,sans-serif" font-size="14" fill="#FFFFFF">Z22: Balanza De Camiones</text>
+  </g>
+</svg>

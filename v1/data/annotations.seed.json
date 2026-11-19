@@ -1,0 +1,56 @@
+[
+  {
+    "id": "ann-001",
+    "requestText": "Actualizar etiquetas de la Planta Industrial y Silos",
+    "labelText": "Planta y Silos",
+    "style": "style-2",
+    "nodePosition": { "x": 0.70, "y": 0.15 },
+    "scope": {
+      "level": "macrozona",
+      "zoneId": "Z6",
+      "subzoneId": null
+    },
+    "action": {
+      "type": "relabel",
+      "status": "draft"
+    },
+    "connectors": [
+      {
+        "id": "conn-001",
+        "anchorId": "anchor-z6-silos"
+      },
+      {
+        "id": "conn-002",
+        "anchorId": "anchor-z6-plant"
+      },
+      {
+        "id": "conn-003",
+        "anchorId": "anchor-z6-dock"
+      }
+    ],
+    "patchPlan": null
+  },
+  {
+    "id": "ann-002",
+    "requestText": "Inspeccionar zona de expansión para nuevos galpones",
+    "labelText": "Expansión Futura",
+    "style": "style-2",
+    "nodePosition": { "x": 0.85, "y": 0.45 },
+    "scope": {
+      "level": "microzona",
+      "zoneId": "Z4",
+      "subzoneId": "Z4-E1"
+    },
+    "action": {
+      "type": "inspect",
+      "status": "ready"
+    },
+    "connectors": [
+      {
+        "id": "conn-004",
+        "anchorId": "anchor-expansion"
+      }
+    ],
+    "patchPlan": null
+  }
+]

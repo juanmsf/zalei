@@ -1,0 +1,470 @@
+/* ═══════════════════════════════════════════════════════════ */
+/* ZALEI — Sistema de diseño premium                          */
+/* Estilo 2: Corporate Premium · Nodos tipo n8n               */
+/* ═══════════════════════════════════════════════════════════ */
+
+:root {
+    --bg-cream:       #f5f0e8;
+    --bg-cream-dark:  #ede5d5;
+    --bg-dark:        #1a1c14;
+    --bg-dark-2:      #252a1a;
+    --accent:         #8B7355;
+    --accent-warm:    #c4a96a;
+    --accent-green:   #3d4a2e;
+    --text-dark:      #1c1c14;
+    --text-mid:       #4a4a3a;
+    --text-muted:     #7a7a6a;
+    --border-light:   rgba(0,0,0,0.12);
+    --border-cream:   rgba(139,115,85,0.25);
+
+    /* Nodo n8n */
+    --node-bg:        rgba(255,255,255,0.93);
+    --node-border:    rgba(0,0,0,0.18);
+    --node-shadow:    0 2px 16px rgba(0,0,0,0.22);
+    --node-text:      #1c1c14;
+    --anchor-color:   #ffffff;
+    --line-color:     rgba(255,255,255,0.75);
+
+    --danger:         #a54a4a;
+
+    --font-serif:     'Playfair Display', Georgia, serif;
+    --font-sans:      'Inter', system-ui, sans-serif;
+}
+
+/* ── Reset ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+    font-family: var(--font-sans);
+    background: var(--bg-cream);
+    color: var(--text-dark);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+img { display: block; max-width: 100%; }
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+
+/* ── UI HELPERS ──────────────────────────────────────────── */
+.hidden { display: none !important; }
+
+/* ── NAV ─────────────────────────────────────────────────── */
+.main-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.5rem 3rem;
+    transition: background 0.4s ease, padding 0.4s ease, box-shadow 0.4s ease;
+}
+.main-nav.scrolled, .nav-fixed {
+    background: rgba(245,240,232,0.96);
+    backdrop-filter: blur(12px);
+    padding: 1rem 3rem;
+    box-shadow: 0 1px 0 var(--border-light);
+}
+.nav-logo {
+    font-family: var(--font-serif);
+    font-size: 1.6rem; font-weight: 500;
+    letter-spacing: 0.15em; color: var(--text-dark);
+}
+.atlas-badge {
+    background: var(--accent-warm); color: #fff;
+    font-size: 0.65rem; font-weight: 600;
+    letter-spacing: 0.1em; padding: 0.3rem 0.6rem; text-transform: uppercase;
+    border-radius: 2px;
+}
+
+/* ── HERO / STAGE ────────────────────────────────────────── */
+.hero {
+    position: relative;
+    width: 100%; height: 100vh; min-height: 600px;
+    overflow: hidden;
+    background: #000;
+}
+
+.annotation-stage {
+    position: relative;
+    width: 100%; height: 100%;
+    user-select: none;
+}
+
+.annotation-image {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.95) 70%, rgba(0,0,0,0.6) 100%);
+}
+
+.annotation-stage::after {
+    content: '';
+    position: absolute; inset: 0; z-index: 1;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.38) 0%,
+        rgba(0,0,0,0.08) 45%,
+        rgba(0,0,0,0.12) 72%,
+        rgba(0,0,0,0.50) 100%
+    );
+    pointer-events: none;
+}
+
+/* ── WATERMARK ───────────────────────────────────────────── */
+.hero::before {
+    content: 'AUDIT DRAFT - ZALEI INTEL';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg);
+    font-size: 6rem; font-weight: 900;
+    color: rgba(255,255,255,0.04);
+    pointer-events: none;
+    z-index: 5;
+    white-space: nowrap;
+    font-family: var(--font-sans);
+    letter-spacing: 0.25em;
+    border: 10px solid rgba(255,255,255,0.02);
+    padding: 2rem;
+}
+
+.hero::after {
+    content: 'CONFIDENTIAL · ATLAS METHOD OPERATOR · ' attr(data-date);
+    position: absolute;
+    bottom: 2rem; right: 3rem;
+    font-size: 0.65rem; font-weight: 600;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.35em;
+    z-index: 5;
+    pointer-events: none;
+}
+
+/* ── LAYERS ──────────────────────────────────────────────── */
+.annotation-layer {
+    position: absolute; inset: 0; z-index: 20;
+    pointer-events: none;
+}
+.annotation-layer > * { pointer-events: auto; }
+
+.annotation-svg {
+    position: absolute; inset: 0; z-index: 10;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    overflow: visible;
+}
+
+/* ── ANCHORS ─────────────────────────────────────────────── */
+.anchor-dot {
+    position: absolute;
+    z-index: 20;
+    width: 12px; height: 12px;
+    background: #fff;
+    border-radius: 50%;
+    border: 2.5px solid rgba(255,255,255,0.6);
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.15), 0 2px 8px rgba(0,0,0,0.4);
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.anchor-dot:hover, .anchor-dot.active {
+    transform: translate(-50%, -50%) scale(1.3);
+    background: var(--accent-warm);
+    box-shadow: 0 0 0 6px rgba(196,169,106,0.3), 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.anchor-dot.draggable {
+    cursor: move;
+}
+
+/* ── NODOS ───────────────────────────────────────────────── */
+.map-node {
+    position: absolute;
+    z-index: 30;
+    cursor: grab;
+    user-select: none;
+    animation: nodeAppear 0.4s ease forwards;
+}
+
+@keyframes nodeAppear {
+    from { opacity: 0; transform: translateY(10px) scale(0.92); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.map-node:active { cursor: grabbing; }
+.map-node.node-dragging { z-index: 100; cursor: grabbing; }
+
+.node-card {
+    background: var(--node-bg);
+    border: 1px solid var(--node-border);
+    border-radius: 4px;
+    padding: 0.45rem 0.9rem;
+    font-family: var(--font-serif);
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--node-text);
+    white-space: nowrap;
+    box-shadow: var(--node-shadow);
+    transition: box-shadow 0.2s, border-color 0.2s;
+    letter-spacing: 0.01em;
+    position: relative;
+}
+
+.map-node.node-selected .node-card {
+    border-color: var(--accent-warm);
+    box-shadow: 0 4px 24px rgba(196,169,106,0.25), var(--node-shadow);
+}
+/* ── NODE PORTS (4 sides) ────────────────────────────────── */
+.node-port {
+    position: absolute;
+    width: 10px; height: 10px;
+    background: #fff;
+    border: 1.5px solid rgba(0,0,0,0.2);
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    cursor: crosshair;
+    transition: transform 0.15s, background 0.15s;
+    z-index: 5;
+}
+
+.node-port:hover, .node-port.connecting {
+    background: var(--accent-warm);
+    border-color: #fff;
+    transform: scale(1.4);
+}
+
+.port-left   { left: -7px;  top: 50%;  transform: translateY(-50%); }
+.port-right  { right: -7px; top: 50%;  transform: translateY(-50%); }
+.port-top    { top: -7px;   left: 50%; transform: translateX(-50%); }
+.port-bottom { bottom: -7px;left: 50%; transform: translateX(-50%); }
+
+.port-left:hover, .port-left.connecting   { transform: translateY(-50%) scale(1.4); }
+.port-right:hover, .port-right.connecting { transform: translateY(-50%) scale(1.4); }
+.port-top:hover, .port-top.connecting     { transform: translateX(-50%) scale(1.4); }
+.port-bottom:hover, .port-bottom.connecting { transform: translateX(-50%) scale(1.4); }
+
+/* Badge styles by status */
+.node-label { font-size: 0.80rem; }
+.node-badge {
+    display: inline-block;
+    font-size: 0.58rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+.badge-draft      { background: rgba(100,100,100,0.15); color: #666; }
+.badge-ready      { background: rgba(80,150,80,0.15);  color: #3a8a3a; }
+.badge-active     { background: rgba(196,169,106,0.2); color: #8a6a20; }
+.badge-in-progress{ background: rgba(80,100,180,0.15); color: #4455aa; }
+.badge-synced     { background: rgba(50,180,100,0.2);  color: #2a9a50; }
+
+/* Connecting mode cursor on stage */
+.annotation-stage.connecting-mode { cursor: crosshair !important; }
+
+/* ── CONNECTORS ──────────────────────────────────────────── */
+.connector-path {
+    stroke: var(--line-color);
+    stroke-width: 1.8px;
+    fill: none;
+    filter: drop-shadow(0 0 3px rgba(0,0,0,0.4));
+    transition: stroke 0.2s, stroke-width 0.2s;
+    pointer-events: none;
+}
+
+.connector-path--active {
+    stroke: var(--accent-warm);
+    stroke-width: 2.8px;
+}
+
+.btn-trash {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 24px; height: 24px;
+    background: rgba(255,255,255,0.9);
+    border: 1px solid var(--border-light);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+    opacity: 0.4;
+}
+
+.btn-trash:hover {
+    opacity: 1;
+    background: var(--danger);
+    color: white;
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.btn-trash::before {
+    content: '✕';
+    font-size: 10px;
+    font-weight: 900;
+}
+
+/* ── TOOLBAR ─────────────────────────────────────────────── */
+.atlas-toolbar {
+    position: absolute; top: 80px; left: 3rem;
+    z-index: 150;
+    display: flex; align-items: center; gap: 0.5rem;
+    background: rgba(26,28,20,0.85);
+    padding: 0.6rem;
+    border-radius: 6px;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.toolbar-group {
+    display: flex; gap: 0.4rem;
+}
+
+.toolbar-divider {
+    width: 1px; height: 24px;
+    background: rgba(255,255,255,0.15);
+    margin: 0 0.4rem;
+}
+
+.btn-tool {
+    background: transparent;
+    color: rgba(255,255,255,0.8);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 0.45rem 0.9rem;
+    font-size: 0.74rem;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font-sans);
+    white-space: nowrap;
+}
+
+.btn-tool:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border-color: var(--accent-warm);
+}
+
+.btn-action {
+    background: rgba(139,115,85,0.15);
+    color: var(--accent-warm);
+}
+
+.btn-action:hover {
+    background: var(--accent-warm);
+    color: #fff;
+}
+
+/* ── INSPECTOR ───────────────────────────────────────────── */
+.atlas-inspector {
+    position: absolute; top: 80px; right: 3rem;
+    z-index: 150;
+    width: 320px;
+    background: rgba(245,240,232,0.97);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    backdrop-filter: blur(15px);
+    font-family: var(--font-sans);
+}
+
+.inspector-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.inspector-header h3 {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    color: var(--text-dark);
+}
+
+.btn-close {
+    background: transparent; border: none; cursor: pointer;
+    font-size: 1.3rem; color: var(--text-muted);
+}
+
+.inspector-section {
+    margin-bottom: 1.25rem;
+}
+
+.inspector-section label {
+    display: block;
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: 0.45rem;
+}
+
+.inspector-value {
+    font-size: 0.88rem; color: var(--text-dark);
+    background: #fff; border: 1px solid var(--border-light);
+    padding: 0.65rem; border-radius: 4px;
+    min-height: 2.3rem;
+}
+
+.inspector-input {
+    width: 100%;
+    font-size: 0.88rem; color: var(--text-dark);
+    background: #fff; border: 1px solid var(--border-light);
+    padding: 0.65rem; border-radius: 4px;
+    font-family: var(--font-sans);
+    outline: none;
+}
+
+.inspector-input:focus {
+    border-color: var(--accent-warm);
+    box-shadow: 0 0 0 2px rgba(196,169,106,0.1);
+}
+
+.status-badge {
+    display: inline-block;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 0.35rem 0.8rem;
+    border-radius: 4px;
+    background: var(--bg-dark-2); color: #fff;
+}
+
+.inspector-actions {
+    margin-top: 2.2rem;
+    display: flex; flex-direction: column; gap: 0.7rem;
+}
+
+.btn-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem;
+    background: var(--accent-warm); color: #fff;
+    font-size: 0.8rem; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 1rem 2rem;
+    border: 1px solid var(--accent-warm);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: transparent; color: var(--accent-warm);
+}
+
+.btn-danger {
+    background: transparent; color: var(--danger);
+    border: 1px solid rgba(165,74,74,0.2);
+    font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+    padding: 0.75rem; cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-danger:hover {
+    background: var(--danger);
+    color: white;
+    border-color: var(--danger);
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 960px) {
+    .atlas-inspector { width: 280px; right: 1.5rem; top: 150px; }
+    .atlas-toolbar { left: 1.5rem; top: 150px; flex-wrap: wrap; }
+}

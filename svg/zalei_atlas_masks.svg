@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" viewBox="0 0 5042 4474" width="5042" height="4474" id="zalei-atlas">
+  <desc>Zalei Agropecuaria - Atlas SVG. Source: atlas/zones.json + atlas/microzones.json</desc>
+
+  <defs>
+    <mask id="mask-Z01" maskUnits="userSpaceOnUse">
+      <rect x="96" y="133" width="1219" height="218" fill="white"/>
+    </mask>
+    <mask id="mask-Z02" maskUnits="userSpaceOnUse">
+      <rect x="2182" y="544" width="1302" height="2097" fill="white"/>
+    </mask>
+    <mask id="mask-Z03" maskUnits="userSpaceOnUse">
+      <rect x="234" y="2032" width="1581" height="1768" fill="white"/>
+    </mask>
+    <mask id="mask-Z04" maskUnits="userSpaceOnUse">
+      <rect x="2319" y="3309" width="160" height="432" fill="white"/>
+    </mask>
+    <mask id="mask-Z05" maskUnits="userSpaceOnUse">
+      <rect x="779" y="2214" width="248" height="1072" fill="white"/>
+    </mask>
+    <mask id="mask-Z06" maskUnits="userSpaceOnUse">
+      <rect x="2746" y="3206" width="706" height="432" fill="white"/>
+    </mask>
+    <mask id="mask-Z07" maskUnits="userSpaceOnUse">
+      <rect x="3635" y="0" width="1407" height="4124" fill="white"/>
+    </mask>
+    <mask id="mask-Z08" maskUnits="userSpaceOnUse">
+      <rect x="3401" y="3820" width="234" height="278" fill="white"/>
+    </mask>
+    <mask id="mask-Z09" maskUnits="userSpaceOnUse">
+      <rect x="399" y="3852" width="628" height="205" fill="white"/>
+    </mask>
+    <mask id="mask-Z10" maskUnits="userSpaceOnUse">
+      <rect x="889" y="2560" width="733" height="274" fill="white"/>
+    </mask>
+    <mask id="mask-Z11" maskUnits="userSpaceOnUse">
+      <rect x="1719" y="3944" width="238" height="159" fill="white"/>
+    </mask>
+    <mask id="mask-Z12" maskUnits="userSpaceOnUse">
+      <rect x="701" y="3623" width="257" height="237" fill="white"/>
+    </mask>
+    <mask id="mask-Z13" maskUnits="userSpaceOnUse">
+      <rect x="1554" y="364" width="390" height="205" fill="white"/>
+    </mask>
+    <mask id="mask-Z14" maskUnits="userSpaceOnUse">
+      <rect x="2466" y="3431" width="133" height="287" fill="white"/>
+    </mask>
+    <mask id="mask-Z15" maskUnits="userSpaceOnUse">
+      <rect x="2663" y="3096" width="92" height="205" fill="white"/>
+    </mask>
+    <mask id="mask-Z16" maskUnits="userSpaceOnUse">
+      <rect x="2448" y="3201" width="206" height="269" fill="white"/>
+    </mask>
+    <mask id="mask-Z17" maskUnits="userSpaceOnUse">
+      <rect x="2361" y="3036" width="60" height="209" fill="white"/>
+    </mask>
+    <mask id="mask-Z18" maskUnits="userSpaceOnUse">
+      <rect x="2663" y="3247" width="206" height="237" fill="white"/>
+    </mask>
+    <mask id="mask-Z19" maskUnits="userSpaceOnUse">
+      <rect x="2482" y="3676" width="98" height="40" fill="white"/>
+    </mask>
+    <mask id="mask-Z20" maskUnits="userSpaceOnUse">
+      <rect x="2251" y="3188" width="183" height="260" fill="white"/>
+    </mask>
+    <mask id="mask-Z21" maskUnits="userSpaceOnUse">
+      <rect x="2067" y="3183" width="124" height="356" fill="white"/>
+    </mask>
+    <mask id="mask-Z22" maskUnits="userSpaceOnUse">
+      <rect x="1998" y="3188" width="73" height="356" fill="white"/>
+    </mask>
+  </defs>
+  <g id="layer-masks" inkscape:label="Atlas Texture Masks">
+    <!-- Apply mask via mask="url(#mask-Z06)" on a texture image -->
+  </g>
+</svg>

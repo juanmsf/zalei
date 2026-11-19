@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zalei &amp; Dashboard — Portal Maestro Unificado</title>
+  <script src="auth.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080a10;
+      --bar: #0f121b;
+      --card: #141926;
+      --border: rgba(255, 255, 255, 0.1);
+      --gold: #d8b56d;
+      --gold-dim: rgba(216, 181, 109, 0.15);
+      --cyan: #22d3ee;
+      --text: #f3f4f8;
+      --muted: #949bb0;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+    }
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+    }
+    /* Top bar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 16px;
+      background: var(--bar);
+      border-bottom: 1px solid var(--border);
+      z-index: 20;
+      flex-wrap: wrap;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-logo {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-pill {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--gold-dim);
+      border: 1px solid rgba(216, 181, 109, 0.35);
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .nav-tabs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      max-width: 100%;
+      padding: 2px 0;
+    }
+    .nav-tab {
+      appearance: none;
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 7px 13px;
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.16s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-tab:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+    .nav-tab.active {
+      background: var(--gold-dim);
+      border-color: rgba(216, 181, 109, 0.45);
+      color: #f7deb0;
+    }
+    .nav-tab.dashboard-tab.active {
+      background: rgba(34, 211, 238, 0.14);
+      border-color: rgba(34, 211, 238, 0.45);
+      color: #67e8f9;
+    }
+    .actions-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .action-btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 11px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: background 0.15s;
+    }
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.11);
+    }
+    .action-btn.lock-btn {
+      border-color: rgba(255, 107, 122, 0.35);
+      color: #ff8592;
+    }
+    .action-btn.lock-btn:hover {
+      background: rgba(255, 107, 122, 0.15);
+    }
+    /* Main viewport */
+    .viewport {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    #main-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      background: #080a10;
+    }
+    /* Hub Grid View */
+    #hub-view {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      padding: 36px 24px 60px;
+      background:
+        radial-gradient(circle at 15% 0%, rgba(216, 181, 109, 0.14), transparent 36%),
+        radial-gradient(circle at 85% 15%, rgba(34, 211, 238, 0.1), transparent 34%),
+        #080a10;
+      display: none;
+    }
+    #hub-view.visible {
+      display: block;
+    }
+    .hub-container {
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+    .hub-header {
+      margin-bottom: 28px;
+    }
+    .hub-header h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(28px, 4vw, 42px);
+      margin: 0 0 8px;
+      letter-spacing: -0.02em;
+    }
+    .hub-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+    .section-label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 28px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hub-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 16px;
+    }
+    .hub-card {
+      background: rgba(20, 25, 38, 0.85);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      transition: transform 0.16s, border-color 0.16s, box-shadow 0.16s;
+      cursor: pointer;
+    }
+    .hub-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(216, 181, 109, 0.45);
+      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.45);
+    }
+    .hub-card-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #cbd5e1;
+      margin-bottom: 8px;
+    }
+    .hub-card h3 {
+      font-family: 'Outfit', sans-serif;
+      margin: 0 0 6px;
+      font-size: 19px;
+      color: #fff;
+    }
+    .hub-card p {
+      margin: 0;
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .hub-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gold);
+    }
+    .hub-card-footer a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .hub-card-footer a:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-group">
+        <div class="brand-logo">
+          <span>ZALEI &amp; PORTFOLIO</span>
+          <span class="brand-pill">PIN 2572</span>
+        </div>
+      </div>
+
+      <nav class="nav-tabs" id="nav-tabs">
+        <button class="nav-tab" data-mode="hub">🗂️ Catálogo Completo</button>
+        <button class="nav-tab active" data-src="AG/index.html">🏗️ Zalei Editor 2D+3D (AG)</button>
+        <button class="nav-tab dashboard-tab" data-src="dashboard.html">⚡ Dashboard Portfolio</button>
+        <button class="nav-tab" data-src="atlas-landing.html">🌐 Zalei Atlas v2 Landing</button>
+        <button class="nav-tab" data-src="chadi-review.html">📋 Revisión Chadi</button>
+        <button class="nav-tab" data-src="muestras.html">🎬 Muestras Visuales</button>
+        <button class="nav-tab" data-src="zalei2/index.html">🧊 Visor 3D Standalone</button>
+        <button class="nav-tab" data-src="viewers/zalei_3d_texturizado.html">🛰️ 3D Texturizado</button>
+        <button class="nav-tab" data-src="zalei_agropecuaria_visualizador_3d.html">🌾 Visualizador Agro 3D</button>
+      </nav>
+
+      <div class="actions-group">
+        <a id="open-tab-link" href="AG/index.html" target="_blank" class="action-btn" title="Abrir vista actual en pestaña nueva">
+          ↗ Abrir directo
+        </a>
+        <button id="lock-btn" class="action-btn lock-btn" title="Cerrar sesión y pedir contraseña">
+          🔒 Bloquear
+        </button>
+      </div>
+    </header>
+
+    <main class="viewport">
+      <iframe id="main-frame" src="AG/index.html" allowfullscreen></iframe>
+
+      <section id="hub-view">
+        <div class="hub-container">
+          <div class="hub-header">
+            <h1>Portal Maestro — Zalei Agropecuaria &amp; Dashboard Portfolio</h1>
+            <p>Todos los módulos, editores 2D/3D, revisiones y el dashboard completo de proyectos en un solo lugar protegido.</p>
+          </div>
+
+          <div class="section-label">⚡ Dashboard &amp; Portfolio General</div>
+          <div class="hub-grid">
+            <div class="hub-card" data-open="dashboard.html">
+              <div>
+                <span class="hub-card-tag" style="background:rgba(34,211,238,0.15);color:#67e8f9">Portfolio &amp; Arquitectura</span>
+                <h3>Dashboard Portfolio Completo</h3>
+                <p>Proyectos, pipelines, microservicios, topología del servidor jumasafer.com.ar, stack técnico y CV interactivo.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="dashboard.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-label">🏗️ Zalei — Editores y Visores 3D Principales</div>
+          <div class="hub-grid">
+            <div class="hub-card" data-open="AG/index.html">
+              <div>
+                <span class="hub-card-tag" style="background:rgba(216,181,109,0.18);color:#f3d28e">Principal Consolidado</span>
+                <h3>Zalei Atlas 3D — Editor Consolidado (AG)</h3>
+                <p>Editor 2D + Visor 3D sincronizados en tiempo real con trazado de calles, edición bidireccional y textura satelital.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="AG/index.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+
+            <div class="hub-card" data-open="zalei2/index.html">
+              <div>
+                <span class="hub-card-tag">Visor 3D</span>
+                <h3>Zalei 2 — Visor 3D Satelital</h3>
+                <p>Escena 3D completa sobre textura satelital de alta resolución con mapeo de alturas BLOCKOUT.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="zalei2/index.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+
+            <div class="hub-card" data-open="editor_3d_v2/index.html">
+              <div>
+                <span class="hub-card-tag">Editor Combinado v2</span>
+                <h3>Editor 3D v2 (2D + 3D)</h3>
+                <p>Versión combinada con exportación/importación JSON estructurada, atajos de teclado y rotación de calles.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="editor_3d_v2/index.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+
+            <div class="hub-card" data-open="viewers/zalei_3d_texturizado.html">
+              <div>
+                <span class="hub-card-tag">3D Texturizado</span>
+                <h3>Zalei 3D Texturizado Standalone</h3>
+                <p>Maqueta 3D texturizada autónoma con terrenos, estructuras e iluminación.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="viewers/zalei_3d_texturizado.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+
+            <div class="hub-card" data-open="zalei_agropecuaria_visualizador_3d.html">
+              <div>
+                <span class="hub-card-tag">Visualizador Agro</span>
+                <h3>Zalei Agropecuaria Visualizador 3D</h3>
+                <p>Visualizador interactivo del predio agropecuario y sus sectores operativos.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="zalei_agropecuaria_visualizador_3d.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+
+            <div class="hub-card" data-open="AG/atlas_editor.html">
+              <div>
+                <span class="hub-card-tag">Atlas Editor</span>
+                <h3>AG Atlas Editor</h3>
+                <p>Editor vectorial de polígonos y zonas del Atlas Zalei.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="AG/atlas_editor.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-label">📋 Presentaciones, Landings y Revisión Cliente (Chadi)</div>
+          <div class="hub-grid">
+            <div class="hub-card" data-open="atlas-landing.html">
+              <div>
+                <span class="hub-card-tag">Landing Técnica v2</span>
+                <h3>Zalei Atlas — De Maqueta Técnica a Renders</h3>
+                <p>Presentación integral del sistema Atlas, validación de zonas, microzonas, 3D y recorribles.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="atlas-landing.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+
+            <div class="hub-card" data-open="chadi-review.html">
+              <div>
+                <span class="hub-card-tag">Revisión Cliente</span>
+                <h3>Revisión Chadi (Opciones y Validación)</h3>
+                <p>Página de revisión optimizada para móvil y escritorio con comparativas de zonas y candidatos de render.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="chadi-review.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+
+            <div class="hub-card" data-open="muestras.html">
+              <div>
+                <span class="hub-card-tag">Muestras Visuales</span>
+                <h3>Así Podría Verse Zalei (3 Muestras + Video)</h3>
+                <p>Vista realista aérea, presentación premium y video recorrido tipo drone en MP4.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="muestras.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+
+            <div class="hub-card" data-open="label_styles.html">
+              <div>
+                <span class="hub-card-tag">UI / Cartografía</span>
+                <h3>Catálogo de Estilos de Etiquetas</h3>
+                <p>Muestras de diseño visual y tipográfico para marcadores y etiquetas del mapa Zalei.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="label_styles.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+
+            <div class="hub-card" data-open="v1/index.html">
+              <div>
+                <span class="hub-card-tag">Archivo v1</span>
+                <h3>Zalei Atlas v1 (Primera Versión)</h3>
+                <p>Primera versión interactiva archivada del Atlas de Zalei con anotaciones y zonas.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="v1/index.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-label">🛠️ Herramientas Técnicas &amp; Viewers Auxiliares</div>
+          <div class="hub-grid">
+            <div class="hub-card" data-open="viewers/index_3d.html">
+              <div>
+                <span class="hub-card-tag">Viewer 3D</span>
+                <h3>Blockout 3D Viewer (index_3d.html)</h3>
+                <p>Visor 3D técnico conectado a atlas/blockout_3d.json.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="viewers/index_3d.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+
+            <div class="hub-card" data-open="viewers/index_2d.html">
+              <div>
+                <span class="hub-card-tag">Viewer 2D</span>
+                <h3>Mapa 2D Interactivo (index_2d.html)</h3>
+                <p>Visor 2D sobre imagen satelital 5042×4474 con capas de zonas y microzonas.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="viewers/index_2d.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+
+            <div class="hub-card" data-open="viewers/editor_2d.html">
+              <div>
+                <span class="hub-card-tag">Editor 2D</span>
+                <h3>Editor 2D Standalone</h3>
+                <p>Editor 2D para trazado y ajuste de geometrías de zonas y caminos.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="viewers/editor_2d.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+
+            <div class="hub-card" data-open="viewers/editor_3d.html">
+              <div>
+                <span class="hub-card-tag">Editor 3D</span>
+                <h3>Editor 3D Standalone</h3>
+                <p>Ajuste tridimensional de volúmenes y alturas del predio.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="viewers/editor_3d.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+
+            <div class="hub-card" data-open="viewers/atlas_sector_inspector.html">
+              <div>
+                <span class="hub-card-tag">Inspector</span>
+                <h3>Atlas Sector Inspector</h3>
+                <p>Inspección detallada de sectores y validación del predio.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="viewers/atlas_sector_inspector.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+
+            <div class="hub-card" data-open="viewers/road_labeler.html">
+              <div>
+                <span class="hub-card-tag">Vialidad</span>
+                <h3>Road Labeler</h3>
+                <p>Etiquetador de caminos internos, perimetrales y accesos.</p>
+              </div>
+              <div class="hub-card-footer">
+                <span>Abrir en visor →</span>
+                <a href="viewers/road_labeler.html" target="_blank" onclick="event.stopPropagation()">Nueva pestaña ↗</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.nav-tab');
+    const frame = document.getElementById('main-frame');
+    const hubView = document.getElementById('hub-view');
+    const openTabLink = document.getElementById('open-tab-link');
+    const lockBtn = document.getElementById('lock-btn');
+
+    function activateUrl(url, matchingTab) {
+      tabs.forEach(t => t.classList.remove('active'));
+      if (matchingTab) {
+        matchingTab.classList.add('active');
+      } else {
+        const found = Array.from(tabs).find(t => t.dataset.src === url);
+        if (found) found.classList.add('active');
+      }
+      hubView.classList.remove('visible');
+      frame.style.display = 'block';
+      if (frame.getAttribute('src') !== url) {
+        frame.setAttribute('src', url);
+      }
+      openTabLink.href = url;
+    }
+
+    function activateHub(tabEl) {
+      tabs.forEach(t => t.classList.remove('active'));
+      if (tabEl) tabEl.classList.add('active');
+      hubView.classList.add('visible');
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        if (tab.dataset.mode === 'hub') {
+          activateHub(tab);
+        } else if (tab.dataset.src) {
+          activateUrl(tab.dataset.src, tab);
+        }
+      });
+    });
+
+    document.querySelectorAll('.hub-card[data-open]').forEach(card => {
+      card.addEventListener('click', () => {
+        activateUrl(card.dataset.open);
+      });
+    });
+
+    lockBtn.addEventListener('click', () => {
+      sessionStorage.removeItem('zalei_auth_2572');
+      localStorage.removeItem('zalei_auth_2572');
+      window.location.reload();
+    });
+  </script>
+</body>
+</html>

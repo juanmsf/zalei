@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Zalei Atlas — De maqueta técnica a renders, 3D y recorribles. Una base precisa para crear visualizaciones del predio sin perder ubicación, escala ni detalles.">
+<title>Zalei Atlas — De Maqueta Técnica A Renders, 3D Y Recorribles</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   DESIGN SYSTEM
+   ============================================================ */
+:root {
+  --bg-deep:        #07090f;
+  --bg-main:        #0b0e18;
+  --bg-card:        #101420;
+  --bg-card-hover:  #141826;
+  --bg-glass:       rgba(16, 20, 32, 0.7);
+
+  --border:         rgba(255,255,255,0.06);
+  --border-hover:   rgba(255,255,255,0.14);
+  --border-accent:  rgba(99,102,241,0.25);
+
+  --text-primary:   #f1f2f6;
+  --text-secondary: #8e95ab;
+  --text-muted:     #555e75;
+
+  --indigo:         #6366f1;
+  --indigo-light:   #818cf8;
+  --indigo-dim:     rgba(99,102,241,0.12);
+  --indigo-glow:    rgba(99,102,241,0.18);
+
+  --amber:          #f59e0b;
+  --amber-dim:      rgba(245,158,11,0.12);
+
+  --emerald:        #10b981;
+  --emerald-dim:    rgba(16,185,129,0.12);
+
+  --rose:           #f43f5e;
+  --rose-dim:       rgba(244,63,94,0.12);
+
+  --sky:            #38bdf8;
+  --sky-dim:        rgba(56,189,248,0.12);
+
+  --violet:         #a78bfa;
+  --violet-dim:     rgba(167,139,250,0.12);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   AMBIENT GLOWS
+   ============================================================ */
+.ambient {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.35;
+}
+.ambient-1 {
+  width: 700px; height: 700px;
+  top: -200px; right: -150px;
+  background: radial-gradient(circle, rgba(99,102,241,0.6), transparent 70%);
+}
+.ambient-2 {
+  width: 600px; height: 600px;
+  top: 60vh; left: -200px;
+  background: radial-gradient(circle, rgba(16,185,129,0.4), transparent 70%);
+}
+.ambient-3 {
+  width: 500px; height: 500px;
+  top: 140vh; right: -100px;
+  background: radial-gradient(circle, rgba(245,158,11,0.3), transparent 70%);
+}
+
+/* ============================================================
+   LAYOUT WRAPPER
+   ============================================================ */
+.page-wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px 120px;
+}
+
+/* ============================================================
+   NAV BAR
+   ============================================================ */
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px 0 0;
+  margin-bottom: 0;
+}
+.nav-logo {
+  font-family: 'Outfit', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(120deg, #fff 40%, var(--indigo-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.nav-links {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+  flex-wrap: wrap;
+}
+.nav-links a {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 30px;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+.nav-links a:hover {
+  color: var(--text-primary);
+  border-color: var(--border);
+  background: rgba(255,255,255,0.04);
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  padding: 90px 0 80px;
+  text-align: center;
+  position: relative;
+}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--indigo-light);
+  background: var(--indigo-dim);
+  border: 1px solid var(--border-accent);
+  padding: 6px 18px;
+  border-radius: 30px;
+  margin-bottom: 32px;
+}
+.hero-eyebrow span { font-size: 14px; }
+
+.hero h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(34px, 7vw, 68px);
+  font-weight: 900;
+  line-height: 1.06;
+  letter-spacing: -2px;
+  margin-bottom: 28px;
+  background: linear-gradient(150deg, #ffffff 30%, #a5b4fc 65%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-sub {
+  font-size: clamp(16px, 2.5vw, 20px);
+  color: var(--text-secondary);
+  font-weight: 300;
+  max-width: 680px;
+  margin: 0 auto 18px;
+  line-height: 1.55;
+}
+
+.hero-body {
+  font-size: clamp(14px, 2vw, 16px);
+  color: var(--text-muted);
+  max-width: 620px;
+  margin: 0 auto 50px;
+  line-height: 1.7;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--indigo), #4f46e5);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(99,102,241,0.25);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(99,102,241,0.4);
+}
+
+.btn-ghost {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.09);
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+}
+
+.btn-outline-indigo {
+  background: var(--indigo-dim);
+  color: var(--indigo-light);
+  border: 1px solid var(--border-accent);
+}
+.btn-outline-indigo:hover {
+  background: rgba(99,102,241,0.22);
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   DIVIDER
+   ============================================================ */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0;
+}
+
+/* ============================================================
+   SECTION WRAPPER
+   ============================================================ */
+.section {
+  padding: 90px 0;
+}
+.section + .section {
+  padding-top: 0;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--indigo-light);
+  margin-bottom: 14px;
+}
+
+.section-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(26px, 4vw, 40px);
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.section-body {
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 680px;
+  line-height: 1.7;
+  margin-bottom: 50px;
+}
+
+/* ============================================================
+   FLOW DIAGRAM
+   ============================================================ */
+.flow-diagram {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 40px 0 60px;
+  gap: 0;
+}
+.flow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.flow-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  transition: all 0.2s;
+}
+.flow-icon:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-accent);
+  box-shadow: 0 8px 24px rgba(99,102,241,0.15);
+}
+.flow-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.flow-arrow {
+  font-size: 18px;
+  color: var(--text-muted);
+  padding: 0 10px;
+  margin-top: -24px;
+}
+
+/* ============================================================
+   RENDER STYLE CARDS — MAIN GRID
+   ============================================================ */
+.renders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.render-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.28s cubic-bezier(0.4,0,0.2,1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.render-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  opacity: 0;
+  transition: opacity 0.28s;
+  pointer-events: none;
+}
+.render-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--border-hover);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+}
+.render-card:hover::before { opacity: 1; }
+
+/* Color accent by type */
+.rc-tecnico    { border-top: 3px solid var(--sky); }
+.rc-aereo      { border-top: 3px solid var(--emerald); }
+.rc-premium    { border-top: 3px solid var(--amber); }
+.rc-masterplan { border-top: 3px solid var(--indigo-light); }
+.rc-clean      { border-top: 3px solid var(--text-muted); }
+.rc-antes      { border-top: 3px solid var(--rose); }
+.rc-recorrible { border-top: 3px solid var(--violet); }
+.rc-video      { border-top: 3px solid #f97316; }
+
+/* Visual placeholder block */
+.render-visual {
+  height: 180px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.render-visual .vis-emoji {
+  font-size: 52px;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.5));
+}
+.render-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.8;
+}
+
+/* Gradient backgrounds for placeholder visuals */
+.vis-sky      { background: linear-gradient(135deg, #0d1f3c 0%, #0c2442 40%, #0e3358 100%); }
+.vis-green    { background: linear-gradient(135deg, #0b2015 0%, #0e2f1c 40%, #0a2a18 100%); }
+.vis-amber    { background: linear-gradient(135deg, #1c1003 0%, #2a1c04 40%, #1e1302 100%); }
+.vis-indigo   { background: linear-gradient(135deg, #0d0e2a 0%, #101230 40%, #0c0e26 100%); }
+.vis-grey     { background: linear-gradient(135deg, #0e0f12 0%, #141518 40%, #111214 100%); }
+.vis-rose     { background: linear-gradient(135deg, #1c0812 0%, #2a0d1a 40%, #1a0810 100%); }
+.vis-violet   { background: linear-gradient(135deg, #0f0a22 0%, #160d2e 40%, #100b24 100%); }
+.vis-orange   { background: linear-gradient(135deg, #1a0d00 0%, #261400 40%, #1c0e00 100%); }
+
+.render-body {
+  padding: 24px 24px 28px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.rc-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 6px;
+  margin-bottom: 14px;
+  width: fit-content;
+}
+.tag-sky     { background: var(--sky-dim);     color: var(--sky);     border: 1px solid rgba(56,189,248,0.2); }
+.tag-green   { background: var(--emerald-dim); color: var(--emerald); border: 1px solid rgba(16,185,129,0.2); }
+.tag-amber   { background: var(--amber-dim);   color: var(--amber);   border: 1px solid rgba(245,158,11,0.2); }
+.tag-indigo  { background: var(--indigo-dim);  color: var(--indigo-light); border: 1px solid var(--border-accent); }
+.tag-grey    { background: rgba(255,255,255,0.04); color: var(--text-secondary); border: 1px solid var(--border); }
+.tag-rose    { background: var(--rose-dim);    color: var(--rose);    border: 1px solid rgba(244,63,94,0.2); }
+.tag-violet  { background: var(--violet-dim);  color: var(--violet);  border: 1px solid rgba(167,139,250,0.2); }
+.tag-orange  { background: rgba(249,115,22,0.1); color: #f97316; border: 1px solid rgba(249,115,22,0.2); }
+
+.render-body h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.render-body .rc-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 12px;
+  flex: 1;
+}
+
+.rc-uso {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.rc-uso strong {
+  color: var(--text-secondary);
+  font-style: normal;
+}
+
+/* ============================================================
+   IMAGE CARDS (assets existentes)
+   ============================================================ */
+.assets-section img {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  object-fit: cover;
+  transition: all 0.28s;
+  display: block;
+}
+.assets-section img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+  border-color: var(--border-hover);
+}
+
+/* ============================================================
+   TEXTURE GRID
+   ============================================================ */
+.textures-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+.texture-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.2s;
+}
+.texture-item:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+.texture-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+.texture-info h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.texture-info p {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ============================================================
+   PHASES
+   ============================================================ */
+.phases-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+.phase-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 30px 28px;
+  position: relative;
+  transition: all 0.25s;
+  overflow: hidden;
+}
+.phase-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+}
+.phase-1::after { background: linear-gradient(90deg, var(--indigo), transparent); }
+.phase-2::after { background: linear-gradient(90deg, var(--amber), transparent); }
+.phase-3::after { background: linear-gradient(90deg, var(--emerald), transparent); }
+.phase-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-hover);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.3);
+}
+.phase-num {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  margin-bottom: 16px;
+}
+.phase-1 .phase-num { color: var(--indigo-light); }
+.phase-2 .phase-num { color: var(--amber); }
+.phase-3 .phase-num { color: var(--emerald); }
+.phase-card h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+}
+.phase-card p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ============================================================
+   DEMO TOOLS GRID
+   ============================================================ */
+.demo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+.demo-tool {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+  text-decoration: none;
+  transition: all 0.22s;
+  position: relative;
+}
+.demo-tool:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.demo-tool-icon {
+  font-size: 30px;
+}
+.demo-tool-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+.demo-tool-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  flex: 1;
+}
+.demo-tool-cta {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--indigo-light);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: auto;
+}
+.demo-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 20px;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+/* ============================================================
+   CTA FINAL
+   ============================================================ */
+.cta-box {
+  background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(16,185,129,0.06) 100%);
+  border: 1px solid var(--border-accent);
+  border-radius: 24px;
+  padding: 60px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-box::before {
+  content: '';
+  position: absolute;
+  top: -80px; left: 50%;
+  transform: translateX(-50%);
+  width: 400px; height: 300px;
+  background: radial-gradient(ellipse, rgba(99,102,241,0.15), transparent 70%);
+  pointer-events: none;
+}
+.cta-box h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(24px, 4vw, 36px);
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  color: #fff;
+  margin-bottom: 16px;
+}
+.cta-box p {
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 560px;
+  margin: 0 auto 36px;
+  line-height: 1.65;
+}
+
+/* ============================================================
+   WHATSAPP BLOCK
+   ============================================================ */
+.whatsapp-block {
+  background: #0a1612;
+  border: 1px solid rgba(16,185,129,0.15);
+  border-radius: 20px;
+  padding: 32px;
+  margin-top: 40px;
+}
+.wa-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.wa-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #6ee7b7;
+}
+.wa-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+.wa-code {
+  background: #050e0b;
+  border: 1px solid rgba(16,185,129,0.08);
+  border-radius: 12px;
+  padding: 22px;
+  margin-bottom: 18px;
+}
+.wa-code pre {
+  color: #d1fae5;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.copy-btn {
+  background: rgba(16,185,129,0.12);
+  color: #6ee7b7;
+  border: 1px solid rgba(16,185,129,0.25);
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.copy-btn:hover {
+  background: #10b981;
+  color: #052e1e;
+  box-shadow: 0 4px 14px rgba(16,185,129,0.2);
+}
+.copy-btn.copied {
+  background: #10b981;
+  color: #052e1e;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer {
+  margin-top: 100px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+footer a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+footer a:hover { color: #fff; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 640px) {
+  .page-wrap { padding: 0 16px 80px; }
+  nav { padding-top: 20px; }
+  .nav-links { display: none; }
+  .hero { padding: 60px 0 60px; }
+  .hero h1 { letter-spacing: -1px; }
+  .hero-cta { flex-direction: column; align-items: center; }
+  .btn { width: 100%; max-width: 340px; justify-content: center; }
+  .flow-arrow { display: none; }
+  .flow-diagram { gap: 16px; justify-content: flex-start; overflow-x: auto; }
+  .section { padding: 60px 0; }
+  .cta-box { padding: 40px 24px; }
+  footer { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- Ambient background -->
+<div class="ambient ambient-1"></div>
+<div class="ambient ambient-2"></div>
+<div class="ambient ambient-3"></div>
+
+<div class="page-wrap">
+
+  <!-- ===== NAV ===== -->
+  <nav>
+    <span class="nav-logo">Zalei Atlas</span>
+    <ul class="nav-links">
+      <li><a href="#renders">Estilos</a></li>
+      <li><a href="#texturas">Texturas</a></li>
+      <li><a href="#fases">Fases</a></li>
+      <li><a href="#demo">Demo</a></li>
+    </ul>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="hero-eyebrow">
+      <span>🏗️</span> Maqueta 3D Activa
+    </div>
+    <h1>De Maqueta Técnica<br>A Renders, 3D Y Recorribles</h1>
+    <p class="hero-sub">Una base precisa para crear visualizaciones de Zalei sin perder ubicación, escala ni detalles.</p>
+    <p class="hero-body">Primero construimos una maqueta técnica basada en el predio real. Desde esa misma base podemos generar distintos estilos de render: técnico, realista, premium, con etiquetas, sin etiquetas, recorrible o pensado para inversores.</p>
+    <div class="hero-cta">
+      <a href="#renders" class="btn btn-primary" id="btn-ver-estilos">Ver Estilos De Render</a>
+      <a href="viewers/index_3d.html" class="btn btn-outline-indigo" id="btn-abrir-3d-hero">Abrir Maqueta 3D</a>
+      <a href="chadi-review.html" class="btn btn-ghost" id="btn-revision-hero">Ver Revisión Visual</a>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== UNA MISMA BASE ===== -->
+  <section class="section">
+    <p class="section-label">Base técnica</p>
+    <h2 class="section-title">Una Misma Base, Muchos Resultados</h2>
+    <p class="section-body">La maqueta 3D funciona como estructura común. Cambiando materiales, iluminación, cámara, etiquetas y nivel de realismo, se pueden producir versiones muy diferentes sin rehacer todo desde cero.</p>
+
+    <div class="flow-diagram">
+      <div class="flow-step">
+        <div class="flow-icon">🗺️</div>
+        <span class="flow-label">Atlas Preciso</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">🏗️</div>
+        <span class="flow-label">Maqueta 3D</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">🎨</div>
+        <span class="flow-label">Texturas</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">🖼️</div>
+        <span class="flow-label">Renders</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">🎮</div>
+        <span class="flow-label">Recorribles</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">🎬</div>
+        <span class="flow-label">Video / Presentación</span>
+      </div>
+    </div>
+
+    <!-- Overview image -->
+    <div class="assets-section">
+      <img src="assets/01_atlas_overview.jpg" alt="Overview del Atlas de Zalei — vista general del predio" loading="lazy">
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== ESTILOS DE RENDER ===== -->
+  <section class="section" id="renders">
+    <p class="section-label">Visualizaciones posibles</p>
+    <h2 class="section-title">Estilos De Render Posibles</h2>
+    <p class="section-body">Con una misma base técnica — Atlas + coordenadas + maqueta 3D — podemos producir distintos tipos de visualización sin perder ubicación, proporciones ni detalles.</p>
+
+    <div class="renders-grid">
+
+      <!-- A: Técnico -->
+      <div class="render-card rc-tecnico">
+        <div class="render-visual vis-sky">
+          <span class="vis-emoji">📐</span>
+        </div>
+        <div class="render-body">
+          <span class="rc-tag tag-sky">Técnico</span>
+          <h3>Render Técnico</h3>
+          <p class="rc-desc">Volúmenes limpios, colores por sector y etiquetas claras. Ideal para revisar estructura, ubicación y organización general del predio.</p>
+          <p class="rc-uso"><strong>Uso:</strong> Control interno / revisión técnica.</p>
+        </div>
+      </div>
+
+      <!-- B: Aéreo -->
+      <div class="render-card rc-aereo">
+        <div class="render-visual vis-green">
+          <span class="vis-emoji">🚁</span>
+        </div>
+        <div class="render-body">
+          <span class="rc-tag tag-green">Realista</span>
+          <h3>Render Realista Aéreo</h3>
+          <p class="rc-desc">Vista tipo drone con caminos de tierra, techos metálicos, silos de acero, campo, galpones y entorno agrícola. La escala real del predio desde arriba.</p>
+          <p class="rc-uso"><strong>Uso:</strong> Presentación general de Zalei.</p>
+        </div>
+      </div>
+
+      <!-- C: Premium -->
+      <div class="render-card rc-premium">
+        <div class="render-visual vis-amber">
+          <span class="vis-emoji">✨</span>
+        </div>
+        <div class="render-body">
+          <span class="rc-tag tag-amber">Premium</span>
+          <h3>Render Premium Para Inversores</h3>
+          <p class="rc-desc">Versión más cuidada, con iluminación de atardecer, colores sobrios y estética de presentación comercial. Alta calidad visual.</p>
+          <p class="rc-uso"><strong>Uso:</strong> Carpetas, reuniones, inversores, sitio web.</p>
+        </div>
+      </div>
+
+      <!-- D: Masterplan -->
+      <div class="render-card rc-masterplan">
+        <div class="render-visual vis-indigo">
+          <span class="vis-emoji">🗂️</span>
+        </div>
+        <div class="render-body">
+          <span class="rc-tag tag-indigo">Masterplan</span>
+          <h3>Masterplan Etiquetado</h3>
+          <p class="rc-desc">Vista superior limpia con nombres de sectores, líneas de llamada y lectura rápida. Explica el predio completo sin necesidad de recorrerlo físicamente.</p>
+          <p class="rc-uso"><strong>Uso:</strong> Presentaciones, planos, documentación.</p>
+        </div>
+      </div>
+
+      <!-- E: Sin etiquetas -->
+      <div class="render-card rc-clean">
+        <div class="render-visual vis-grey">
+          <span class="vis-emoji">🖼️</span>
+        </div>
+        <div class="render-body">
+          <span class="rc-tag tag-grey">Limpio</span>
+          <h3>Render Sin Etiquetas</h3>
+          <p class="rc-desc">Imagen limpia, sin textos, pensada para portada, sitio web o presentación visual. El predio habla solo.</p>
+          <p class="rc-uso"><strong>Uso:</strong> Material comercial y portadas.</p>
+        </div>
+      </div>
+
+      <!-- F: Antes / después -->
+      <div class="render-card rc-antes">
+        <div class="render-visual vis-rose">
+          <span class="vis-emoji">🔄</span>
+        </div>
+        <div class="render-body">
+          <span class="rc-tag tag-rose">Comparativo</span>
+          <h3>Antes / Después</h3>
+          <p class="rc-desc">Comparar estado actual con ampliaciones posibles: nuevos galpones, silo-bolsas, mejoras de caminos o infraestructura. Muestra el impacto real de cada decisión.</p>
+          <p class="rc-uso"><strong>Uso:</strong> Planificación de obra / toma de decisiones.</p>
+        </div>
+      </div>
+
+      <!-- G: Recorrible -->
+      <div class="render-card rc-recorrible">
+        <div class="render-visual vis-violet">
+          <span class="vis-emoji">🎮</span>
+        </div>
+        <div class="render-body">
+          <span class="rc-tag tag-violet">Interactivo</span>
+          <h3>Recorrible Web</h3>
+          <p class="rc-desc">Modelo navegable desde el navegador: rotar, acercar, recorrer zonas, activar o desactivar etiquetas. Funciona en celular y computadora.</p>
+          <p class="rc-uso"><strong>Uso:</strong> Mostrar el proyecto por link.</p>
+        </div>
+      </div>
+
+      <!-- H: Video -->
+      <div class="render-card rc-video">
+        <div class="render-visual vis-orange">
+          <span class="vis-emoji">🎬</span>
+        </div>
+        <div class="render-body">
+          <span class="rc-tag tag-orange">Video</span>
+          <h3>Video Recorrido</h3>
+          <p class="rc-desc">Video tipo drone o cámara guiada recorriendo acceso, galpones, planta, silos y terreno de expansión. Secuencia cinemática del predio completo.</p>
+          <p class="rc-uso"><strong>Uso:</strong> Presentación institucional.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== TEXTURAS ===== -->
+  <section class="section" id="texturas">
+    <p class="section-label">Materiales</p>
+    <h2 class="section-title">Texturas Que Podemos Aplicar</h2>
+    <p class="section-body">Las texturas se aplican sobre geometría ya ubicada. No se usan para inventar posiciones — simplemente le dan realismo a lo que ya está bien colocado en la maqueta.</p>
+
+    <div class="textures-grid">
+      <div class="texture-item">
+        <span class="texture-icon">🏭</span>
+        <div class="texture-info">
+          <h4>Galpones</h4>
+          <p>Chapa metálica clara</p>
+        </div>
+      </div>
+      <div class="texture-item">
+        <span class="texture-icon">🥫</span>
+        <div class="texture-info">
+          <h4>Silos grandes</h4>
+          <p>Acero / metal gris</p>
+        </div>
+      </div>
+      <div class="texture-item">
+        <span class="texture-icon">⚗️</span>
+        <div class="texture-info">
+          <h4>Tanques</h4>
+          <p>Metal claro</p>
+        </div>
+      </div>
+      <div class="texture-item">
+        <span class="texture-icon">🛤️</span>
+        <div class="texture-info">
+          <h4>Caminos</h4>
+          <p>Tierra compactada</p>
+        </div>
+      </div>
+      <div class="texture-item">
+        <span class="texture-icon">🌾</span>
+        <div class="texture-info">
+          <h4>Campo</h4>
+          <p>Cultivo / suelo agrícola</p>
+        </div>
+      </div>
+      <div class="texture-item">
+        <span class="texture-icon">🟤</span>
+        <div class="texture-info">
+          <h4>Guano</h4>
+          <p>Textura marrón plana</p>
+        </div>
+      </div>
+      <div class="texture-item">
+        <span class="texture-icon">⚙️</span>
+        <div class="texture-info">
+          <h4>Cintas / pasarelas</h4>
+          <p>Metal oscuro / tubular</p>
+        </div>
+      </div>
+      <div class="texture-item">
+        <span class="texture-icon">🏠</span>
+        <div class="texture-info">
+          <h4>Oficinas / viviendas</h4>
+          <p>Techos claros, simple</p>
+        </div>
+      </div>
+      <div class="texture-item">
+        <span class="texture-icon">🌱</span>
+        <div class="texture-info">
+          <h4>Terreno nuevo</h4>
+          <p>Suelo agrícola / expansión</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== FASES ===== -->
+  <section class="section" id="fases">
+    <p class="section-label">Proceso</p>
+    <h2 class="section-title">Qué Conviene Hacer Primero</h2>
+    <p class="section-body">Tres pasos claros para pasar de la maqueta técnica actual a un resultado visual de nivel profesional.</p>
+
+    <div class="phases-row">
+      <div class="phase-card phase-1">
+        <p class="phase-num">FASE 1</p>
+        <h3>Maqueta Técnica Mejorada</h3>
+        <p>Volúmenes más claros, alturas estimadas y sectores bien separados. La base que garantiza que todo lo que viene después quede bien ubicado.</p>
+      </div>
+      <div class="phase-card phase-2">
+        <p class="phase-num">FASE 2</p>
+        <h3>Render De Estilos</h3>
+        <p>Probar 3 o 4 estilos visuales rápidos para elegir una dirección. Técnico, aéreo realista, premium para inversores, masterplan etiquetado.</p>
+      </div>
+      <div class="phase-card phase-3">
+        <p class="phase-num">FASE 3</p>
+        <h3>Render Final / Recorrible</h3>
+        <p>Aplicar texturas, iluminación, cámaras y exportar imágenes o recorrido web. El producto final listo para inversores, web y presentaciones.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== DEMO ===== -->
+  <section class="section" id="demo">
+    <p class="section-label">Herramientas activas</p>
+    <h2 class="section-title">Demo Actual</h2>
+    <p class="section-body">La maqueta técnica ya existe. Podés explorar la base actual, el mapa del predio y la revisión visual ahora mismo.</p>
+
+    <div class="demo-grid">
+      <a href="viewers/index_3d.html" class="demo-tool" id="btn-demo-3d">
+        <span class="demo-tool-icon">🏗️</span>
+        <span class="demo-tool-title">Maqueta 3D</span>
+        <span class="demo-tool-desc">Blockout tridimensional interactivo. Silos, galpones, terrenos y volúmenes del predio completo.</span>
+        <span class="demo-tool-cta">Abrir →</span>
+      </a>
+      <a href="viewers/index_2d.html" class="demo-tool" id="btn-demo-2d">
+        <span class="demo-tool-icon">🗺️</span>
+        <span class="demo-tool-title">Mapa 2D</span>
+        <span class="demo-tool-desc">Visualizador interactivo sobre imagen satelital. Todas las zonas del Atlas.</span>
+        <span class="demo-tool-cta">Abrir →</span>
+      </a>
+      <a href="viewers/crop_viewer.html" class="demo-tool" id="btn-demo-crops">
+        <span class="demo-tool-icon">🔍</span>
+        <span class="demo-tool-title">Crop Viewer</span>
+        <span class="demo-tool-desc">Inspector de recortes de alta resolución por zona. Detalle máximo del predio.</span>
+        <span class="demo-tool-cta">Abrir →</span>
+      </a>
+      <a href="chadi-review.html" class="demo-tool" id="btn-demo-review">
+        <span class="demo-tool-icon">📸</span>
+        <span class="demo-tool-title">Revisión Visual</span>
+        <span class="demo-tool-desc">Imágenes comparativas del Atlas. Optimizada para celular.</span>
+        <span class="demo-tool-cta">Abrir →</span>
+      </a>
+    </div>
+    <p class="demo-note">⚠️ Algunos visualizadores pueden requerir los archivos completos del Atlas para funcionar correctamente online.</p>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== CTA FINAL ===== -->
+  <section class="section">
+    <div class="cta-box">
+      <h2>Próximo Paso Recomendado</h2>
+      <p>Lo más lógico ahora es generar una primera tanda de previews de estilo, no renders finales: una versión técnica, una realista aérea, una premium para inversores y una masterplan etiquetada. Con eso se elige una dirección visual antes de invertir tiempo en texturas finales.</p>
+      <a href="#renders" class="btn btn-primary" id="btn-elegir-estilo">Elegir Estilo De Render</a>
+    </div>
+
+    <!-- WhatsApp -->
+    <div class="whatsapp-block">
+      <div class="wa-header">
+        <span style="font-size:22px">💬</span>
+        <span class="wa-title">Mensaje Para Mandar Por WhatsApp</span>
+      </div>
+      <p class="wa-subtitle">Texto listo para copiar y enviar a Chadi:</p>
+      <div class="wa-code">
+        <pre id="wa-text">Chadi, te paso la nueva página del Atlas de Zalei.
+
+Ya no es solo una revisión técnica: la idea es mostrar todo lo que podemos hacer a partir de la maqueta 3D y del mapa preciso del predio.
+
+Con esta base podemos crear renders de distintos estilos: vista aérea realista, render premium para inversores, plano técnico etiquetado, render sin etiquetas, antes/después, recorrible web y video tipo drone.
+
+Link: https://www.inglesconjuanma.com.ar/zalei
+
+La idea ahora sería elegir qué estilo visual conviene probar primero.</pre>
+      </div>
+      <button class="copy-btn" id="btn-copy-wa">
+        <span>📋</span> <span id="copy-btn-text">Copiar Mensaje</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div>
+      <a href="v1/index.html" id="link-v1">← Primera Versión Del Atlas</a>
+    </div>
+    <div>© 2026 ZALEI · 34°17′S · 61°20′O · Argentina</div>
+  </footer>
+
+</div><!-- /page-wrap -->
+
+<script>
+(function () {
+  var btn     = document.getElementById('btn-copy-wa');
+  var textEl  = document.getElementById('wa-text');
+  var btnText = document.getElementById('copy-btn-text');
+
+  btn.addEventListener('click', function () {
+    var msg = textEl.textContent.trim();
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(msg).then(ok, fallback);
+    } else {
+      fallback();
+    }
+
+    function ok() {
+      btn.classList.add('copied');
+      btnText.textContent = '✓ ¡Copiado!';
+      setTimeout(function () {
+        btn.classList.remove('copied');
+        btnText.textContent = 'Copiar Mensaje';
+      }, 2200);
+    }
+
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = msg;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); ok(); } catch (e) { alert('Seleccionalo manualmente.'); }
+      document.body.removeChild(ta);
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="es">
+<head>
+<script src="auth.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Zalei Atlas — Estilos De Etiquetas Sobre Mapa Real</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      background:#08090c;color:#f5f2ea;
+      font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+      padding:16px;
+    }
+    h1{text-align:center;font-size:clamp(20px,3vw,36px);margin:8px 0 4px;letter-spacing:-.04em}
+    .sub{text-align:center;color:#a7a092;font-size:14px;margin-bottom:12px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:1400px;margin:0 auto}
+    .cell{
+      position:relative;border-radius:10px;overflow:hidden;
+      background:#111;border:2px solid rgba(255,255,255,.08);
+    }
+    .cell canvas{width:100%;height:100%;display:block}
+    .cell-label{
+      position:absolute;bottom:10px;left:10px;
+      background:rgba(0,0,0,.7);padding:6px 12px;border-radius:6px;
+      font-size:12px;font-weight:700;pointer-events:none;
+      border:1px solid rgba(255,255,255,.1);
+      z-index:2;
+    }
+    .cell-num{
+      position:absolute;top:10px;left:10px;
+      width:28px;height:28px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(216,181,109,.15);color:#f1d58a;
+      font-weight:900;font-size:13px;border:1px solid rgba(216,181,109,.35);
+      pointer-events:none;z-index:2;
+    }
+    .controls{
+      display:flex;gap:8px;justify-content:center;
+      flex-wrap:wrap;margin:12px auto;max-width:800px;
+    }
+    .btn{
+      padding:8px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.14);
+      background:#1a1e27;color:#fff;font-weight:700;font-size:12px;
+      cursor:pointer;transition:.18s ease;
+    }
+    .btn:hover{transform:translateY(-1px);border-color:rgba(216,181,109,.55);background:#222838}
+    .btn.primary{background:linear-gradient(135deg,#d8b56d,#8b6b2e);color:#111;border-color:transparent}
+    .info{max-width:800px;margin:16px auto 0;padding:16px;background:rgba(255,255,255,.04);border-radius:12px;font-size:13px;color:#bdb4a4;line-height:1.5;border:1px solid rgba(255,255,255,.06)}
+    .info b{color:#f1d58a}
+    @media (max-width:800px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<h1>Estilos De Etiquetas</h1>
+<p class="sub">Mismo mapa, 4 estilos distintos. Seleccioná uno para aplicarlo al Atlas.</p>
+
+<div class="controls" id="controls">
+  <button class="btn primary" data-style="corporate">Corporate Premium (base)</button>
+  <button class="btn" data-style="minimal">Minimal Editorial</button>
+  <button class="btn" data-style="technical">Technical Legend</button>
+  <button class="btn" data-style="accent">Accent-Coded</button>
+</div>
+
+<div class="grid" id="mapGrid">
+  <div class="cell" data-style="minimal">
+    <canvas id="c_minimal"></canvas>
+    <div class="cell-num">1</div>
+    <div class="cell-label" style="color:rgba(255,255,255,.7)">Minimal Editorial</div>
+  </div>
+  <div class="cell" data-style="corporate">
+    <canvas id="c_corporate"></canvas>
+    <div class="cell-num">2</div>
+    <div class="cell-label" style="color:#fff">Corporate Premium</div>
+  </div>
+  <div class="cell" data-style="technical">
+    <canvas id="c_technical"></canvas>
+    <div class="cell-num">3</div>
+    <div class="cell-label" style="color:#f1d58a">Technical Legend</div>
+  </div>
+  <div class="cell" data-style="accent">
+    <canvas id="c_accent"></canvas>
+    <div class="cell-num">4</div>
+    <div class="cell-label" style="color:#8ec5ff">Accent-Coded</div>
+  </div>
+</div>
+
+<div class="controls" style="margin-top:4px">
+  <button class="btn primary small" id="btnZones">Alternar zonas</button>
+  <button class="btn primary small" id="btnRoads" style="background:#1a1e27;border-color:rgba(255,255,255,.14);color:#fff;background:linear-gradient(135deg,#d8b56d,#8b6b2e);color:#111;border-color:transparent">Alternar calles</button>
+  <span style="color:#6f685b;font-size:12px;align-self:center">(mostrar/ocultar capas)</span>
+</div>
+
+<div class="info">
+  <b>Estilo activo:</b> <span id="activeStyleLabel">Corporate Premium</span> ·
+  Los cambios persisten en localStorage ·
+  <b>Base:</b> Corporate Premium + <b>Correcciones:</b> Accent-Coded + <b>Planos:</b> Technical Legend
+</div>
+
+<script>
+// ===== DATA =====
+const SATELLITE_SRC = '../zalei_satellite_5042x4474.png';
+const IMG_W = 5042, IMG_H = 4474;
+
+const ZONES = [
+  {id:'Z01',name:'Recr\u00eda Existente',bbox:{x:114,y:122,w:1023,h:270},color:'#FFD700'},
+  {id:'Z02',name:'Guano',bbox:{x:2182,y:544,w:1302,h:2097},color:'#A0522D'},
+  {id:'Z03_E01',name:'Galpon 01',bbox:{x:955,y:2157,w:789,h:176},color:'#00B4FF'},
+  {id:'Z03_E02',name:'Galpon 02',bbox:{x:953,y:2445,w:787,h:118},color:'#00B4FF'},
+  {id:'Clasificadora',name:'Clasificadora',bbox:{x:913,y:2560,w:593,h:301},color:'#00B4FF'},
+  {id:'Z03_E04',name:'Galpon 04',bbox:{x:958,y:2829,w:765,h:138},color:'#00B4FF'},
+  {id:'Z03_E05',name:'Galpon 05',bbox:{x:964,y:3073,w:783,h:201},color:'#00B4FF'},
+  {id:'Z03_E06',name:'Galpon 06',bbox:{x:963,y:3274,w:789,h:285},color:'#00B4FF'},
+  {id:'Z03_E07',name:'Galpon 07',bbox:{x:453,y:2062,w:242,h:827},color:'#00B4FF'},
+  {id:'Z03_E08',name:'Galpon 08',bbox:{x:475,y:2398,w:229,h:850},color:'#00B4FF'},
+  {id:'Z03_E09',name:'Galpon 09',bbox:{x:520,y:3078,w:234,h:781},color:'#00B4FF'},
+  {id:'Z03_E10',name:'Galpon 10',bbox:{x:536,y:2784,w:191,h:737},color:'#00B4FF'},
+  {id:'Taller',name:'Taller Ponedoras',bbox:{x:750,y:3642,w:152,h:213},color:'#00B4FF'},
+  {id:'Z04',name:'Planta de alimento',bbox:{x:2319,y:3309,w:160,h:432},color:'#C800FF'},
+  {id:'Z05',name:'Cintas Transportadoras',bbox:{x:788,y:2254,w:147,h:961},color:'#FFFFFF'},
+  {id:'Z06',name:'Silos secos',bbox:{x:2745,y:3206,w:706,h:432},color:'#FF1493'},
+  {id:'Z07',name:'Terreno Nuevo',bbox:{x:3635,y:0,w:1407,h:4124},color:'#00FF7F'},
+  {id:'Z08',name:'Casa de gerencia',bbox:{x:3401,y:3820,w:234,h:278},color:'#0B206B'},
+  {id:'Z09',name:'Departamentos',bbox:{x:479,y:3874,w:452,h:140},color:'#6A5B19'},
+  {id:'Z10',name:'Clasificadora',bbox:{x:901,y:2571,w:608,h:264},color:'#B3ABB0'},
+  {id:'Z11',name:'Casa mant. sur',bbox:{x:1770,y:3965,w:141,h:110},color:'#FF0F6D'},
+  {id:'Z12',name:'Taller',bbox:{x:701,y:3623,w:257,h:237},color:'#347C65'},
+  {id:'Z13',name:'Casa mant. norte',bbox:{x:1561,y:373,w:350,h:170},color:'#284695'},
+  {id:'Z14',name:'Aceitera',bbox:{x:2471,y:3437,w:117,h:244},color:'#F23DD7'},
+  {id:'Z15',name:'Silos h\u00famedos',bbox:{x:2663,y:3096,w:81,h:164},color:'#CB8F8D'},
+  {id:'Z16',name:'Silos almacenamiento',bbox:{x:2448,y:3218,w:165,h:218},color:'#6010D0'},
+  {id:'Z17',name:'Planta descarga granos',bbox:{x:2361,y:3037,w:59,h:209},color:'#7A5B13'},
+  {id:'Z18',name:'Secado y limpieza',bbox:{x:2663,y:3247,w:86,h:123},color:'#FE2948'},
+  {id:'Z19',name:'Tanques de aceite',bbox:{x:2477,y:3676,w:115,h:57},color:'#E66981'},
+  {id:'Z20',name:'Descarga de alimento',bbox:{x:2251,y:3188,w:184,h:260},color:'#AF1BDF'},
+  {id:'Z21',name:'Oficinas',bbox:{x:2067,y:3183,w:124,h:356},color:'#B39BBD'},
+  {id:'Z22',name:'Balanza de camiones',bbox:{x:1999,y:3188,w:73,h:356},color:'#4C3FAC'},
+  {id:'Z23',name:'Recr\u00eda 23',bbox:{x:3322,y:990,w:1219,h:218},color:'#FFD700'},
+  {id:'Z24',name:'Recr\u00eda 24',bbox:{x:3656,y:1000,w:1219,h:218},color:'#FFD700'},
+];
+
+const ROADS = [
+  {id:'R01',type:'externa',w:108,color:'#FFD700',pts:[{x:39,y:4216},{x:4987,y:4199}]},
+  {id:'R03',type:'externa',w:14,color:'#FFD700',pts:[{x:193,y:4096},{x:4631,y:4096}]},
+  {id:'C02',type:'perimetral',w:20,color:'#FF6600',pts:[{x:246,y:4136},{x:4863,y:4126},{x:4849,y:23}]},
+  {id:'C03',type:'perimetral',w:20,color:'#FF6600',pts:[{x:23,y:4167},{x:14,y:46},{x:4858,y:28}]},
+  {id:'C28',type:'externa',w:108,color:'#FFD700',pts:[{x:4996,y:4201},{x:4991,y:25}]},
+];
+
+// ===== STATE =====
+let showZones = true, showRoads = true;
+let activeStyle = localStorage.getItem('zalei_label_style') || 'corporate';
+let imgLoaded = false;
+
+// ===== STYLE RENDERERS =====
+function renderZoneBox(ctx, bbox, color, style) {
+  const {x,y,w,h} = bbox;
+  ctx.save();
+  // Zone fill
+  ctx.fillStyle = color + '22';
+  ctx.fillRect(x,y,w,h);
+  // Zone border
+  ctx.strokeStyle = color + '88';
+  ctx.lineWidth = style === 'minimal' ? 1 : 2;
+  ctx.setLineDash(style === 'technical' ? [4,4] : []);
+  ctx.strokeRect(x,y,w,h);
+  ctx.restore();
+}
+
+function renderLabel(ctx, cx, cy, text, color, style, idx) {
+  ctx.save();
+  const fontSize = style === 'corporate' ? 14 : style === 'minimal' ? 16 : 13;
+  ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+  const tm = ctx.measureText(text);
+  const tw = tm.width, th = fontSize * 1.2;
+  const pad = 6;
+
+  switch(style) {
+    case 'minimal':
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 6;
+      ctx.fillText(text, cx, cy - 6);
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(cx, cy - 3); ctx.lineTo(cx, cy + 8); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy + 10, 2, 0, Math.PI*2); ctx.fill();
+      break;
+
+    case 'corporate':
+      ctx.fillStyle = 'rgba(255,255,255,0.92)';
+      ctx.shadowColor = 'rgba(0,0,0,0.25)'; ctx.shadowBlur = 8;
+      const rx = cx - tw/2 - pad, ry = cy - th - 12, rw = tw + pad*2, rh = th + pad;
+      ctx.beginPath(); ctx.roundRect(rx, ry, rw, rh, 4); ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#1a1a1a';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      ctx.fillText(text, cx, cy - 14);
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(cx, cy - 6); ctx.lineTo(cx, cy + 6); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy + 8, 2.5, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.fill();
+      break;
+
+    case 'technical':
+      // Number badge
+      const badgeR = 11;
+      ctx.fillStyle = '#f1d58a';
+      ctx.shadowColor = 'rgba(0,0,0,0.3)'; ctx.shadowBlur = 4;
+      ctx.beginPath(); ctx.arc(cx - tw/2 - badgeR - 4, cy - th/2, badgeR, 0, Math.PI*2); ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#111';
+      ctx.font = `bold 11px Arial, sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const num = String(idx + 1).padStart(2,'0');
+      ctx.fillText(num, cx - tw/2 - badgeR - 4, cy - th/2);
+      // Text
+      ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+      ctx.fillStyle = '#fff';
+      ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 5;
+      ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+      ctx.fillText(text, cx - tw/2 + 4, cy);
+      // Leader line
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = color + '88';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3,3]);
+      const lx = cx - tw/2 + 4;
+      ctx.beginPath(); ctx.moveTo(lx, cy + th/2 + 4); ctx.lineTo(lx, cy + th/2 + 16); ctx.stroke();
+      ctx.setLineDash([]);
+      break;
+
+    case 'accent':
+      ctx.fillStyle = 'rgba(0,120,255,0.85)';
+      ctx.shadowColor = 'rgba(0,120,255,0.25)'; ctx.shadowBlur = 12;
+      const ax = cx - tw/2 - pad, ay = cy - th - 12, aw = tw + pad*2, ah = th + pad;
+      ctx.beginPath(); ctx.roundRect(ax, ay, aw, ah, 4); ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      ctx.fillText(text, cx, cy - 14);
+      ctx.strokeStyle = 'rgba(0,150,255,0.5)';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(cx, cy - 6); ctx.lineTo(cx, cy + 6); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy + 8, 3, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(0,150,255,0.5)'; ctx.fill();
+      break;
+  }
+  ctx.restore();
+}
+
+function renderRoad(ctx, road, style) {
+  const pts = road.pts;
+  if (!pts || pts.length < 2) return;
+  ctx.save();
+  const isAlambrado = road.type === 'alambrado';
+  const w = isAlambrado ? 3 : Math.max(2, road.w / 20);
+  ctx.strokeStyle = isAlambrado ? (style === 'accent' ? '#4488FF' : road.color) : road.color;
+  ctx.lineWidth = w;
+  ctx.globalAlpha = style === 'minimal' ? 0.4 : 0.6;
+  if (isAlambrado) ctx.setLineDash([6,6]);
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+  ctx.stroke();
+  ctx.restore();
+}
+
+// ===== CANVAS RENDER =====
+function renderAll() {
+  const styleCanvases = {
+    minimal: document.getElementById('c_minimal'),
+    corporate: document.getElementById('c_corporate'),
+    technical: document.getElementById('c_technical'),
+    accent: document.getElementById('c_accent'),
+  };
+
+  for (const [style, canvas] of Object.entries(styleCanvases)) {
+    const parent = canvas.parentElement;
+    const w = parent.clientWidth, h = parent.clientHeight;
+    canvas.width = w * 2; canvas.height = h * 2; // retina
+    canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(2,2);
+
+    // Background: satellite image
+    if (imgLoaded) {
+      ctx.drawImage(window.satImg, 0, 0, w, h);
+    } else {
+      ctx.fillStyle = '#1a2418';
+      ctx.fillRect(0,0,w,h);
+      ctx.fillStyle = '#3a5a2a';
+      ctx.font = '14px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('Cargando imagen satelital...', w/2, h/2);
+    }
+
+    // Roads
+    if (showRoads) {
+      ROADS.forEach(r => renderRoad(ctx, r, style));
+    }
+
+    // Zones
+    if (showZones) {
+      ZONES.forEach((z, i) => {
+        const bbox = z.bbox;
+        // Scale coords from 5042x4474 to canvas w x h
+        const sx = w / IMG_W, sy = h / IMG_H;
+        const scaledBox = {
+          x: bbox.x * sx, y: bbox.y * sy,
+          w: bbox.w * sx, h: bbox.h * sy
+        };
+        renderZoneBox(ctx, scaledBox, z.color, style);
+        const cx = scaledBox.x + scaledBox.w/2;
+        const cy = scaledBox.y;
+        renderLabel(ctx, cx, cy, z.name, z.color, style, i);
+      });
+    }
+
+    // Style name watermark
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.font = 'bold 36px sans-serif';
+    ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
+    ctx.fillText(style.toUpperCase(), w - 16, h - 16);
+    ctx.restore();
+  }
+}
+
+// ===== IMAGE LOADING =====
+window.satImg = new Image();
+window.satImg.onload = () => {
+  imgLoaded = true;
+  renderAll();
+};
+window.satImg.src = SATELLITE_SRC;
+
+// ===== RESIZE =====
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(renderAll, 200);
+});
+
+// ===== CONTROLS =====
+document.querySelectorAll('#controls .btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    activeStyle = btn.dataset.style;
+    localStorage.setItem('zalei_label_style', activeStyle);
+    document.querySelectorAll('#controls .btn').forEach(b => b.className = 'btn');
+    btn.className = 'btn primary';
+    // Highlight active cell
+    document.querySelectorAll('.cell').forEach(c => c.style.borderColor = 'rgba(255,255,255,.08)');
+    const cell = document.querySelector(`.cell[data-style="${activeStyle}"]`);
+    if (cell) cell.style.borderColor = '#d8b56d';
+    const names = {corporate:'Corporate Premium',minimal:'Minimal Editorial',technical:'Technical Legend',accent:'Accent-Coded'};
+    document.getElementById('activeStyleLabel').textContent = names[activeStyle] || activeStyle;
+  });
+});
+
+document.getElementById('btnZones').addEventListener('click', () => {
+  showZones = !showZones;
+  document.getElementById('btnZones').style.opacity = showZones ? '1' : '0.4';
+  renderAll();
+});
+
+document.getElementById('btnRoads').addEventListener('click', () => {
+  showRoads = !showRoads;
+  document.getElementById('btnRoads').style.opacity = showRoads ? '1' : '0.4';
+  renderAll();
+});
+
+// ===== INIT =====
+// Set initial active style
+document.querySelectorAll('#controls .btn').forEach(b => {
+  if (b.dataset.style === activeStyle) {
+    b.className = 'btn primary';
+    const cell = document.querySelector(`.cell[data-style="${activeStyle}"]`);
+    if (cell) cell.style.borderColor = '#d8b56d';
+  }
+});
+const names = {corporate:'Corporate Premium',minimal:'Minimal Editorial',technical:'Technical Legend',accent:'Accent-Coded'};
+document.getElementById('activeStyleLabel').textContent = names[activeStyle] || activeStyle;
+</script>
+</body>
+</html>

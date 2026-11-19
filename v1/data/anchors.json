@@ -1,0 +1,83 @@
+[
+  {
+    "id": "anchor-recria",
+    "x": 0.20,
+    "y": 0.34,
+    "zoneId": "Z1",
+    "subzoneId": "Z1-A1",
+    "type": "building",
+    "label": "Galpón de Recría"
+  },
+  {
+    "id": "anchor-ponedoras-1",
+    "x": 0.22,
+    "y": 0.52,
+    "zoneId": "Z2",
+    "subzoneId": "Z2-B1",
+    "type": "building",
+    "label": "Línea Ponedoras Norte"
+  },
+  {
+    "id": "anchor-ponedoras-2",
+    "x": 0.18,
+    "y": 0.58,
+    "zoneId": "Z2",
+    "subzoneId": "Z2-B1",
+    "type": "building",
+    "label": "Línea Ponedoras Sur"
+  },
+  {
+    "id": "anchor-z6-silos",
+    "x": 0.45,
+    "y": 0.68,
+    "zoneId": "Z6",
+    "subzoneId": "Z6-C1",
+    "type": "silo-cluster",
+    "label": "Silos de Granos (Z6)"
+  },
+  {
+    "id": "anchor-z6-plant",
+    "x": 0.48,
+    "y": 0.72,
+    "zoneId": "Z6",
+    "subzoneId": "Z6-C2",
+    "type": "building",
+    "label": "Planta de Procesamiento (Z6)"
+  },
+  {
+    "id": "anchor-z6-dock",
+    "x": 0.52,
+    "y": 0.70,
+    "zoneId": "Z6",
+    "subzoneId": "Z6-C3",
+    "type": "dock",
+    "label": "Área de Carga (Z6)"
+  },
+  {
+    "id": "anchor-silosbolsa",
+    "x": 0.58,
+    "y": 0.74,
+    "zoneId": "Z3",
+    "subzoneId": "Z3-A1",
+    "type": "storage",
+    "label": "Silos Bolsa"
+  },
+  {
+    "id": "anchor-expansion",
+    "x": 0.74,
+    "y": 0.38,
+    "zoneId": "Z4",
+    "subzoneId": "Z4-E1",
+    "type": "expansion-area",
+    "label": "Zona de Expansión Este"
+  },
+  {
+    "id": "anchor-admin",
+    "x": 0.11,
+    "y": 0.62,
+    "zoneId": "Z5",
+    "subzoneId": "Z5-A1",
+    "type": "office",
+    "label": "Administración"
+  }
+]

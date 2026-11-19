@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" viewBox="0 0 5042 4474" width="5042" height="4474" id="zalei-atlas">
+  <desc>Zalei Agropecuaria - Atlas SVG. Source: atlas/zones.json + atlas/microzones.json</desc>
+
+  <g id="layer-labels" inkscape:label="Zone Labels">
+    <g id="label-Z01" class="zone-label" data-zone="Z01">
+      <rect x="472" y="213" width="465" height="58" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="705" y="259" text-anchor="middle" font-family="Arial,sans-serif" font-size="48" font-weight="bold" fill="#FFD700">Recría Existente</text>
+      <text x="705" y="298" text-anchor="middle" font-family="Arial,sans-serif" font-size="33" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z02" class="zone-label" data-zone="Z02">
+      <rect x="2753" y="1563" width="159" height="58" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2833" y="1609" text-anchor="middle" font-family="Arial,sans-serif" font-size="48" font-weight="bold" fill="#A0522D">Guano</text>
+      <text x="2833" y="1544" text-anchor="middle" font-family="Arial,sans-serif" font-size="33" fill="#FFAA00">[CHADI PENDING]</text>
+    </g>
+    <g id="label-Z03" class="zone-label" data-zone="Z03">
+      <rect x="722" y="2887" width="605" height="58" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="1024" y="2933" text-anchor="middle" font-family="Arial,sans-serif" font-size="48" font-weight="bold" fill="#00B4FF">Galpones De Ponedoras</text>
+      <text x="1024" y="2972" text-anchor="middle" font-family="Arial,sans-serif" font-size="33" fill="#CCCCCC">x10</text>
+    </g>
+    <g id="label-Z04" class="zone-label" data-zone="Z04">
+      <rect x="2295" y="3511" width="208" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2399" y="3531" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#C800FF">Planta De Alimento</text>
+      <text x="2399" y="3551" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z05" class="zone-label" data-zone="Z05">
+      <rect x="778" y="2736" width="250" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="903" y="2756" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF">Cintas Transportadoras</text>
+    </g>
+    <g id="label-Z06" class="zone-label" data-zone="Z06">
+      <rect x="2945" y="3394" width="307" height="55" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="3099" y="3438" text-anchor="middle" font-family="Arial,sans-serif" font-size="45" font-weight="bold" fill="#FF1493">Silos Secos</text>
+      <text x="3099" y="3475" text-anchor="middle" font-family="Arial,sans-serif" font-size="31" fill="#CCCCCC">x7</text>
+    </g>
+    <g id="label-Z07" class="zone-label" data-zone="Z07">
+      <rect x="4147" y="2033" width="382" height="58" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="4338" y="2079" text-anchor="middle" font-family="Arial,sans-serif" font-size="48" font-weight="bold" fill="#00FF7F">Terreno Nuevo</text>
+      <text x="4338" y="2014" text-anchor="middle" font-family="Arial,sans-serif" font-size="33" fill="#FFAA00">[CHADI PENDING]</text>
+    </g>
+    <g id="label-Z08" class="zone-label" data-zone="Z08">
+      <rect x="3424" y="3945" width="187" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="3518" y="3965" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#0b206b">Casa De Gerencia</text>
+      <text x="3518" y="3985" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z09" class="zone-label" data-zone="Z09">
+      <rect x="401" y="3929" width="623" height="50" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="713" y="3968" text-anchor="middle" font-family="Arial,sans-serif" font-size="40" font-weight="bold" fill="#6a5b19">Departamentos De Empleados</text>
+    </g>
+    <g id="label-Z10" class="zone-label" data-zone="Z10">
+      <rect x="1068" y="2668" width="374" height="57" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="1255" y="2713" text-anchor="middle" font-family="Arial,sans-serif" font-size="47" font-weight="bold" fill="#b3abb0">Clasificadora</text>
+      <text x="1255" y="2752" text-anchor="middle" font-family="Arial,sans-serif" font-size="32" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z11" class="zone-label" data-zone="Z11">
+      <rect x="1698" y="4009" width="281" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="1838" y="4029" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#ff0f6d">Casa De Mantenimiento Sur</text>
+      <text x="1838" y="4049" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+      <text x="1838" y="4005" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#FFAA00">[CHADI PENDING]</text>
+    </g>
+    <g id="label-Z12" class="zone-label" data-zone="Z12">
+      <rect x="788" y="3727" width="83" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="829" y="3747" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#347c65">Taller</text>
+      <text x="829" y="3767" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z13" class="zone-label" data-zone="Z13">
+      <rect x="1543" y="448" width="412" height="35" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="1749" y="475" text-anchor="middle" font-family="Arial,sans-serif" font-size="25" font-weight="bold" fill="#284695">Casa De Mantenimiento Norte</text>
+      <text x="1749" y="499" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#CCCCCC">x1</text>
+      <text x="1749" y="441" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#FFAA00">[CHADI PENDING]</text>
+    </g>
+    <g id="label-Z14" class="zone-label" data-zone="Z14">
+      <rect x="2480" y="3560" width="104" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2532" y="3580" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#f23dd7">Aceitera</text>
+      <text x="2532" y="3600" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z15" class="zone-label" data-zone="Z15">
+      <rect x="2631" y="3184" width="156" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2709" y="3204" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#cb8f8d">Silos Húmedos</text>
+    </g>
+    <g id="label-Z16" class="zone-label" data-zone="Z16">
+      <rect x="2322" y="3321" width="458" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2551" y="3341" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#6010d0">Silos De Almacenamiento Consumo Y Expeller</text>
+    </g>
+    <g id="label-Z17" class="zone-label" data-zone="Z17">
+      <rect x="2235" y="3126" width="312" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2391" y="3146" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#7a5b13">Planta De Descarga De Granos</text>
+      <text x="2391" y="3166" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z18" class="zone-label" data-zone="Z18">
+      <rect x="2615" y="3351" width="302" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2766" y="3371" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#fe2948">Secado Y Limpieza De Granos</text>
+      <text x="2766" y="3391" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+      <text x="2766" y="3347" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#FFAA00">[CHADI PENDING]</text>
+    </g>
+    <g id="label-Z19" class="zone-label" data-zone="Z19">
+      <rect x="2432" y="3682" width="197" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2531" y="3702" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#e66981">Tanques De Aceite</text>
+      <text x="2531" y="3722" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x3</text>
+    </g>
+    <g id="label-Z20" class="zone-label" data-zone="Z20">
+      <rect x="2228" y="3304" width="229" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2342" y="3324" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#af1bdf">Descarga De Alimento</text>
+      <text x="2342" y="3344" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z21" class="zone-label" data-zone="Z21">
+      <rect x="2077" y="3347" width="104" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2129" y="3367" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#b39bbd">Oficinas</text>
+      <text x="2129" y="3387" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+    </g>
+    <g id="label-Z22" class="zone-label" data-zone="Z22">
+      <rect x="1925" y="3352" width="218" height="28" fill="#000000" fill-opacity="0.65" rx="4"/>
+      <text x="2034" y="3372" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="bold" fill="#4c3fac">Balanza De Camiones</text>
+      <text x="2034" y="3392" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#CCCCCC">x1</text>
+    </g>
+  </g>
+  <g id="layer-microzone-labels" inkscape:label="Atlas Microzone Labels">
+    <g id="mzlabel-Z06_S01" data-microzone="Z06_S01">
+      <text x="2821" y="3289" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">S01</text>
+    </g>
+    <g id="mzlabel-Z06_S02" data-microzone="Z06_S02">
+      <text x="2974" y="3288" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">S02</text>
+    </g>
+    <g id="mzlabel-Z06_S03" data-microzone="Z06_S03">
+      <text x="3125" y="3290" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">S03</text>
+    </g>
+    <g id="mzlabel-Z06_S04" data-microzone="Z06_S04">
+      <text x="2823" y="3466" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">S04</text>
+    </g>
+    <g id="mzlabel-Z06_S05" data-microzone="Z06_S05">
+      <text x="2975" y="3465" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">S05</text>
+    </g>
+    <g id="mzlabel-Z06_S06" data-microzone="Z06_S06">
+      <text x="3129" y="3463" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">S06</text>
+    </g>
+    <g id="mzlabel-Z06_S07" data-microzone="Z06_S07">
+      <text x="3280" y="3462" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">S07</text>
+    </g>
+    <g id="mzlabel-Z19_T01" data-microzone="Z19_T01">
+      <text x="2497" y="3699" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">T01</text>
+    </g>
+    <g id="mzlabel-Z19_T02" data-microzone="Z19_T02">
+      <text x="2532" y="3696" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">T02</text>
+    </g>
+    <g id="mzlabel-Z19_T03" data-microzone="Z19_T03">
+      <text x="2565" y="3705" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">T03</text>
+    </g>
+    <g id="mzlabel-Z15_H01" data-microzone="Z15_H01">
+      <text x="2664" y="3120" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">H01</text>
+    </g>
+    <g id="mzlabel-Z15_H02" data-microzone="Z15_H02">
+      <text x="2718" y="3245" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">H02</text>
+    </g>
+    <g id="mzlabel-Z15_H03" data-microzone="Z15_H03">
+      <text x="2725" y="3301" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">H03</text>
+    </g>
+    <g id="mzlabel-Z16_E01" data-microzone="Z16_E01">
+      <text x="2504" y="3230" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E01</text>
+    </g>
+    <g id="mzlabel-Z16_E02" data-microzone="Z16_E02">
+      <text x="2475" y="3266" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E02</text>
+    </g>
+    <g id="mzlabel-Z16_E03" data-microzone="Z16_E03">
+      <text x="2496" y="3295" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E03</text>
+    </g>
+    <g id="mzlabel-Z16_E04" data-microzone="Z16_E04">
+      <text x="2499" y="3459" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E04</text>
+    </g>
+    <g id="mzlabel-Z18A_Conexion_Tubular" data-microzone="Z18A_Conexion_Tubular">
+      <text x="2690" y="3295" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">Conexion_Tubular</text>
+    </g>
+    <g id="mzlabel-Z18B_Secado_Y_Limpieza" data-microzone="Z18B_Secado_Y_Limpieza">
+      <text x="2766" y="3435" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">Secado_Y_Limpieza</text>
+    </g>
+    <g id="mzlabel-Z04_E01" data-microzone="Z04_E01">
+      <text x="2399" y="3529" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E01</text>
+    </g>
+    <g id="mzlabel-Z14_E01" data-microzone="Z14_E01">
+      <text x="2532" y="3579" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E01</text>
+    </g>
+    <g id="mzlabel-Z17_D01" data-microzone="Z17_D01">
+      <text x="2390" y="3146" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">D01</text>
+    </g>
+    <g id="mzlabel-Z20_E01" data-microzone="Z20_E01">
+      <text x="2342" y="3322" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E01</text>
+    </g>
+    <g id="mzlabel-Z21_E01" data-microzone="Z21_E01">
+      <text x="2129" y="3366" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E01</text>
+    </g>
+    <g id="mzlabel-Z22_E01" data-microzone="Z22_E01">
+      <text x="2035" y="3371" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E01</text>
+    </g>
+    <g id="mzlabel-Z03_E01" data-microzone="Z03_E01">
+      <text x="1349" y="2250" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E01</text>
+    </g>
+    <g id="mzlabel-Z03_E02" data-microzone="Z03_E02">
+      <text x="1346" y="2509" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E02</text>
+    </g>
+    <g id="mzlabel-Z03_E03" data-microzone="Z03_E03">
+      <text x="1256" y="2701" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E03</text>
+    </g>
+    <g id="mzlabel-Z03_E04" data-microzone="Z03_E04">
+      <text x="1348" y="2900" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E04</text>
+    </g>
+    <g id="mzlabel-Z03_E05" data-microzone="Z03_E05">
+      <text x="1355" y="3178" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E05</text>
+    </g>
+    <g id="mzlabel-Z03_E06" data-microzone="Z03_E06">
+      <text x="1358" y="3407" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E06</text>
+    </g>
+    <g id="mzlabel-Z03_E07" data-microzone="Z03_E07">
+      <text x="575" y="2479" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E07</text>
+    </g>
+    <g id="mzlabel-Z03_E08" data-microzone="Z03_E08">
+      <text x="585" y="2823" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E08</text>
+    </g>
+    <g id="mzlabel-Z03_E09" data-microzone="Z03_E09">
+      <text x="606" y="3097" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E09</text>
+    </g>
+    <g id="mzlabel-Z03_E10" data-microzone="Z03_E10">
+      <text x="644" y="3477" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E10</text>
+    </g>
+    <g id="mzlabel-Z07_G_NEW_01" data-microzone="Z07_G_NEW_01">
+      <text x="3949" y="840" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">G_NEW_01</text>
+    </g>
+    <g id="mzlabel-Z07_G_NEW_02" data-microzone="Z07_G_NEW_02">
+      <text x="4250" y="836" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">G_NEW_02</text>
+    </g>
+    <g id="mzlabel-Z03_E03_clasif" data-microzone="Z03_E03_clasif">
+      <text x="1209" y="2715" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E03_clasif</text>
+    </g>
+    <g id="mzlabel-Z03_E11_taller" data-microzone="Z03_E11_taller">
+      <text x="826" y="3753" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" stroke="#000000" stroke-width="0.6" paint-order="stroke">E11_taller</text>
+    </g>
+  </g>
+</svg>

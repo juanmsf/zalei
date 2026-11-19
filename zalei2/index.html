@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zalei Atlas — 3D Completo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#0a0a0a;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#eee}
+#canvas-wrap{width:100%;height:100%;position:relative}
+#canvas{width:100%;height:100%;display:block}
+#info{position:absolute;bottom:12px;left:12px;background:rgba(0,0,0,0.82);padding:8px 12px;border-radius:6px;font-size:12px;max-width:380px;z-index:10;display:none;border:1px solid rgba(255,255,255,0.08)}
+#info.show{display:block}
+#info .row{display:flex;gap:10px;flex-wrap:wrap}
+#info .row span{color:#888}
+#info .row b{color:#fff}
+#legend{position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.82);padding:10px 14px;border-radius:6px;font-size:11px;z-index:10;max-height:90vh;overflow-y:auto;min-width:200px;border:1px solid rgba(255,255,255,0.08)}
+#legend h3{font-size:12px;color:#aaa;margin-bottom:8px}
+#legend .entry{display:flex;align-items:center;gap:8px;margin-bottom:3px;cursor:pointer;padding:2px 4px;border-radius:3px}
+#legend .entry:hover{background:rgba(255,255,255,0.06)}
+#legend .swatch{width:12px;height:12px;border-radius:2px;flex-shrink:0}
+#legend .lbl{font-size:11px;color:#ccc}
+#legend .lbl small{color:#666;font-size:9px}
+#legend .pending{color:#ffaa00;font-size:9px;margin-left:4px}
+#hint{position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,0.6);padding:6px 10px;border-radius:4px;font-size:10px;color:#666;z-index:10}
+#badge{position:absolute;top:12px;left:12px;background:rgba(0,0,0,0.7);padding:6px 12px;border-radius:6px;font-size:11px;color:#888;z-index:10;border:1px solid rgba(255,255,255,0.06)}
+#badge b{color:#00FF7F}
+</style>
+</head>
+<body>
+<div id="canvas-wrap">
+  <div id="canvas"></div>
+  <div id="badge"><b>Zalei Atlas</b> · 3D Completo</div>
+  <div id="info"></div>
+  <div id="hint">Click para info · Arrastrar mover · Rueda zoom · Click+arrastrar orbitar</div>
+</div>
+<div id="legend"><h3>Estructuras</h3><div id="legend-list"></div></div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+// ======================================================================
+// =====  EDITAR AQUI — DATOS DEL ATLAS  ===============================
+// ======================================================================
+// Modificá las coordenadas, agergá o sacá estructuras en esta seccion.
+// Cada objeto en "objects" tiene:
+//   id, shape (gable_box, box, cylinder_tall, etc.),
+//   footprint {cx, cz, w, d}, rotation_deg, height_m_estimated, color
+// ======================================================================
+const BLOCKOUT = {
+  "meta": {
+    "image_w_px": 5245,
+    "image_h_px": 4329,
+    "image_w_units": 52.45,
+    "image_d_units": 43.29,
+    "scale_px_to_units": 0.01,
+    "meters_per_unit": 15.0,
+    "vertical_exaggeration_default": 2.5,
+    "title": "Zalei Atlas — Blockout 3D"
+  },
+  "objects": [
+    {
+      "id": "Z01",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "building",
+      "skip_reason": null,
+      "shape": "gable_box",
+      "subtype": "galpon_recria",
+      "label": "Recr\u00eda Existente",
+      "color": "#FFD700",
+      "footprint": {"cx": 7.06, "cz": 2.42, "w": 12.2, "d": 2.18},
+      "height_m_estimated": 5.0,
+      "height_3d_units": 0.3333,
+      "height_confidence": "medium",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false,
+      "count": 1
+    },
+    {
+      "id": "Z02",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "building",
+      "skip_reason": null,
+      "shape": "flat_organic",
+      "subtype": "guano",
+      "label": "Guano",
+      "color": "#A0522D",
+      "footprint": {"cx": 28.33, "cz": 15.925, "w": 13.02, "d": 20.97},
+      "height_m_estimated": 0.5,
+      "height_3d_units": 0.0333,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "geometry_ok_subtype_pending",
+      "requires_chadi_validation": true,
+      "is_questioned": true,
+      "count": null
+    },
+    {
+      "id": "Z03",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "footprint",
+      "skip_reason": "has_renderable_microzones",
+      "shape": "flat_transparent",
+      "subtype": "galpon_ponedoras",
+      "label": "Galpones De Ponedoras",
+      "color": "#00B4FF",
+      "footprint": {"cx": 10.245, "cz": 29.16, "w": 15.81, "d": 17.68},
+      "height_m_estimated": 0.0,
+      "height_3d_units": 0.0,
+      "height_confidence": "n/a",
+      "is_heuristic_height": true,
+      "validation_status": "individual_bbox_measured_in_crop_editor",
+      "requires_chadi_validation": false,
+      "is_questioned": false,
+      "count": 10
+    },
+    {
+      "id": "Z03_E01",
+      "source": "microzone",
+      "parent_zone": "Z03",
+      "render_mode": "building",
+      "shape": "gable_box",
+      "subtype": "galpon_ponedoras",
+      "label": "Galpon Ponedoras 01",
+      "color": "#00B4FF",
+      "rotation_deg": 0,
+      "footprint": {"cx": 13.496, "cz": 20.068, "w": 7.891, "d": 1.758},
+      "height_m_estimated": 5,
+      "height_3d_units": 0.3333,
+      "height_confidence": "medium",
+      "is_heuristic_height": false,
+      "validation_status": "measured_from_crop",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z03_E02",
+      "source": "microzone",
+      "parent_zone": "Z03",
+      "render_mode": "building",
+      "shape": "gable_box",
+      "subtype": "galpon_ponedoras",
+      "label": "Galpon Ponedoras 02",
+      "color": "#00B4FF",
+      "rotation_deg": 0,
+      "footprint": {"cx": 13.465, "cz": 25.041, "w": 7.871, "d": 1.181},
+      "height_m_estimated": 5,
+      "height_3d_units": 0.3333,
+      "height_confidence": "medium",
+      "is_heuristic_height": false,
+      "validation_status": "measured_from_crop",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z03_E03_clasif",
+      "source": "microzone",
+      "parent_zone": "Z03",
+      "render_mode": "building",
+      "shape": "gable_box",
+      "subtype": "galpon_ponedoras",
+      "label": "Galpon Ponedoras Clasificadora",
+      "color": "#b3abb0",
+      "rotation_deg": 0,
+      "footprint": {"cx": 12.096, "cz": 27.106, "w": 5.929, "d": 3.011},
+      "height_m_estimated": 5,
+      "height_3d_units": 0.3333,
+      "height_confidence": "medium",
+      "is_heuristic_height": false,
+      "validation_status": "measured_from_crop",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z03_E04",
+      "source": "microzone",
+      "parent_zone": "Z03",
+      "render_mode": "building",
+      "shape": "gable_box",
+      "subtype": "galpon_ponedoras",
+      "label": "Galpon Ponedoras 04",
+      "color": "#00B4FF",
+      "rotation_deg": 0,
+      "footprint": {"cx": 13.485, "cz": 28.947, "w": 7.649, "d": 1.378},
+      "height_m_estimated": 5,
+      "height_3d_units": 0.3333,
+      "height_confidence": "medium",
+      "is_heuristic_height": false,
+      "validation_status": "measured_from_crop",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z03_E05",
+      "source": "microzone",
+      "parent_zone": "Z03",
+      "render_mode": "building",
+      "shape": "gable_box",
+      "subtype": "galpon_ponedoras",
+      "label": "Galpon Ponedoras 05",
+      "color": "#00B4FF",
+      "rotation_deg": 0,
+      "footprint": {"cx": 13.555, "cz": 31.736, "w": 7.83, "d": 2.009},
+      "height_m_estimated": 5,
+      "height_3d_units": 0.3333,
+      "height_confidence": "medium",
+      "is_heuristic_height": false,
+      "validation_status": "measured_from_crop",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z03_E06",
+      "source": "microzone",
+      "parent_zone": "Z03",
+      "render_mode": "building",
+      "shape": "gable_box",
+      "subtype": "galpon_ponedoras",
+      "label": "Galpon Ponedoras 06",
+      "color": "#00B4FF",
+      "rotation_deg": 0,
+      "footprint": {"cx": 13.586, "cz": 34.018, "w": 7.891, "d": 2.34},
+      "height_m_estimated": 5,
+      "height_3d_units": 0.3333,
+      "height_confidence": "medium",
+      "is_heuristic_height": false,
+      "validation_status": "measured_from_crop",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z03_E07",
+      "source": "microzone",
+      "parent_zone": "Z03",
+      "render_mode": "building",
+      "shape": "gable_box",
+      "subtype": "galpon_ponedoras",
+      "label": "Galpon Ponedoras 07",
+      "color": "#00B4FF",
+      "rotation_deg": 45,
+      "footprint": {"cx": 5.748, "cz": 24.739, "w": 7.26, "d": 7.261},
+      "height_m_estimated": 5,
+      "height_3d_units": 0.3333,
+      "height_confidence": "medium",
+      "is_heuristic_height": false,
+      "validation_status": "measured_from_crop",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z03_E08",
+      "source": "microzone",
+      "parent_zone": "Z03",
+      "render_mode": "building",
+      "shape": "gable_box",
+      "subtype": "galpon_ponedoras",
+      "label": "Galpon Ponedoras 08",
+      "color": "#00B4FF",
+      "rotation_deg": 45,
+      "footprint": {"cx": 5.851, "cz": 28.182, "w": 7.558, "d": 7.561},
+      "height_m_estimated": 5,
+      "height_3d_units": 0.3333,
+      "height_confidence": "medium",
+      "is_heuristic_height": false,
+      "validation_status": "measured_from_crop",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z03_E09",
+      "source": "microzone",
+      "parent_zone": "Z03",
+      "render_mode": "building",
+      "shape": "gable_box",
+      "subtype": "galpon_ponedoras",
+      "label": "Galpon Ponedoras 09",
+      "color": "#00B4FF",
+      "rotation_deg": 45,
+      "footprint": {"cx": 6.065, "cz": 30.918, "w": 7.472, "d": 7.458},
+      "height_m_estimated": 5,
+      "height_3d_units": 0.3333,
+      "height_confidence": "medium",
+      "is_heuristic_height": false,
+      "validation_status": "measured_from_crop",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z03_E10",
+      "source": "microzone",
+      "parent_zone": "Z03",
+      "render_mode": "building",
+      "shape": "gable_box",
+      "subtype": "galpon_ponedoras",
+      "label": "Galpon Ponedoras 10",
+      "color": "#00B4FF",
+      "rotation_deg": 45,
+      "footprint": {"cx": 6.439, "cz": 34.723, "w": 7.039, "d": 7.042},
+      "height_m_estimated": 5,
+      "height_3d_units": 0.3333,
+      "height_confidence": "medium",
+      "is_heuristic_height": false,
+      "validation_status": "measured_from_crop",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z03_E11_taller",
+      "source": "microzone",
+      "parent_zone": "Z03",
+      "render_mode": "building",
+      "shape": "gable_box",
+      "subtype": "galpon_ponedoras",
+      "label": "Galpon Ponedoras Taller",
+      "color": "#347c65",
+      "rotation_deg": 0,
+      "footprint": {"cx": 8.261, "cz": 37.483, "w": 1.518, "d": 2.13},
+      "height_m_estimated": 5,
+      "height_3d_units": 0.3333,
+      "height_confidence": "medium",
+      "is_heuristic_height": false,
+      "validation_status": "measured_from_crop",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z04_E01",
+      "source": "microzone",
+      "parent_zone": "Z04",
+      "render_mode": "building",
+      "shape": "box",
+      "subtype": "planta_industrial",
+      "label": "Planta De Alimento",
+      "color": "#C800FF",
+      "rotation_deg": 0,
+      "footprint": {"cx": 23.995, "cz": 35.245, "w": 1.61, "d": 4.31},
+      "height_m_estimated": 4.0,
+      "height_3d_units": 0.2667,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z05",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "pending_footprint",
+      "skip_reason": "all_microzones_bbox_pending",
+      "shape": "flat_transparent",
+      "subtype": "cintas_transportadoras",
+      "label": "Cintas Transportadoras",
+      "color": "#FFFFFF",
+      "footprint": {"cx": 9.03, "cz": 27.5, "w": 2.48, "d": 10.72},
+      "height_m_estimated": 0.0,
+      "height_3d_units": 0.0,
+      "height_confidence": "n/a",
+      "is_heuristic_height": true,
+      "validation_status": "trajectory_validated_connections_pending",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z06",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "footprint",
+      "skip_reason": "has_renderable_microzones",
+      "shape": "flat_transparent",
+      "subtype": "silo_seco_cilindrico",
+      "label": "Silos Secos",
+      "color": "#FF1493",
+      "footprint": {"cx": 30.985, "cz": 34.215, "w": 7.05, "d": 4.31},
+      "height_m_estimated": 0.0,
+      "height_3d_units": 0.0,
+      "height_confidence": "n/a",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z06_S01",
+      "source": "microzone",
+      "parent_zone": "Z06",
+      "render_mode": "building",
+      "shape": "cylinder_tall",
+      "subtype": "silo_seco_cilindrico",
+      "label": "Silo Seco Norte 1",
+      "color": "#FF1493",
+      "footprint": {"cx": 28.21, "cz": 32.84, "w": 1.38, "d": 1.38},
+      "height_m_estimated": 18.0,
+      "height_3d_units": 1.2,
+      "height_confidence": "medium",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z06_S02",
+      "source": "microzone",
+      "parent_zone": "Z06",
+      "render_mode": "building",
+      "shape": "cylinder_tall",
+      "subtype": "silo_seco_cilindrico",
+      "label": "Silo Seco Norte 2",
+      "color": "#FF1493",
+      "footprint": {"cx": 29.74, "cz": 32.83, "w": 1.38, "d": 1.38},
+      "height_m_estimated": 18.0,
+      "height_3d_units": 1.2,
+      "height_confidence": "medium",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z06_S03",
+      "source": "microzone",
+      "parent_zone": "Z06",
+      "render_mode": "building",
+      "shape": "cylinder_tall",
+      "subtype": "silo_seco_cilindrico",
+      "label": "Silo Seco Norte 3",
+      "color": "#FF1493",
+      "footprint": {"cx": 31.25, "cz": 32.85, "w": 1.3, "d": 1.3},
+      "height_m_estimated": 18.0,
+      "height_3d_units": 1.2,
+      "height_confidence": "medium",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z06_S04",
+      "source": "microzone",
+      "parent_zone": "Z06",
+      "render_mode": "building",
+      "shape": "cylinder_tall",
+      "subtype": "silo_seco_cilindrico",
+      "label": "Silo Seco Sur 1",
+      "color": "#FF1493",
+      "footprint": {"cx": 28.23, "cz": 34.61, "w": 1.38, "d": 1.38},
+      "height_m_estimated": 18.0,
+      "height_3d_units": 1.2,
+      "height_confidence": "medium",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z06_S05",
+      "source": "microzone",
+      "parent_zone": "Z06",
+      "render_mode": "building",
+      "shape": "cylinder_tall",
+      "subtype": "silo_seco_cilindrico",
+      "label": "Silo Seco Sur 2",
+      "color": "#FF1493",
+      "footprint": {"cx": 29.75, "cz": 34.6, "w": 1.38, "d": 1.38},
+      "height_m_estimated": 18.0,
+      "height_3d_units": 1.2,
+      "height_confidence": "medium",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z06_S06",
+      "source": "microzone",
+      "parent_zone": "Z06",
+      "render_mode": "building",
+      "shape": "cylinder_tall",
+      "subtype": "silo_seco_cilindrico",
+      "label": "Silo Seco Sur 3",
+      "color": "#FF1493",
+      "footprint": {"cx": 31.29, "cz": 34.58, "w": 1.38, "d": 1.38},
+      "height_m_estimated": 18.0,
+      "height_3d_units": 1.2,
+      "height_confidence": "medium",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z06_S07",
+      "source": "microzone",
+      "parent_zone": "Z06",
+      "render_mode": "building",
+      "shape": "cylinder_tall",
+      "subtype": "silo_seco_cilindrico",
+      "label": "Silo Seco Sur 4",
+      "color": "#FF1493",
+      "footprint": {"cx": 32.8, "cz": 34.57, "w": 1.38, "d": 1.38},
+      "height_m_estimated": 18.0,
+      "height_3d_units": 1.2,
+      "height_confidence": "medium",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z07",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "footprint",
+      "skip_reason": "has_pending_microzones_silo_bolsas",
+      "shape": "flat_transparent",
+      "subtype": "terreno_nuevo",
+      "label": "Terreno Nuevo",
+      "color": "#00FF7F",
+      "footprint": {"cx": 43.385, "cz": 20.62, "w": 14.07, "d": 41.24},
+      "height_m_estimated": 0.0,
+      "height_3d_units": 0.0,
+      "height_confidence": "n/a",
+      "is_heuristic_height": true,
+      "validation_status": "perimeter_validated_content_pending",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z07_G_NEW_01",
+      "source": "microzone",
+      "parent_zone": "Z07",
+      "render_mode": "building",
+      "shape": "gable_box",
+      "subtype": "galpon_recria_futuro",
+      "label": "Galpon Recria Nuevo 1",
+      "color": "#00FF7F",
+      "rotation_deg": 90,
+      "footprint": {"cx": 39.4889, "cz": 8.3552, "w": 2.178, "d": 12.192},
+      "height_m_estimated": 5.0,
+      "height_3d_units": 0.3333,
+      "height_confidence": "medium",
+      "is_heuristic_height": false,
+      "validation_status": "planned_in_crop_editor",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z07_G_NEW_02",
+      "source": "microzone",
+      "parent_zone": "Z07",
+      "render_mode": "building",
+      "shape": "gable_box",
+      "subtype": "galpon_recria_futuro",
+      "label": "Galpon Recria Nuevo 2",
+      "color": "#00FF7F",
+      "rotation_deg": 90,
+      "footprint": {"cx": 42.499, "cz": 8.3149, "w": 2.178, "d": 12.192},
+      "height_m_estimated": 5.0,
+      "height_3d_units": 0.3333,
+      "height_confidence": "medium",
+      "is_heuristic_height": false,
+      "validation_status": "planned_in_crop_editor",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z08",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "building",
+      "skip_reason": null,
+      "shape": "box",
+      "subtype": "vivienda",
+      "label": "Casa De Gerencia",
+      "color": "#0b206b",
+      "footprint": {"cx": 35.18, "cz": 39.59, "w": 2.34, "d": 2.78},
+      "height_m_estimated": 4.0,
+      "height_3d_units": 0.2667,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z09",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "building",
+      "skip_reason": null,
+      "shape": "box",
+      "subtype": "departamentos",
+      "label": "Departamentos",
+      "color": "#6a5b19",
+      "footprint": {"cx": 7.13, "cz": 39.545, "w": 6.28, "d": 2.05},
+      "height_m_estimated": 4.0,
+      "height_3d_units": 0.2667,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z10",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "building",
+      "skip_reason": null,
+      "shape": "box",
+      "subtype": "clasificadora",
+      "label": "Clasificadora",
+      "color": "#b3abb0",
+      "footprint": {"cx": 12.56, "cz": 26.965, "w": 7.34, "d": 2.73},
+      "height_m_estimated": 4.0,
+      "height_3d_units": 0.2667,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z11",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "building",
+      "skip_reason": null,
+      "shape": "box",
+      "subtype": "vivienda_mantenimiento",
+      "label": "Casa Mantenimiento Sur",
+      "color": "#ff0f6d",
+      "footprint": {"cx": 18.38, "cz": 40.235, "w": 2.38, "d": 1.59},
+      "height_m_estimated": 4.0,
+      "height_3d_units": 0.2667,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "geometry_ok_name_conflict_pending",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z12",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "building",
+      "skip_reason": null,
+      "shape": "box",
+      "subtype": "taller",
+      "label": "Taller",
+      "color": "#347c65",
+      "footprint": {"cx": 8.295, "cz": 37.415, "w": 2.57, "d": 2.37},
+      "height_m_estimated": 4.0,
+      "height_3d_units": 0.2667,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z13",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "building",
+      "skip_reason": null,
+      "shape": "box",
+      "subtype": "vivienda_mantenimiento",
+      "label": "Casa Mantenimiento Norte",
+      "color": "#284695",
+      "footprint": {"cx": 17.485, "cz": 4.665, "w": 3.89, "d": 2.05},
+      "height_m_estimated": 4.0,
+      "height_3d_units": 0.2667,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "geometry_ok_name_conflict_pending",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z14_E01",
+      "source": "microzone",
+      "parent_zone": "Z14",
+      "render_mode": "building",
+      "shape": "box",
+      "subtype": "planta_industrial",
+      "label": "Aceitera",
+      "color": "#f23dd7",
+      "footprint": {"cx": 25.325, "cz": 35.745, "w": 1.33, "d": 2.87},
+      "height_m_estimated": 4.0,
+      "height_3d_units": 0.2667,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z15",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "footprint",
+      "skip_reason": "has_renderable_microzones",
+      "shape": "flat_transparent",
+      "subtype": "silo_humedo",
+      "label": "Silos H\u00famedos",
+      "color": "#cb8f8d",
+      "footprint": {"cx": 27.09, "cz": 31.985, "w": 0.92, "d": 2.05},
+      "height_m_estimated": 0.0,
+      "height_3d_units": 0.0,
+      "height_confidence": "n/a",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z15_H01",
+      "source": "microzone",
+      "parent_zone": "Z15",
+      "render_mode": "building",
+      "shape": "cylinder_tall",
+      "subtype": "silo_humedo",
+      "label": "Silo Humedo 1",
+      "color": "#cb8f8d",
+      "footprint": {"cx": 26.64, "cz": 31.15, "w": 0.78, "d": 0.78},
+      "height_m_estimated": 18.0,
+      "height_3d_units": 1.2,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "probable",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z15_H02",
+      "source": "microzone",
+      "parent_zone": "Z15",
+      "render_mode": "building",
+      "shape": "cylinder_tall",
+      "subtype": "silo_humedo",
+      "label": "Silo Humedo 2",
+      "color": "#cb8f8d",
+      "footprint": {"cx": 27.18, "cz": 32.4, "w": 0.78, "d": 0.78},
+      "height_m_estimated": 18.0,
+      "height_3d_units": 1.2,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "probable",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z15_H03",
+      "source": "microzone",
+      "parent_zone": "Z15",
+      "render_mode": "building",
+      "shape": "cylinder_tall",
+      "subtype": "silo_humedo",
+      "label": "Silo Humedo 3",
+      "color": "#cb8f8d",
+      "footprint": {"cx": 27.25, "cz": 32.96, "w": 0.78, "d": 0.78},
+      "height_m_estimated": 18.0,
+      "height_3d_units": 1.2,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "probable",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z16",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "footprint",
+      "skip_reason": "has_renderable_microzones",
+      "shape": "flat_transparent",
+      "subtype": "silo_consumo",
+      "label": "Silos Consumo",
+      "color": "#6010d0",
+      "footprint": {"cx": 25.51, "cz": 33.355, "w": 2.06, "d": 2.69},
+      "height_m_estimated": 0.0,
+      "height_3d_units": 0.0,
+      "height_confidence": "n/a",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z16_E01",
+      "source": "microzone",
+      "parent_zone": "Z16",
+      "render_mode": "building",
+      "shape": "cylinder_tall",
+      "subtype": "silo_consumo",
+      "label": "Silo Consumo 1",
+      "color": "#6010d0",
+      "footprint": {"cx": 25.04, "cz": 32.25, "w": 0.62, "d": 0.62},
+      "height_m_estimated": 18.0,
+      "height_3d_units": 1.2,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "probable",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z16_E02",
+      "source": "microzone",
+      "parent_zone": "Z16",
+      "render_mode": "building",
+      "shape": "cylinder_tall",
+      "subtype": "silo_consumo",
+      "label": "Silo Consumo 2",
+      "color": "#6010d0",
+      "footprint": {"cx": 24.75, "cz": 32.61, "w": 0.62, "d": 0.62},
+      "height_m_estimated": 18.0,
+      "height_3d_units": 1.2,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "probable",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z16_E03",
+      "source": "microzone",
+      "parent_zone": "Z16",
+      "render_mode": "building",
+      "shape": "cylinder_tall",
+      "subtype": "silo_consumo",
+      "label": "Silo Consumo 3",
+      "color": "#6010d0",
+      "footprint": {"cx": 24.96, "cz": 32.9, "w": 0.62, "d": 0.62},
+      "height_m_estimated": 18.0,
+      "height_3d_units": 1.2,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "probable",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z16_E04",
+      "source": "microzone",
+      "parent_zone": "Z16",
+      "render_mode": "building",
+      "shape": "cylinder_tall",
+      "subtype": "silo_consumo",
+      "label": "Silo Consumo 4",
+      "color": "#6010d0",
+      "footprint": {"cx": 24.99, "cz": 34.54, "w": 0.62, "d": 0.62},
+      "height_m_estimated": 18.0,
+      "height_3d_units": 1.2,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "probable",
+      "requires_chadi_validation": true,
+      "is_questioned": false
+    },
+    {
+      "id": "Z17_D01",
+      "source": "microzone",
+      "parent_zone": "Z17",
+      "render_mode": "building",
+      "shape": "tower",
+      "subtype": "descarga_granos",
+      "label": "Descarga De Granos",
+      "color": "#7a5b13",
+      "footprint": {"cx": 23.905, "cz": 31.41, "w": 0.59, "d": 2.1},
+      "height_m_estimated": 14.0,
+      "height_3d_units": 0.9333,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z18",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "footprint",
+      "skip_reason": "has_renderable_microzones",
+      "shape": "flat_transparent",
+      "subtype": "secado_limpieza",
+      "label": "Secado Y Limpieza",
+      "color": "#fe2948",
+      "footprint": {"cx": 27.66, "cz": 33.655, "w": 2.06, "d": 2.37},
+      "height_m_estimated": 0.0,
+      "height_3d_units": 0.0,
+      "height_confidence": "n/a",
+      "is_heuristic_height": true,
+      "validation_status": "requires_chadi_validation",
+      "requires_chadi_validation": true,
+      "is_questioned": true
+    },
+    {
+      "id": "Z18A_Conexion_Tubular",
+      "source": "microzone",
+      "parent_zone": "Z18",
+      "render_mode": "building",
+      "shape": "elevated_beam",
+      "subtype": "infraestructura_tubular",
+      "label": "Conexion Tubular",
+      "color": "#fe8a48",
+      "footprint": {"cx": 26.9, "cz": 32.9, "w": 3.6, "d": 1.6},
+      "height_m_estimated": 1.5,
+      "height_3d_units": 0.1,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "ambiguous",
+      "requires_chadi_validation": true,
+      "is_questioned": true
+    },
+    {
+      "id": "Z18B_Secado_Y_Limpieza",
+      "source": "microzone",
+      "parent_zone": "Z18",
+      "render_mode": "building",
+      "shape": "tower",
+      "subtype": "secado_limpieza",
+      "label": "Secado Estructura",
+      "color": "#fe2948",
+      "footprint": {"cx": 27.66, "cz": 34.305, "w": 2.06, "d": 1.07},
+      "height_m_estimated": 14.0,
+      "height_3d_units": 0.9333,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "requires_chadi_validation",
+      "requires_chadi_validation": true,
+      "is_questioned": true
+    },
+    {
+      "id": "Z19",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "footprint",
+      "skip_reason": "has_renderable_microzones",
+      "shape": "flat_transparent",
+      "subtype": "tanque_aceite_cilindrico",
+      "label": "Tanques De Aceite",
+      "color": "#e66981",
+      "footprint": {"cx": 25.31, "cz": 36.96, "w": 0.98, "d": 0.4},
+      "height_m_estimated": 0.0,
+      "height_3d_units": 0.0,
+      "height_confidence": "n/a",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z19_T01",
+      "source": "microzone",
+      "parent_zone": "Z19",
+      "render_mode": "building",
+      "shape": "cylinder_low",
+      "subtype": "tanque_aceite_cilindrico",
+      "label": "Tanque Aceite 1",
+      "color": "#e66981",
+      "footprint": {"cx": 24.97, "cz": 36.94, "w": 0.3, "d": 0.32},
+      "height_m_estimated": 4.0,
+      "height_3d_units": 0.2667,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z19_T02",
+      "source": "microzone",
+      "parent_zone": "Z19",
+      "render_mode": "building",
+      "shape": "cylinder_low",
+      "subtype": "tanque_aceite_cilindrico",
+      "label": "Tanque Aceite 2",
+      "color": "#e66981",
+      "footprint": {"cx": 25.32, "cz": 36.91, "w": 0.3, "d": 0.3},
+      "height_m_estimated": 4.0,
+      "height_3d_units": 0.2667,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z19_T03",
+      "source": "microzone",
+      "parent_zone": "Z19",
+      "render_mode": "building",
+      "shape": "cylinder_low",
+      "subtype": "tanque_aceite_cilindrico",
+      "label": "Tanque Aceite 3",
+      "color": "#e66981",
+      "footprint": {"cx": 25.65, "cz": 37.0, "w": 0.3, "d": 0.3},
+      "height_m_estimated": 4.0,
+      "height_3d_units": 0.2667,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z20_E01",
+      "source": "microzone",
+      "parent_zone": "Z20",
+      "render_mode": "building",
+      "shape": "box",
+      "subtype": "descarga_alimento",
+      "label": "Descarga De Alimento",
+      "color": "#af1bdf",
+      "footprint": {"cx": 23.425, "cz": 33.175, "w": 1.83, "d": 2.59},
+      "height_m_estimated": 4.0,
+      "height_3d_units": 0.2667,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z21_E01",
+      "source": "microzone",
+      "parent_zone": "Z21",
+      "render_mode": "building",
+      "shape": "box",
+      "subtype": "oficinas",
+      "label": "Oficinas",
+      "color": "#b39bbd",
+      "footprint": {"cx": 21.29, "cz": 33.61, "w": 1.24, "d": 3.56},
+      "height_m_estimated": 4.0,
+      "height_3d_units": 0.2667,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z22_E01",
+      "source": "microzone",
+      "parent_zone": "Z22",
+      "render_mode": "building",
+      "shape": "flat_slab",
+      "subtype": "balanza_camiones",
+      "label": "Balanza De Camiones",
+      "color": "#4c3fac",
+      "footprint": {"cx": 20.35, "cz": 33.66, "w": 0.74, "d": 3.56},
+      "height_m_estimated": 0.4,
+      "height_3d_units": 0.0267,
+      "height_confidence": "low",
+      "is_heuristic_height": true,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z23",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "building",
+      "skip_reason": null,
+      "shape": "gable_box",
+      "subtype": "galpon_recria",
+      "label": "Recr\u00eda 23",
+      "color": "#FFD700",
+      "rotation_deg": 90,
+      "footprint": {"cx": 39.315, "cz": 10.99, "w": 12.19, "d": 2.18},
+      "height_m_estimated": 5.0,
+      "height_3d_units": 0.3333,
+      "height_confidence": "medium",
+      "is_heuristic_height": false,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    },
+    {
+      "id": "Z24",
+      "source": "zone",
+      "parent_zone": null,
+      "render_mode": "building",
+      "skip_reason": null,
+      "shape": "gable_box",
+      "subtype": "galpon_recria",
+      "label": "Recr\u00eda 24",
+      "color": "#FFD700",
+      "rotation_deg": 90,
+      "footprint": {"cx": 42.655, "cz": 11.09, "w": 12.19, "d": 2.18},
+      "height_m_estimated": 5.0,
+      "height_3d_units": 0.3333,
+      "height_confidence": "medium",
+      "is_heuristic_height": false,
+      "validation_status": "validated",
+      "requires_chadi_validation": false,
+      "is_questioned": false
+    }
+  ],
+  "roads": [
+  {"id":"R01","name":"","road_type":"externa","width_px":108,"color":"#FFD700","description":"","points_pixels":[{x:39,y:4216},{x:4987,y:4199}]},
+  {"id":"R02","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:1590,y:2003},{x:411,y:1932},{x:264,y:1967},{x:188,y:2069},{x:160,y:2185},{x:195,y:3795},{x:225,y:3833},{x:281,y:3871},{x:332,y:3884},{x:424,y:3869},{x:502,y:3849},{x:557,y:3785},{x:635,y:3705},{x:701,y:3633},{x:807,y:3592},{x:971,y:3582},{x:964,y:3671},{x:969,y:3777},{x:969,y:3851},{x:1032,y:3872},{x:1625,y:3872},{x:1702,y:3862},{x:1759,y:3848},{x:1815,y:3797},{x:1812,y:3727},{x:1781,y:3423}]},
+  {"id":"R03","name":"","road_type":"externa","width_px":14,"color":"#FFD700","description":"","points_pixels":[{x:193,y:4096},{x:4631,y:4096}]},
+  {"id":"R04","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:1597,y:2010},{x:1723,y:2064},{x:1763,y:2135},{x:1770,y:2212},{x:1774,y:2285},{x:1768,y:2370},{x:1771,y:2478},{x:1767,y:2586},{x:1754,y:2680},{x:1749,y:2779},{x:1763,y:2900},{x:1791,y:3309},{x:1796,y:3407},{x:1777,y:3478},{x:1733,y:3527},{x:1668,y:3549},{x:1549,y:3561},{x:1342,y:3567},{x:1180,y:3558},{x:1055,y:3577},{x:980,y:3573},{x:924,y:3586}]},
+  {"id":"R05","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:177,y:2733},{x:388,y:2497},{x:540,y:2325},{x:659,y:2175},{x:756,y:2078},{x:948,y:1976}]},
+  {"id":"R06","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:926,y:1993},{x:928,y:2538}]},
+  {"id":"R07","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:938,y:2894},{x:953,y:3155},{x:968,y:3229},{x:965,y:3279}]},
+  {"id":"R08","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:954,y:3419},{x:977,y:3582}]},
+  {"id":"R09","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:188,y:3301},{x:366,y:3158},{x:265,y:3018},{x:228,y:2971},{x:356,y:2813},{x:223,y:2675}]},
+  {"id":"R10","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:193,y:3082},{x:271,y:2989}]},
+  {"id":"R11","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:193,y:3489},{x:295,y:3396}]},
+  {"id":"R12","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:198,y:3797},{x:520,y:3438}]},
+  {"id":"R13","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:1458,y:2725},{x:4125,y:2712}]},
+  {"id":"R14","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:2029,y:4093},{x:1974,y:501},{x:1960,y:408},{x:1907,y:348},{x:1796,y:311},{x:1643,y:311},{x:1085,y:373},{x:992,y:373},{x:863,y:373},{x:477,y:373},{x:378,y:386},{x:286,y:404},{x:246,y:404},{x:246,y:354},{x:246,y:304},{x:246,y:304}]},
+  {"id":"R15","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:1982,y:3877},{x:3050,y:3871}]},
+  {"id":"R16","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:2210,y:3874},{x:2188,y:2836},{x:2134,y:2723}]},
+  {"id":"R17","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:2354,y:3243},{x:2349,y:2883},{x:2298,y:2813},{x:2210,y:2759},{x:2123,y:2730}]},
+  {"id":"R18","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:2665,y:3873},{x:2664,y:3432}]},
+  {"id":"R19","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:2525,y:2724},{x:2602,y:2762},{x:2644,y:2816},{x:2664,y:2875},{x:2673,y:2970},{x:2667,y:3131}]},
+  {"id":"R20","name":"","road_type":"alambrado","width_px":8,"color":"#0b27f4","description":"Alambrado de púas — NO es calle","points_pixels":[{x:4903,y:39},{x:4908,y:4103}]},
+  {"id":"R24","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:1983,y:569},{x:2043,y:564},{x:2108,y:553},{x:2189,y:556},{x:2350,y:566},{x:2490,y:564},{x:2599,y:517},{x:2729,y:424},{x:2802,y:374},{x:2864,y:247},{x:2864,y:200},{x:2849,y:164},{x:2815,y:138},{x:2387,y:140},{x:2312,y:140},{x:2193,y:140},{x:2110,y:140},{x:2026,y:140},{x:1979,y:140},{x:440,y:140}]},
+  {"id":"R25","name":"","road_type":"interna","width_px":6,"color":"#00BFFF","description":"","points_pixels":[{x:975,y:3842},{x:975,y:4083}]},
+  {"id":"C02","name":"Codo Perimetral","road_type":"perimetral","width_px":20,"color":"#FF6600","description":"Codo 90° perimetral esquina inferior derecha","points_pixels":[{x:246,y:4136},{x:4863,y:4126},{x:4849,y:23}]},
+  {"id":"C03","name":"Codo Perimetral","road_type":"perimetral","width_px":20,"color":"#FF6600","description":"Codo 90° perimetral esquina superior izquierda","points_pixels":[{x:23,y:4167},{x:14,y:46},{x:4858,y:28}]},
+  {"id":"C28","name":"","road_type":"externa","width_px":108,"color":"#FFD700","description":"","points_pixels":[{x:4996,y:4201},{x:4991,y:25}]},
+  {"id":"C26","name":"Calle C26","road_type":"interna","width_px":5,"color":"#4488FF","description":"","points_pixels":[{x:3930,y:1714},{x:3933,y:2709}]},
+  {"id":"C27","name":"Calle C27","road_type":"interna","width_px":5,"color":"#4488FF","description":"","points_pixels":[{x:4264,y:1728},{x:4269,y:2594}]},
+  {"id":"C29","name":"Calle C29","road_type":"interna","width_px":5,"color":"#4488FF","description":"","points_pixels":[{x:4269,y:2605},{x:4261,y:2660},{x:4240,y:2704},{x:4183,y:2715},{x:4131,y:2712}]}
+  ]
+};
+// ===== FIN EDITAR =====================================================
+
+// ===== SETUP =====
+const meta = BLOCKOUT.meta;
+const objects = BLOCKOUT.objects;
+const W = meta.image_w_units;
+const D = meta.image_d_units;
+const EXAG = meta.vertical_exaggeration_default;
+const METERS_PER_UNIT = meta.meters_per_unit;
+
+// ===== DATA LOADING (from editor localStorage) =====
+const EDITOR_KEY = 'atlas_zalei_editor2d';
+const EDITOR_IMG_W = 5042, EDITOR_IMG_H = 4474;
+
+function loadEditorZones() {
+  try {
+    const raw = localStorage.getItem(EDITOR_KEY);
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    return d.zones && d.zones.length ? d.zones : null;
+  } catch(e) { return null; }
+}
+
+function loadEditorRoads() {
+  try {
+    const raw = localStorage.getItem(EDITOR_KEY);
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    return d.roads && d.roads.length ? d.roads : null;
+  } catch(e) { return null; }
+}
+
+// Convert normalized editor coords (0-1 WRT 5042x4474) to 3D pixel coords
+// Assumes both images cover the same physical area proportionally
+function normToPx(nx, ny) {
+  // map: (norm * EDITOR_IMG) space → (norm * meta.image_w_px) space
+  return { x: nx * meta.image_w_px, y: ny * meta.image_h_px };
+}
+
+// 3D shape property lookup from BLOCKOUT objects
+const shapeProps = {};
+objects.forEach(o => {
+  const props = {
+    shape: o.shape || 'box',
+    height_m_estimated: o.height_m_estimated || 4,
+    rotation_deg: o.rotation_deg || 0,
+    render_mode: o.render_mode || 'building',
+    subtype: o.subtype || '',
+    validation_status: o.validation_status || '',
+    color: o.color || '#cccccc',
+  };
+  shapeProps[o.id] = props;
+});
+
+// Map editor zone IDs → BLOCKOUT IDs where names differ
+const zoneIdAlias = {
+  'Clasificadora': 'Z03_E03_clasif',
+  'Taller': 'Z03_E11_taller',
+  'Z04': 'Z04_E01',
+  'Z14': 'Z14_E01',
+  'Z17': 'Z17_D01',
+  'Z20': 'Z20_E01',
+  'Z21': 'Z21_E01',
+  'Z22': 'Z22_E01',
+};
+
+function lookupShapeProps(zoneId) {
+  return shapeProps[zoneId] || (zoneIdAlias[zoneId] ? shapeProps[zoneIdAlias[zoneId]] : null);
+}
+
+function mergeZones() {
+  const ez = loadEditorZones();
+  if (!ez) return null;
+  const used = new Set();
+  const merged = [];
+  ez.forEach(z => {
+    used.add(z.id);
+    const p = lookupShapeProps(z.id) || {};
+    const c = normToPx(z.x + z.w/2, z.y + z.h/2);
+    const w_px = z.w * meta.image_w_px;
+    const d_px = z.h * meta.image_h_px;
+    const hm = p.height_m_estimated || 4;
+    merged.push({
+      id: z.id,
+      shape: p.shape || 'box',
+      footprint: { cx: c.x, cz: c.y, w: w_px, d: d_px },
+      height_m_estimated: hm,
+      height_3d_units: hm / METERS_PER_UNIT,
+      rotation_deg: p.rotation_deg || 0,
+      color: z.color || p.color || '#cccccc',
+      render_mode: p.render_mode || 'building',
+      subtype: p.subtype || '',
+      validation_status: p.validation_status || '',
+      label: z.name || z.id,
+    });
+  });
+  objects.forEach(o => {
+    if (!used.has(o.id)) {
+      merged.push({ ...o, height_3d_units: o.height_3d_units || ((o.height_m_estimated || 4) / METERS_PER_UNIT) });
+    }
+  });
+  return merged;
+}
+
+function mergeRoads() {
+  const er = loadEditorRoads();
+  if (!er || !er.length) return null;
+  return er.map(r => ({
+    id: r.id,
+    name: r.name || '',
+    road_type: r.type || 'interna',
+    width_px: r.width_px || 6,
+    color: r.color || '#666',
+    description: r.description || '',
+    points_pixels: r.points.map(p => ({ x: p.x * meta.image_w_px, y: p.y * meta.image_h_px }))
+  }));
+}
+
+const sceneZones = mergeZones() || objects;
+const sceneRoads = mergeRoads() || (BLOCKOUT.roads || []);
+console.log('Roads loaded:', sceneRoads.length);
+
+const container = document.getElementById('canvas');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x050505);
+
+const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 200);
+camera.position.set(W * 0.6, 18, D * 0.8);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(container.clientWidth, container.clientHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.7;
+container.appendChild(renderer.domElement);
+
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(container.clientWidth, container.clientHeight);
+labelRenderer.domElement.style.position = 'absolute';
+labelRenderer.domElement.style.top = 0;
+labelRenderer.domElement.style.pointerEvents = 'none';
+container.appendChild(labelRenderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(W / 2, 0, D / 2);
+controls.update();
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.maxPolarAngle = Math.PI / 2.1;
+controls.minDistance = 0.5;
+controls.maxDistance = 80;
+
+// ===== LIGHTS =====
+const ambient = new THREE.AmbientLight(0x2a2a4a, 0.25);
+scene.add(ambient);
+
+const hemi = new THREE.HemisphereLight(0x446688, 0x1a1410, 0.3);
+scene.add(hemi);
+
+const sun = new THREE.DirectionalLight(0xffddbb, 0.9);
+sun.position.set(20, 40, 10);
+sun.castShadow = true;
+sun.shadow.mapSize.width = 1024;
+sun.shadow.mapSize.height = 1024;
+sun.shadow.camera.near = 0.5;
+sun.shadow.camera.far = 80;
+sun.shadow.camera.left = -40;
+sun.shadow.camera.right = 40;
+sun.shadow.camera.top = 40;
+sun.shadow.camera.bottom = -40;
+scene.add(sun);
+scene.add(sun.target);
+
+const fill = new THREE.DirectionalLight(0x334488, 0.15);
+fill.position.set(-20, 10, -20);
+scene.add(fill);
+
+// ===== SATELLITE GROUND =====
+const texLoader = new THREE.TextureLoader();
+const groundGeo = new THREE.PlaneGeometry(W, D);
+const groundMat = new THREE.MeshStandardMaterial({
+  map: texLoader.load('satellite.jpg'),
+  roughness: 0.85,
+  metalness: 0.0,
+  side: THREE.DoubleSide
+});
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.set(W / 2, 0, D / 2);
+ground.receiveShadow = true;
+scene.add(ground);
+
+// ===== ROADS =====
+const roads = sceneRoads;
+const roadGroup = new THREE.Group();
+scene.add(roadGroup);
+const ROAD_SCALE = meta.scale_px_to_units;
+const M2U = meta.meters_per_unit || 15;
+
+const ROAD_CFG = {
+  externa:    { w_m: 8,  color: 0x444444 },
+  perimetral: { w_m: 5,  color: 0x555555 },
+  interna:    { w_m: 3.5,color: 0x555555 },
+  alambrado:  { w_m: 0,  color: 0x888899 },
+};
+
+function roadSegment(x1,z1,x2,z2,w,mat,elev) {
+  const dx=x2-x1, dz=z2-z1;
+  const len=Math.sqrt(dx*dx+dz*dz);
+  if (len<0.001) return null;
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,len), mat);
+  m.rotation.x=-Math.PI/2;
+  m.rotation.y=Math.atan2(dx,dz);
+  m.position.set((x1+x2)/2,elev,(z1+z2)/2);
+  return m;
+}
+
+function buildRoadMesh(road) {
+  const pts=road.points_pixels;
+  if (!pts||pts.length<2) return;
+  const type=road.road_type||'interna';
+  const cfg=ROAD_CFG[type]||ROAD_CFG.interna;
+  const isAlamb=type==='alambrado';
+  const elev=0.003;
+  const group=new THREE.Group();
+
+  if (isAlamb) {
+    const w=(road.width_px||6)*ROAD_SCALE*0.4;
+    const mat=new THREE.MeshStandardMaterial({
+      color:0x8888aa,roughness:0.5,metalness:0.0,
+      transparent:true,opacity:0.3,side:THREE.DoubleSide,depthWrite:false
+    });
+    for (let i=0;i<pts.length-1;i++) {
+      const s=roadSegment(pts[i].x*ROAD_SCALE,pts[i].y*ROAD_SCALE,
+                          pts[i+1].x*ROAD_SCALE,pts[i+1].y*ROAD_SCALE,w,mat,elev);
+      if (s) group.add(s);
+    }
+    return group;
+  }
+
+  const roadW=cfg.w_m/M2U;
+  const mat=new THREE.MeshStandardMaterial({
+    color:cfg.color,roughness:0.92,metalness:0.0,side:THREE.DoubleSide
+  });
+  const edgeMat=new THREE.MeshStandardMaterial({
+    color:0xcccccc,roughness:0.6,metalness:0.0,side:THREE.DoubleSide
+  });
+
+  for (let i=0;i<pts.length-1;i++) {
+    const ax=pts[i].x*ROAD_SCALE,az=pts[i].y*ROAD_SCALE;
+    const bx=pts[i+1].x*ROAD_SCALE,bz=pts[i+1].y*ROAD_SCALE;
+    const dx=bx-ax,dz=bz-az;
+    const len=Math.sqrt(dx*dx+dz*dz);
+    if (len<0.001) continue;
+    const ang=Math.atan2(dx,dz);
+    const mx=(ax+bx)/2, mz=(az+bz)/2;
+    const perpX=-Math.cos(ang), perpZ=Math.sin(ang);
+    const edgeW=0.018;
+
+    const surf=new THREE.Mesh(new THREE.PlaneGeometry(roadW,len),mat);
+    surf.rotation.x=-Math.PI/2; surf.rotation.y=ang;
+    surf.position.set(mx,elev,mz);
+    group.add(surf);
+
+    const hw=roadW/2-edgeW/2;
+    [ -1, 1 ].forEach(s=>{
+      const e=new THREE.Mesh(new THREE.PlaneGeometry(edgeW,len),edgeMat);
+      e.rotation.x=-Math.PI/2; e.rotation.y=ang;
+      e.position.set(mx+s*hw*perpX,elev+0.0005,mz+s*hw*perpZ);
+      group.add(e);
+    });
+  }
+  return group;
+}
+
+let roadsRendered=0;
+roads.forEach(r=>{const m=buildRoadMesh(r);if(m){roadGroup.add(m);roadsRendered++;}});
+console.log('Road meshes rendered:', roadsRendered);
+
+// Road labels
+const roadLabelGroup=new THREE.Group();
+scene.add(roadLabelGroup);
+roads.forEach(r=>{
+  const pts=r.points_pixels;
+  if(!pts||pts.length<2)return;
+  const mid=Math.floor(pts.length/2);
+  const mx=pts[mid].x*ROAD_SCALE, mz=pts[mid].y*ROAD_SCALE;
+  const nm=r.name||r.id;
+  const tp=r.road_type||'';
+  const txt=nm+(tp==='alambrado'?' (alambrado)':'');
+  const div=document.createElement('div');
+  div.textContent=txt;
+  div.style.color='#ddd';
+  div.style.fontSize='9px';
+  div.style.fontWeight='600';
+  div.style.fontFamily='sans-serif';
+  div.style.background='rgba(0,0,0,0.5)';
+  div.style.padding='1px 6px';
+  div.style.borderRadius='3px';
+  div.style.border='1px solid '+(r.color||'#666');
+  div.style.whiteSpace='nowrap';
+  div.style.pointerEvents='none';
+  const lbl=new CSS2DObject(div);
+  lbl.position.set(mx,1.0,mz);
+  roadLabelGroup.add(lbl);
+});
+
+// ===== SHAPE BUILDER =====
+const meshMap = new Map();
+const buildingGroup = new THREE.Group();
+const footprintGroup = new THREE.Group();
+scene.add(buildingGroup);
+scene.add(footprintGroup);
+
+function hexColor(c) {
+  if (!c) return 0xcccccc;
+  if (typeof c === 'number') return c;
+  return parseInt(c.replace('#', ''), 16);
+}
+
+function buildShape(obj) {
+  const fp = obj.footprint;
+  const h = Math.max(obj.height_3d_units || 0.001, 0.001) * EXAG;
+  const color = hexColor(obj.color);
+  const opacity = (obj.render_mode === 'footprint' || obj.render_mode === 'pending_footprint') ? 0.1 : 0.35;
+  const mat = new THREE.MeshStandardMaterial({
+    color, roughness: 0.6, metalness: 0.05,
+    transparent: opacity < 1, opacity, side: THREE.DoubleSide
+  });
+
+  let mesh;
+  const shape = obj.shape || 'box';
+  switch(shape) {
+    case 'cylinder_tall': case 'cylinder_low': {
+      const r = Math.min(fp.w, fp.d) / 2;
+      const g = new THREE.CylinderGeometry(r, r, h, shape === 'cylinder_low' ? 24 : 20);
+      mesh = new THREE.Mesh(g, mat);
+      mesh.position.set(fp.cx, h / 2, fp.cz);
+      break;
+    }
+    case 'cylinder_long': {
+      const r = Math.min(fp.w, fp.d) / 2;
+      const len = Math.max(fp.w, fp.d);
+      const g = new THREE.CylinderGeometry(r, r, len, 18);
+      mesh = new THREE.Mesh(g, mat);
+      if (fp.w >= fp.d) mesh.rotation.z = Math.PI / 2;
+      else mesh.rotation.x = Math.PI / 2;
+      mesh.position.set(fp.cx, Math.max(r, h / 2), fp.cz);
+      break;
+    }
+    case 'gable_box': {
+      const group = new THREE.Group();
+      const wallH = h * 0.65, roofH = h * 0.35;
+      const walls = new THREE.Mesh(new THREE.BoxGeometry(fp.w, wallH, fp.d), mat);
+      walls.position.y = wallH / 2;
+      group.add(walls);
+      const roofGeo = new THREE.CylinderGeometry(roofH, roofH, fp.w, 3, 1);
+      const roof = new THREE.Mesh(roofGeo, mat.clone());
+      roof.material.color.setHex(0xcc4444);
+      roof.rotation.z = Math.PI / 2;
+      roof.position.y = wallH + roofH / 2;
+      roof.scale.set(1, fp.d / (fp.w || 1), 1);
+      group.add(roof);
+      group.position.set(fp.cx, 0, fp.cz);
+      mesh = group;
+      break;
+    }
+    case 'tower': {
+      const cw = Math.min(fp.w, fp.d);
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(cw, h, cw), mat);
+      mesh.position.set(fp.cx, h / 2, fp.cz);
+      break;
+    }
+    case 'flat_slab': case 'flat_organic': {
+      const slab = Math.max(h, 0.02);
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(fp.w, slab, fp.d), mat);
+      mesh.position.set(fp.cx, slab / 2, fp.cz);
+      break;
+    }
+    case 'flat_transparent': {
+      const flatMat = new THREE.MeshStandardMaterial({
+        color, roughness: 1, transparent: true, opacity: 0.08, side: THREE.DoubleSide
+      });
+      mesh = new THREE.Mesh(new THREE.PlaneGeometry(fp.w, fp.d), flatMat);
+      mesh.rotation.x = -Math.PI / 2;
+      mesh.position.set(fp.cx, 0.005, fp.cz);
+      break;
+    }
+    case 'elevated_beam': {
+      const beamH = Math.max(h, 0.05);
+      const elev = (5.0 / METERS_PER_UNIT) * EXAG;
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(fp.w, beamH, fp.d), mat);
+      mesh.position.set(fp.cx, elev + beamH / 2, fp.cz);
+      break;
+    }
+    default: {
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(fp.w, h, fp.d), mat);
+      mesh.position.set(fp.cx, h / 2, fp.cz);
+    }
+  }
+  if (mesh && obj.rotation_deg) {
+    mesh.rotation.y = obj.rotation_deg * Math.PI / 180;
+  }
+  return mesh;
+}
+
+// ===== BUILD SCENE =====
+sceneZones.forEach(obj => {
+  const mesh = buildShape(obj);
+  if (!mesh) return;
+  mesh.userData = { id: obj.id, obj };
+  if (mesh.isMesh || mesh.isGroup) {
+    mesh.castShadow = obj.render_mode === 'building';
+    mesh.receiveShadow = obj.render_mode === 'building';
+  }
+
+  if (obj.render_mode === 'footprint' || obj.render_mode === 'pending_footprint') {
+    footprintGroup.add(mesh);
+  } else {
+    buildingGroup.add(mesh);
+  }
+  meshMap.set(obj.id, mesh);
+});
+
+const labelMap = new Map();
+
+// ===== LABELS =====
+sceneZones.forEach(obj => {
+  const fp = obj.footprint;
+  const label = document.createElement('div');
+  label.textContent = obj.label || obj.id;
+  label.style.color = obj.color || '#fff';
+  label.style.fontSize = '10px';
+  label.style.fontWeight = '600';
+  label.style.textShadow = '0 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.7)';
+  label.style.background = 'rgba(0,0,0,0.45)';
+  label.style.padding = '1px 5px';
+  label.style.borderRadius = '3px';
+  label.style.border = '1px solid ' + (obj.color || '#444');
+  label.style.whiteSpace = 'nowrap';
+  label.style.fontFamily = 'sans-serif';
+  label.style.pointerEvents = 'none';
+
+  const labelObj = new CSS2DObject(label);
+  const h = Math.max((obj.height_3d_units || 0.001) * EXAG, 0.001);
+  labelObj.position.set(fp.cx, h + 0.5, fp.cz);
+  labelMap.set(obj.id, labelObj);
+  scene.add(labelObj);
+});
+
+// ===== DRAG + RAYCASTER =====
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+const dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+const intersection = new THREE.Vector3();
+let hoveredId = null;
+let selectedObj = null;
+let selectedMesh = null;
+let isDragging = false;
+let dragStartMouse = new THREE.Vector2();
+let dragMoved = false;
+let highlightMesh = null;
+const infoEl = document.getElementById('info');
+
+function getMeshes() {
+  const m = [];
+  buildingGroup.children.forEach(c => {
+    if (c.isMesh) m.push(c);
+    if (c.isGroup) c.children.forEach(ch => { if (ch.isMesh) m.push(ch); });
+  });
+  return m;
+}
+
+function findObjFromHit(intersects) {
+  for (const hit of intersects) {
+    let o = hit.object;
+    while (o) {
+      if (o.userData && o.userData.obj) return o.userData.obj;
+      o = o.parent;
+    }
+  }
+  return null;
+}
+
+function findTopMesh(objId) {
+  for (const c of buildingGroup.children) {
+    if (c.userData && c.userData.obj && c.userData.obj.id === objId) return c;
+    if (c.isGroup && c.children.length) {
+      for (const ch of c.children) {
+        if (ch.userData && ch.userData.obj && ch.userData.obj.id === objId) return c;
+      }
+    }
+  }
+  return null;
+}
+
+function showHighlight(mesh) {
+  if (highlightMesh) { scene.remove(highlightMesh); highlightMesh = null; }
+  if (!mesh) return;
+  const fp = mesh.userData.obj.footprint;
+  const h = Math.max((mesh.userData.obj.height_3d_units || 0.001) * EXAG, 0.001);
+  const geo = new THREE.BoxGeometry(fp.w + 0.08, h + 0.08, fp.d + 0.08);
+  const mat = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.4 });
+  highlightMesh = new THREE.Mesh(geo, mat);
+  highlightMesh.position.copy(mesh.position);
+  if (mesh.rotation) highlightMesh.rotation.copy(mesh.rotation);
+  scene.add(highlightMesh);
+}
+
+function getDragPoint(event) {
+  const rect = renderer.domElement.getBoundingClientRect();
+  const mx = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  const my = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  pointer.set(mx, my);
+  raycaster.setFromCamera(pointer, camera);
+  const hit = raycaster.ray.intersectPlane(dragPlane, intersection);
+  return hit ? intersection.clone() : null;
+}
+
+renderer.domElement.addEventListener('pointerdown', e => {
+  const rect = renderer.domElement.getBoundingClientRect();
+  dragStartMouse.set(e.clientX, e.clientY);
+  pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(pointer, camera);
+  const intersects = raycaster.intersectObjects(getMeshes());
+  const obj = findObjFromHit(intersects);
+  if (obj && obj.render_mode === 'building') {
+    selectedObj = obj;
+    selectedMesh = findTopMesh(obj.id);
+    isDragging = false;
+    dragMoved = false;
+    controls.enabled = false;
+    renderer.domElement.style.cursor = 'grabbing';
+  } else {
+    selectedObj = null;
+    selectedMesh = null;
+  }
+});
+
+renderer.domElement.addEventListener('pointermove', e => {
+  const rect = renderer.domElement.getBoundingClientRect();
+  pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+  if (selectedObj && selectedMesh) {
+    const dx = e.clientX - dragStartMouse.x;
+    const dy = e.clientY - dragStartMouse.y;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+      isDragging = true;
+      dragMoved = true;
+    }
+    if (isDragging) {
+      const pt = getDragPoint(e);
+      if (pt) {
+        const h = Math.max((selectedObj.height_3d_units || 0.001) * EXAG, 0.001);
+        selectedMesh.position.x = pt.x;
+        selectedMesh.position.z = pt.z;
+        if (highlightMesh) {
+          highlightMesh.position.x = pt.x;
+          highlightMesh.position.z = pt.z;
+        }
+        const labelObj = labelMap.get(selectedObj.id);
+        if (labelObj) {
+          labelObj.position.x = pt.x;
+          labelObj.position.z = pt.z;
+        }
+      }
+      return;
+    }
+  }
+
+  // Hover
+  raycaster.setFromCamera(pointer, camera);
+  const hits = raycaster.intersectObjects(getMeshes());
+  let newHovered = null;
+  if (!isDragging) {
+    const obj = findObjFromHit(hits);
+    if (obj) newHovered = obj.id;
+  }
+  if (newHovered !== hoveredId) {
+    hoveredId = newHovered;
+    renderer.domElement.style.cursor = hoveredId ? 'pointer' : 'default';
+    showHighlight(hoveredId ? findTopMesh(hoveredId) : null);
+  }
+});
+
+renderer.domElement.addEventListener('pointerup', e => {
+  if (dragMoved && isDragging && selectedObj) {
+    selectedObj.footprint.cx = selectedMesh.position.x;
+    selectedObj.footprint.cz = selectedMesh.position.z;
+    showInfo(selectedObj);
+  }
+  if (!dragMoved && selectedObj) {
+    showInfo(selectedObj);
+  }
+  if (!dragMoved && !selectedObj) {
+    infoEl.classList.remove('show');
+  }
+  isDragging = false;
+  selectedObj = null;
+  selectedMesh = null;
+  controls.enabled = true;
+  renderer.domElement.style.cursor = 'default';
+});
+
+function showInfo(obj) {
+  const fp = obj.footprint;
+  const w_m = (fp.w * METERS_PER_UNIT).toFixed(1);
+  const d_m = (fp.d * METERS_PER_UNIT).toFixed(1);
+  const h_m = obj.height_m_estimated || 0;
+  const rot = obj.rotation_deg ? obj.rotation_deg + '\u00b0' : '0\u00b0';
+  const subtype = obj.subtype || '';
+  const status = obj.validation_status || '';
+  const label = obj.label || obj.id;
+
+  infoEl.innerHTML =
+    '<div class="row"><b style="color:' + (obj.color || '#fff') + '">' + label + '</b> <span>(' + obj.id + ')</span></div>' +
+    '<div class="row"><span>Tipo</span><b>' + subtype + '</b> | <span>Shape</span><b>' + (obj.shape || 'box') + '</b></div>' +
+    '<div class="row"><span>Dimensiones</span><b>' + w_m + 'm</b> &times; <b>' + d_m + 'm</b> &times; <b>' + h_m + 'm</b> <span>rot ' + rot + '</span></div>' +
+    '<div class="row"><span>Pos.</span><b>(' + fp.cx.toFixed(2) + ', ' + fp.cz.toFixed(2) + ')</b> <span>w=' + fp.w.toFixed(3) + ' d=' + fp.d.toFixed(3) + '</span></div>' +
+    '<div class="row"><span>Estado</span><b style="color:' + (status.includes('validated') ? '#4caf50' : status.includes('pending') ? '#ffaa00' : '#888') + '">' + status + '</b></div>';
+  infoEl.classList.add('show');
+}
+
+// ===== LEGEND =====
+const legendList = document.getElementById('legend-list');
+const seen = {};
+sceneZones.forEach(obj => {
+  const key = obj.color + '|' + (obj.subtype || obj.shape);
+  if (seen[key]) return;
+  seen[key] = true;
+  const entry = document.createElement('div');
+  entry.className = 'entry';
+  const swatch = document.createElement('div');
+  swatch.className = 'swatch';
+  swatch.style.background = obj.color || '#666';
+  const lbl = document.createElement('div');
+  lbl.className = 'lbl';
+  const sub = obj.subtype ? obj.subtype.replace(/_/g, ' ') : (obj.shape || '');
+  lbl.innerHTML = sub + ' <small>' + (obj.shape || '') + '</small>';
+  entry.appendChild(swatch);
+  entry.appendChild(lbl);
+  entry.addEventListener('click', () => {
+    const mesh = meshMap.get(obj.id);
+    if (mesh) {
+      controls.target.set(obj.footprint.cx, 0, obj.footprint.cz);
+      camera.position.set(obj.footprint.cx + 8, 6, obj.footprint.cz + 8);
+      controls.update();
+      showInfo(obj);
+    }
+  });
+  legendList.appendChild(entry);
+});
+
+// pending info
+const pm = BLOCKOUT.pending_microzones || [];
+if (pm.length) {
+  const sep = document.createElement('div');
+  sep.style.cssText = 'border-top:1px solid #333;margin:8px 0 6px;padding-top:6px;color:#666;font-size:10px';
+  sep.textContent = 'Pendientes:';
+  legendList.appendChild(sep);
+  pm.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'entry';
+    div.innerHTML = '<span class="pending">\u26a0</span><span class="lbl">' + p.name + ' <small>' + p.reason + '</small></span>';
+    legendList.appendChild(div);
+  });
+}
+
+// ===== RESIZE =====
+window.addEventListener('resize', () => {
+  const w = container.clientWidth;
+  const h = container.clientHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+  labelRenderer.setSize(w, h);
+});
+
+// ===== ANIMATION LOOP =====
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+
+  if (highlightMesh && selectedObj) {
+    highlightMesh.position.copy(selectedMesh.position);
+  }
+
+  renderer.render(scene, camera);
+  labelRenderer.render(scene, camera);
+}
+animate();
+
+console.log('Zalei Atlas 3D cargado. ' + sceneZones.length + ' objetos renderizados.');
+</script>
+</body>
+</html>

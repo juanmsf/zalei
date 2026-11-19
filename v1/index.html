@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<script src="../auth.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZALEI | Interactive Atlas Operator</title>
+    <meta name="description" content="Zalei — Interactive Atlas Operator para planificación espacial de infraestructura.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- NAV -->
+    <nav class="main-nav nav-fixed" id="main-nav">
+        <div class="nav-logo">ZALEI</div>
+        <div class="nav-links">
+            <span class="atlas-badge">ATLAS OPERATOR v2.0</span>
+        </div>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- ATLAS OPERATOR CANVAS                                  -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <section class="hero" id="hero" data-date="MAY 2026">
+
+        <!-- TOOLBAR -->
+        <div class="atlas-toolbar" id="atlas-toolbar">
+            <div class="toolbar-group">
+                <button class="btn-tool" id="btn-save">Guardar</button>
+                <button class="btn-tool" id="btn-export">Exportar</button>
+                <label class="btn-tool" for="input-import">Importar</label>
+                <input type="file" id="input-import" class="hidden" accept=".json">
+            </div>
+            <div class="toolbar-divider"></div>
+            <div class="toolbar-group">
+                <button class="btn-tool btn-action" id="btn-add-node">+ Etiqueta</button>
+                <button class="btn-tool btn-action" id="btn-add-anchor">+ Punto</button>
+            </div>
+            <div class="toolbar-divider"></div>
+            <div class="toolbar-group">
+                <label class="btn-tool" for="input-replace-img">Cambiar Imagen</label>
+                <input type="file" id="input-replace-img" class="hidden" accept="image/*">
+            </div>
+        </div>
+
+        <!-- STAGE: full hero -->
+        <div class="annotation-stage" id="annotation-stage">
+
+            <!-- La imagen llena el stage vía object-fit:cover.
+                 El "image-canvas" se redimensiona exactamente al tamaño
+                 de la imagen renderizada para que los overlays coincidan. -->
+            <img
+                src="assets/zalei-hero.png"
+                alt="Vista aérea del establecimiento Zalei"
+                class="annotation-image"
+                id="annotation-image"
+                draggable="false"
+            >
+
+            <!-- Overlays: se posicionan en JS relativo a image rect -->
+            <svg class="annotation-svg" id="annotation-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+            <div class="annotation-layer" id="anchor-layer"></div>
+            <div class="annotation-layer" id="node-layer"></div>
+            <div class="annotation-layer" id="connector-ui-layer"></div>
+
+        </div><!-- /annotation-stage -->
+
+        <!-- INSPECTOR -->
+        <div class="atlas-inspector hidden" id="atlas-inspector">
+            <div class="inspector-header">
+                <h3>Inspector de Nodo</h3>
+                <button class="btn-close" id="btn-close-inspector">✕</button>
+            </div>
+            <div class="inspector-section">
+                <label>Pedido:</label>
+                <div class="inspector-value" id="inspector-request">--</div>
+            </div>
+            <div class="inspector-section">
+                <label>Etiqueta:</label>
+                <input type="text" id="inspector-label" class="inspector-input">
+            </div>
+            <div class="inspector-section">
+                <label>Alcance:</label>
+                <div class="inspector-value" id="inspector-scope">--</div>
+            </div>
+            <div class="inspector-section">
+                <label>Estado:</label>
+                <div class="status-badge" id="inspector-status">--</div>
+            </div>
+            <div class="inspector-actions">
+                <button class="btn-primary" id="btn-send-n8n">Enviar A n8n</button>
+                <button class="btn-danger" id="btn-delete-node">Eliminar Etiqueta</button>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- IDENTIDAD -->
+    <section class="identity-section">
+        <div class="identity-inner">
+            <p class="eyebrow">Un activo diseñado para generar valor</p>
+            <h2 class="section-title">Eficiencia operativa.<br>Escala industrial.<br>Resultados concretos.</h2>
+            <p class="identity-copy">
+                Zalei es un establecimiento avícola de producción continua de huevos,
+                operado con infraestructura de primer nivel y orientado a la escala industrial.
+            </p>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">ZALEI</div>
+            <div class="footer-coords">
+                <span>34°17'S · 61°20'O</span>
+                <span>Argentina</span>
+            </div>
+        </div>
+        <div class="footer-bottom"><p>© 2026 ZALEI · zalei.ar</p></div>
+    </footer>
+
+    <!-- DATA (window globals, no ES modules needed) -->
+    <script src="./data/anchors.js"></script>
+    <script src="./data/zones.js"></script>
+    <script src="./data/annotations.seed.js"></script>
+    <script src="./data/requests.seed.js"></script>
+    <script src="./src/atlas.js"></script>
+</body>
+</html>

@@ -1,0 +1,1956 @@
+{
+  "generated": "2026-11-04T17:45:41.786637",
+  "zones_count": 22,
+  "microzones_count": 43,
+  "summary": {
+    "PASS": 290,
+    "FAIL": 0,
+    "WARN": 10,
+    "PENDING": 20
+  },
+  "results": [
+    {
+      "check": "duplicate_ids_global",
+      "zone_id": "ALL",
+      "status": "PASS",
+      "detail": "No duplicate IDs across 22 zones + 43 microzones"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z01",
+      "status": "PASS",
+      "detail": "Recría Existente"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z02",
+      "status": "PASS",
+      "detail": "Guano"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z03",
+      "status": "PASS",
+      "detail": "Galpones De Ponedoras"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z04",
+      "status": "PASS",
+      "detail": "Planta De Alimento"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z05",
+      "status": "PASS",
+      "detail": "Cintas Transportadoras"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z06",
+      "status": "PASS",
+      "detail": "Silos Secos"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z07",
+      "status": "PASS",
+      "detail": "Terreno Nuevo"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z08",
+      "status": "PASS",
+      "detail": "Casa De Gerencia"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z09",
+      "status": "PASS",
+      "detail": "Departamentos De Empleados"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z10",
+      "status": "PASS",
+      "detail": "Clasificadora"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z11",
+      "status": "PASS",
+      "detail": "Casa De Mantenimiento Sur"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z12",
+      "status": "PASS",
+      "detail": "Taller"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z13",
+      "status": "PASS",
+      "detail": "Casa De Mantenimiento Norte"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z14",
+      "status": "PASS",
+      "detail": "Aceitera"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z15",
+      "status": "PASS",
+      "detail": "Silos Húmedos"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z16",
+      "status": "PASS",
+      "detail": "Silos De Almacenamiento Consumo Y Expeller"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z17",
+      "status": "PASS",
+      "detail": "Planta De Descarga De Granos"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z18",
+      "status": "PASS",
+      "detail": "Secado Y Limpieza De Granos"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z19",
+      "status": "PASS",
+      "detail": "Tanques De Aceite"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z20",
+      "status": "PASS",
+      "detail": "Descarga De Alimento"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z21",
+      "status": "PASS",
+      "detail": "Oficinas"
+    },
+    {
+      "check": "zone_name_present",
+      "zone_id": "Z22",
+      "status": "PASS",
+      "detail": "Balanza De Camiones"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z01",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z01",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z02",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z02",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z03",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z03",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z04",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z04",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z05",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z05",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z06",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z06",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z07",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z07",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z08",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z08",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z09",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z09",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z10",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z10",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z11",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z11",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z12",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z12",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z13",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z13",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z14",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z14",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z15",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z15",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z16",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z16",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z17",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z17",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z18",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z18",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z19",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z19",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z20",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z20",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z21",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z21",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "zone_bbox_in_bounds",
+      "zone_id": "Z22",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "zone_bbox_orientation",
+      "zone_id": "Z22",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "critical_count",
+      "zone_id": "Z03",
+      "zone_name": "Galpones De Ponedoras",
+      "status": "PASS",
+      "detail": "count=10 == expected=10"
+    },
+    {
+      "check": "critical_count",
+      "zone_id": "Z06",
+      "zone_name": "Silos Secos",
+      "status": "PASS",
+      "detail": "count=7 == expected=7"
+    },
+    {
+      "check": "critical_count",
+      "zone_id": "Z19",
+      "zone_name": "Tanques De Aceite",
+      "status": "PASS",
+      "detail": "count=3 == expected=3"
+    },
+    {
+      "check": "name_conflict",
+      "zone_id": "Z11+Z13",
+      "status": "WARN",
+      "detail": "Z11=\"Casa De Mantenimiento Sur\" conflicts with Z13=\"Casa De Mantenimiento Norte\" - validate with Chadi"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z01",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z02",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z03",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z04",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z05",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z06",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z07",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z08",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z09",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z10",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z11",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z12",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z13",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z14",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z15",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z16",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z17",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z18",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z19",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z20",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z21",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "crop_exists",
+      "zone_id": "Z22",
+      "status": "PASS",
+      "detail": "Crop in manifest"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z06_S01",
+      "status": "PASS",
+      "detail": "Silo Seco Norte 1"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z06_S02",
+      "status": "PASS",
+      "detail": "Silo Seco Norte 2"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z06_S03",
+      "status": "PASS",
+      "detail": "Silo Seco Norte 3"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z06_S04",
+      "status": "PASS",
+      "detail": "Silo Seco Sur 1"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z06_S05",
+      "status": "PASS",
+      "detail": "Silo Seco Sur 2"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z06_S06",
+      "status": "PASS",
+      "detail": "Silo Seco Sur 3"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z06_S07",
+      "status": "PASS",
+      "detail": "Silo Seco Sur 4"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z19_T01",
+      "status": "PASS",
+      "detail": "Tanque Aceite 1"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z19_T02",
+      "status": "PASS",
+      "detail": "Tanque Aceite 2"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z19_T03",
+      "status": "PASS",
+      "detail": "Tanque Aceite 3"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z15_H01",
+      "status": "PASS",
+      "detail": "Silo Humedo 1"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z15_H02",
+      "status": "PASS",
+      "detail": "Silo Humedo 2"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z15_H03",
+      "status": "PASS",
+      "detail": "Silo Humedo 3"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z16_E01",
+      "status": "PASS",
+      "detail": "Silo Consumo/Expeller 1"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z16_E02",
+      "status": "PASS",
+      "detail": "Silo Consumo/Expeller 2"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z16_E03",
+      "status": "PASS",
+      "detail": "Silo Consumo/Expeller 3"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z16_E04",
+      "status": "PASS",
+      "detail": "Silo Consumo/Expeller 4"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z18A_Conexion_Tubular",
+      "status": "PASS",
+      "detail": "Conexion Tubular (Pasarela Superior)"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z18B_Secado_Y_Limpieza",
+      "status": "PASS",
+      "detail": "Secado Y Limpieza De Granos (Estructura Inferior)"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z04_E01",
+      "status": "PASS",
+      "detail": "Planta De Alimento (Estructura Principal)"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z14_E01",
+      "status": "PASS",
+      "detail": "Aceitera (Estructura Principal)"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z17_D01",
+      "status": "PASS",
+      "detail": "Planta De Descarga De Granos (Estructura Principal)"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z20_E01",
+      "status": "PASS",
+      "detail": "Descarga De Alimento (Estructura Principal)"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z21_E01",
+      "status": "PASS",
+      "detail": "Oficinas (Estructura Principal)"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z22_E01",
+      "status": "PASS",
+      "detail": "Balanza De Camiones (Estructura Principal)"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z03_E01",
+      "status": "PASS",
+      "detail": "Galpon Ponedoras 01"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z03_E02",
+      "status": "PASS",
+      "detail": "Galpon Ponedoras 02"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z03_E03",
+      "status": "PASS",
+      "detail": "Galpon Ponedoras 3"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z03_E04",
+      "status": "PASS",
+      "detail": "Galpon Ponedoras 04"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z03_E05",
+      "status": "PASS",
+      "detail": "Galpon Ponedoras 05"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z03_E06",
+      "status": "PASS",
+      "detail": "Galpon Ponedoras 06"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z03_E07",
+      "status": "PASS",
+      "detail": "Galpon Ponedoras 07"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z03_E08",
+      "status": "PASS",
+      "detail": "Galpon Ponedoras 08"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z03_E09",
+      "status": "PASS",
+      "detail": "Galpon Ponedoras 09"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z03_E10",
+      "status": "PASS",
+      "detail": "Galpon Ponedoras 10"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z05_C01",
+      "status": "PASS",
+      "detail": "Conexion Cinta Galpon 1"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z05_C02",
+      "status": "PASS",
+      "detail": "Conexion Cinta Galpon 2"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z05_C03",
+      "status": "PASS",
+      "detail": "Conexion Cinta Galpon 3"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z07_G_NEW_01",
+      "status": "PASS",
+      "detail": "Galpon Recria Nuevo 1"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z07_G_NEW_02",
+      "status": "PASS",
+      "detail": "Galpon Recria Nuevo 2"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z07_SILO_BOLSAS",
+      "status": "PASS",
+      "detail": "Silo Bolsas"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z03_E03_clasif",
+      "status": "PASS",
+      "detail": "Galpon Ponedoras Clasificadora"
+    },
+    {
+      "check": "microzone_name_present",
+      "zone_id": "Z03_E11_taller",
+      "status": "PASS",
+      "detail": "Galpon Ponedoras Taller"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z06_S01",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z06_S01",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z06_S02",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z06_S02",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z06_S03",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z06_S03",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z06_S04",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z06_S04",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z06_S05",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z06_S05",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z06_S06",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z06_S06",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z06_S07",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z06_S07",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z19_T01",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z19_T01",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z19_T02",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z19_T02",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z19_T03",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z19_T03",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z15_H01",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z15_H01",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z15_H02",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z15_H02",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z15_H03",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z15_H03",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z16_E01",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z16_E01",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z16_E02",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z16_E02",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z16_E03",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z16_E03",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z16_E04",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z16_E04",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z18A_Conexion_Tubular",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z18A_Conexion_Tubular",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z18B_Secado_Y_Limpieza",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z18B_Secado_Y_Limpieza",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z04_E01",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z04_E01",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z14_E01",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z14_E01",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z17_D01",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z17_D01",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z20_E01",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z20_E01",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z21_E01",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z21_E01",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z22_E01",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z22_E01",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z03_E01",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z03_E01",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z03_E02",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z03_E02",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z03_E03",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z03_E03",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z03_E04",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z03_E04",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z03_E05",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z03_E05",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z03_E06",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z03_E06",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z03_E07",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z03_E07",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z03_E08",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z03_E08",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z03_E09",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z03_E09",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z03_E10",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z03_E10",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z07_G_NEW_01",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z07_G_NEW_01",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z07_G_NEW_02",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z07_G_NEW_02",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z03_E03_clasif",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z03_E03_clasif",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_bbox_in_bounds",
+      "zone_id": "Z03_E11_taller",
+      "status": "PASS",
+      "detail": "Within 5042x4474"
+    },
+    {
+      "check": "microzone_bbox_orientation",
+      "zone_id": "Z03_E11_taller",
+      "status": "PASS",
+      "detail": "x1<x2, y1<y2"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z06_S01",
+      "status": "PASS",
+      "detail": "parent=Z06"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z06_S02",
+      "status": "PASS",
+      "detail": "parent=Z06"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z06_S03",
+      "status": "PASS",
+      "detail": "parent=Z06"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z06_S04",
+      "status": "PASS",
+      "detail": "parent=Z06"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z06_S05",
+      "status": "PASS",
+      "detail": "parent=Z06"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z06_S06",
+      "status": "PASS",
+      "detail": "parent=Z06"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z06_S07",
+      "status": "PASS",
+      "detail": "parent=Z06"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z19_T01",
+      "status": "PASS",
+      "detail": "parent=Z19"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z19_T02",
+      "status": "PASS",
+      "detail": "parent=Z19"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z19_T03",
+      "status": "PASS",
+      "detail": "parent=Z19"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z15_H01",
+      "status": "PASS",
+      "detail": "parent=Z15"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z15_H02",
+      "status": "PASS",
+      "detail": "parent=Z15"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z15_H03",
+      "status": "PASS",
+      "detail": "parent=Z15"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z16_E01",
+      "status": "PASS",
+      "detail": "parent=Z16"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z16_E02",
+      "status": "PASS",
+      "detail": "parent=Z16"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z16_E03",
+      "status": "PASS",
+      "detail": "parent=Z16"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z16_E04",
+      "status": "PASS",
+      "detail": "parent=Z16"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z18A_Conexion_Tubular",
+      "status": "PASS",
+      "detail": "parent=Z18"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z18B_Secado_Y_Limpieza",
+      "status": "PASS",
+      "detail": "parent=Z18"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z04_E01",
+      "status": "PASS",
+      "detail": "parent=Z04"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z14_E01",
+      "status": "PASS",
+      "detail": "parent=Z14"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z17_D01",
+      "status": "PASS",
+      "detail": "parent=Z17"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z20_E01",
+      "status": "PASS",
+      "detail": "parent=Z20"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z21_E01",
+      "status": "PASS",
+      "detail": "parent=Z21"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z22_E01",
+      "status": "PASS",
+      "detail": "parent=Z22"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z03_E01",
+      "status": "PASS",
+      "detail": "parent=Z03"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z03_E02",
+      "status": "PASS",
+      "detail": "parent=Z03"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z03_E03",
+      "status": "PASS",
+      "detail": "parent=Z03"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z03_E04",
+      "status": "PASS",
+      "detail": "parent=Z03"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z03_E05",
+      "status": "PASS",
+      "detail": "parent=Z03"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z03_E06",
+      "status": "PASS",
+      "detail": "parent=Z03"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z03_E07",
+      "status": "PASS",
+      "detail": "parent=Z03"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z03_E08",
+      "status": "PASS",
+      "detail": "parent=Z03"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z03_E09",
+      "status": "PASS",
+      "detail": "parent=Z03"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z03_E10",
+      "status": "PASS",
+      "detail": "parent=Z03"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z05_C01",
+      "status": "PASS",
+      "detail": "parent=Z05"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z05_C02",
+      "status": "PASS",
+      "detail": "parent=Z05"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z05_C03",
+      "status": "PASS",
+      "detail": "parent=Z05"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z07_G_NEW_01",
+      "status": "PASS",
+      "detail": "parent=Z07"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z07_G_NEW_02",
+      "status": "PASS",
+      "detail": "parent=Z07"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z07_SILO_BOLSAS",
+      "status": "PASS",
+      "detail": "parent=Z07"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z03_E03_clasif",
+      "status": "PASS",
+      "detail": "parent=Z03"
+    },
+    {
+      "check": "microzone_parent_exists",
+      "zone_id": "Z03_E11_taller",
+      "status": "PASS",
+      "detail": "parent=Z03"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z06_S01",
+      "status": "PASS",
+      "detail": "Inside parent Z06"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z06_S02",
+      "status": "PASS",
+      "detail": "Inside parent Z06"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z06_S03",
+      "status": "PASS",
+      "detail": "Inside parent Z06"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z06_S04",
+      "status": "PASS",
+      "detail": "Inside parent Z06"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z06_S05",
+      "status": "PASS",
+      "detail": "Inside parent Z06"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z06_S06",
+      "status": "PASS",
+      "detail": "Inside parent Z06"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z06_S07",
+      "status": "PASS",
+      "detail": "Inside parent Z06"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z19_T01",
+      "status": "PASS",
+      "detail": "Inside parent Z19"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z19_T02",
+      "status": "PASS",
+      "detail": "Inside parent Z19"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z19_T03",
+      "status": "PASS",
+      "detail": "Inside parent Z19"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z15_H01",
+      "status": "WARN",
+      "detail": "Microzone bbox extends outside parent Z15 - mark containment_exempt if justified"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z15_H02",
+      "status": "WARN",
+      "detail": "Microzone bbox extends outside parent Z15 - mark containment_exempt if justified"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z15_H03",
+      "status": "WARN",
+      "detail": "Microzone bbox extends outside parent Z15 - mark containment_exempt if justified"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z16_E01",
+      "status": "WARN",
+      "detail": "Microzone bbox extends outside parent Z16 - mark containment_exempt if justified"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z16_E02",
+      "status": "WARN",
+      "detail": "Microzone bbox extends outside parent Z16 - mark containment_exempt if justified"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z16_E03",
+      "status": "PASS",
+      "detail": "Inside parent Z16"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z16_E04",
+      "status": "WARN",
+      "detail": "Microzone bbox extends outside parent Z16 - mark containment_exempt if justified"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z18A_Conexion_Tubular",
+      "status": "WARN",
+      "detail": "Microzone bbox extends outside parent Z18 - mark containment_exempt if justified"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z18B_Secado_Y_Limpieza",
+      "status": "PASS",
+      "detail": "Inside parent Z18"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z04_E01",
+      "status": "PASS",
+      "detail": "Inside parent Z04"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z14_E01",
+      "status": "PASS",
+      "detail": "Inside parent Z14"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z17_D01",
+      "status": "PASS",
+      "detail": "Inside parent Z17"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z20_E01",
+      "status": "PASS",
+      "detail": "Inside parent Z20"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z21_E01",
+      "status": "PASS",
+      "detail": "Inside parent Z21"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z22_E01",
+      "status": "PASS",
+      "detail": "Inside parent Z22"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z03_E01",
+      "status": "PASS",
+      "detail": "Inside parent Z03"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z03_E02",
+      "status": "PASS",
+      "detail": "Inside parent Z03"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z03_E03",
+      "status": "PASS",
+      "detail": "Inside parent Z03"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z03_E04",
+      "status": "PASS",
+      "detail": "Inside parent Z03"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z03_E05",
+      "status": "PASS",
+      "detail": "Inside parent Z03"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z03_E06",
+      "status": "PASS",
+      "detail": "Inside parent Z03"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z03_E07",
+      "status": "PASS",
+      "detail": "Inside parent Z03"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z03_E08",
+      "status": "PASS",
+      "detail": "Inside parent Z03"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z03_E09",
+      "status": "WARN",
+      "detail": "Microzone bbox extends outside parent Z03 - mark containment_exempt if justified"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z03_E10",
+      "status": "PASS",
+      "detail": "Inside parent Z03"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z07_G_NEW_01",
+      "status": "PASS",
+      "detail": "Inside parent Z07"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z07_G_NEW_02",
+      "status": "PASS",
+      "detail": "Inside parent Z07"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z03_E03_clasif",
+      "status": "PASS",
+      "detail": "Inside parent Z03"
+    },
+    {
+      "check": "microzone_inside_parent",
+      "zone_id": "Z03_E11_taller",
+      "status": "WARN",
+      "detail": "Microzone bbox extends outside parent Z03 - mark containment_exempt if justified"
+    },
+    {
+      "check": "critical_microzone_count",
+      "zone_id": "Z06",
+      "status": "PASS",
+      "detail": "7 microzones for Silos Secos == expected 7"
+    },
+    {
+      "check": "critical_microzone_count",
+      "zone_id": "Z19",
+      "status": "PASS",
+      "detail": "3 microzones for Tanques De Aceite == expected 3"
+    },
+    {
+      "check": "z18a_name_purity",
+      "zone_id": "Z18A_Conexion_Tubular",
+      "status": "PASS",
+      "detail": "Z18A name does not mix secado/limpieza"
+    },
+    {
+      "check": "z18b_name_required",
+      "zone_id": "Z18B_Secado_Y_Limpieza",
+      "status": "PASS",
+      "detail": "Z18B name correctly labels secado/limpieza"
+    },
+    {
+      "check": "chadi_validation_pending",
+      "zone_id": "Z02",
+      "zone_name": "Guano",
+      "status": "PENDING",
+      "detail": "¿guano seco / húmedo / zonas mixtas? Pendiente validación."
+    },
+    {
+      "check": "chadi_validation_pending",
+      "zone_id": "Z07",
+      "zone_name": "Terreno Nuevo",
+      "status": "PENDING",
+      "detail": "Requires Chadi review"
+    },
+    {
+      "check": "chadi_validation_pending",
+      "zone_id": "Z11",
+      "zone_name": "Casa De Mantenimiento Sur",
+      "status": "PENDING",
+      "detail": "Z13 también llamado Casa de Mantenimiento — validar con Chadi si son 2 estructuras distintas"
+    },
+    {
+      "check": "chadi_validation_pending",
+      "zone_id": "Z13",
+      "zone_name": "Casa De Mantenimiento Norte",
+      "status": "PENDING",
+      "detail": "Z11 también llamado Casa de Mantenimiento — validar con Chadi"
+    },
+    {
+      "check": "chadi_validation_pending",
+      "zone_id": "Z18",
+      "zone_name": "Secado Y Limpieza De Granos",
+      "status": "PENDING",
+      "detail": "Bbox padre cuestionado por Juan/Phase 3 review (2026-05-28). Posible que la estructura tubular inferior real no este en este bbox - Chadi debe marcar exactamente."
+    },
+    {
+      "check": "chadi_microzone_pending",
+      "zone_id": "Z15_H01",
+      "zone_name": "Silo Humedo 1",
+      "status": "PENDING",
+      "detail": "Hough detecto 8 candidatos. Quedan los 3 mas grandes. Confirmar conteo y posiciones con Chadi."
+    },
+    {
+      "check": "chadi_microzone_pending",
+      "zone_id": "Z15_H02",
+      "zone_name": "Silo Humedo 2",
+      "status": "PENDING",
+      "detail": "Hough detecto 8 candidatos. Quedan los 3 mas grandes. Confirmar conteo y posiciones con Chadi."
+    },
+    {
+      "check": "chadi_microzone_pending",
+      "zone_id": "Z15_H03",
+      "zone_name": "Silo Humedo 3",
+      "status": "PENDING",
+      "detail": "Hough detecto 8 candidatos. Quedan los 3 mas grandes. Confirmar conteo y posiciones con Chadi."
+    },
+    {
+      "check": "chadi_microzone_pending",
+      "zone_id": "Z16_E01",
+      "zone_name": "Silo Consumo/Expeller 1",
+      "status": "PENDING",
+      "detail": "Hough detecto 51 candidatos (alta densidad). Quedan los 4 mayores. Necesita validacion Chadi."
+    },
+    {
+      "check": "chadi_microzone_pending",
+      "zone_id": "Z16_E02",
+      "zone_name": "Silo Consumo/Expeller 2",
+      "status": "PENDING",
+      "detail": "Hough detecto 51 candidatos (alta densidad). Quedan los 4 mayores. Necesita validacion Chadi."
+    },
+    {
+      "check": "chadi_microzone_pending",
+      "zone_id": "Z16_E03",
+      "zone_name": "Silo Consumo/Expeller 3",
+      "status": "PENDING",
+      "detail": "Hough detecto 51 candidatos (alta densidad). Quedan los 4 mayores. Necesita validacion Chadi."
+    },
+    {
+      "check": "chadi_microzone_pending",
+      "zone_id": "Z16_E04",
+      "zone_name": "Silo Consumo/Expeller 4",
+      "status": "PENDING",
+      "detail": "Hough detecto 51 candidatos (alta densidad). Quedan los 4 mayores. Necesita validacion Chadi."
+    },
+    {
+      "check": "chadi_microzone_pending",
+      "zone_id": "Z18A_Conexion_Tubular",
+      "zone_name": "Conexion Tubular (Pasarela Superior)",
+      "status": "PENDING",
+      "detail": "Phase 3 review (2026-05-28): bbox ampliado al oeste para capturar la pasarela tubular diagonal completa que viene desde planta de alimento. Chadi debe confirmar limites exactos."
+    },
+    {
+      "check": "chadi_microzone_pending",
+      "zone_id": "Z18B_Secado_Y_Limpieza",
+      "zone_name": "Secado Y Limpieza De Granos (Estructura Inferior)",
+      "status": "PENDING",
+      "detail": "Phase 3 review (2026-05-28): La estructura inferior real debe ser marcada por Chadi; no confirmar sobre pasarela superior. Bbox actual NO validado."
+    },
+    {
+      "check": "chadi_microzone_pending",
+      "zone_id": "Z05_C01",
+      "zone_name": "Conexion Cinta Galpon 1",
+      "status": "PENDING",
+      "detail": "Chadi marco 5-6 puntos. Confirmar coords exactas en proxima sesion."
+    },
+    {
+      "check": "chadi_microzone_pending",
+      "zone_id": "Z05_C02",
+      "zone_name": "Conexion Cinta Galpon 2",
+      "status": "PENDING",
+      "detail": "Chadi marco 5-6 puntos. Confirmar coords exactas en proxima sesion."
+    },
+    {
+      "check": "chadi_microzone_pending",
+      "zone_id": "Z05_C03",
+      "zone_name": "Conexion Cinta Galpon 3",
+      "status": "PENDING",
+      "detail": "Chadi marco 5-6 puntos. Confirmar coords exactas en proxima sesion."
+    },
+    {
+      "check": "chadi_microzone_pending",
+      "zone_id": "Z07_G_NEW_01",
+      "zone_name": "Galpon Recria Nuevo 1",
+      "status": "PENDING",
+      "detail": "Posicion planificada desde crop Z07 con measure_z07.html. Rotado 90° (vertical). Requiere validacion Chadi."
+    },
+    {
+      "check": "chadi_microzone_pending",
+      "zone_id": "Z07_G_NEW_02",
+      "zone_name": "Galpon Recria Nuevo 2",
+      "status": "PENDING",
+      "detail": "Posicion planificada desde crop Z07 con measure_z07.html. Rotado 90° (vertical). Requiere validacion Chadi."
+    },
+    {
+      "check": "chadi_microzone_pending",
+      "zone_id": "Z07_SILO_BOLSAS",
+      "zone_name": "Silo Bolsas",
+      "status": "PENDING",
+      "detail": "Requires Chadi review"
+    }
+  ]
+}

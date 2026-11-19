@@ -1,0 +1,684 @@
+{
+  "meta": {
+    "project": "Zalei Agropecuaria S.A.",
+    "method": "Atlas",
+    "image_base": "zalei_satellite_5042x4474.png",
+    "image_width_px": 5042,
+    "image_height_px": 4474,
+    "last_updated": "2026-05-28",
+    "source_of_truth": "atlas_zalei.md",
+    "hierarchy_of_authority": [
+      "Chadi (anotaciones + audio)",
+      "Juan (correcciones manuales + bbox editor)",
+      "atlas_zalei.md (este archivo)",
+      "Renders previos (solo referencia visual)"
+    ],
+    "critical_counts": {
+      "galpones_ponedoras": 10,
+      "silos_secos": 7,
+      "tanques_aceite": 3
+    },
+    "phase3_review": "Z06 names corrected, Z18 marked questioned, Z19 bbox refined"
+  },
+  "zones": [
+    {
+      "id": "Z01",
+      "name": "Recría Existente",
+      "description": "Galpón de recría existente. 1 unidad. Referencia dimensional para los 2 galpones nuevos en Z07.",
+      "color": "#FFD700",
+      "source": "Juan",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 96,
+        "y1": 133,
+        "x2": 1316,
+        "y2": 351,
+        "w": 1219,
+        "h": 218
+      },
+      "bbox_normalized": {
+        "x1": 0.01904,
+        "y1": 0.02973,
+        "x2": 0.26098,
+        "y2": 0.07846
+      },
+      "element_type": "building",
+      "element_subtype": "galpon_recria",
+      "count": 1,
+      "validation_status": "validated",
+      "phase": 1,
+      "notes_chadi": null,
+      "requires_chadi_validation": false
+    },
+    {
+      "id": "Z02",
+      "name": "Guano",
+      "description": "Sector de guano. Plano, NO representar como montaña ni relieve elevado.",
+      "color": "#A0522D",
+      "source": "Observación + Juan",
+      "certainty": "medium",
+      "bbox_pixels": {
+        "x1": 2182,
+        "y1": 544,
+        "x2": 3484,
+        "y2": 2641,
+        "w": 1302,
+        "h": 2097
+      },
+      "bbox_normalized": {
+        "x1": 0.43284,
+        "y1": 0.12158,
+        "x2": 0.69099,
+        "y2": 0.59029
+      },
+      "element_type": "open_area",
+      "element_subtype": "guano",
+      "count": null,
+      "validation_status": "geometry_ok_subtype_pending",
+      "phase": 1,
+      "notes_chadi": "¿guano seco / húmedo / zonas mixtas? Pendiente validación.",
+      "requires_chadi_validation": true
+    },
+    {
+      "id": "Z03",
+      "name": "Galpones De Ponedoras",
+      "description": "10 galpones de ponedoras. Conteo y bboxes individuales medidos y validados (Z03_E01..Z03_E10).",
+      "color": "#00B4FF",
+      "source": "Chadi + Juan",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 234,
+        "y1": 2032,
+        "x2": 1815,
+        "y2": 3800,
+        "w": 1581,
+        "h": 1768
+      },
+      "bbox_normalized": {
+        "x1": 0.04641,
+        "y1": 0.45413,
+        "x2": 0.35996,
+        "y2": 0.84935
+      },
+      "element_type": "building",
+      "element_subtype": "galpon_ponedoras",
+      "count": 10,
+      "validation_status": "validated",
+      "phase": 1,
+      "notes_chadi": "10 galpones confirmados y medidos individualmente (6 horizontales + 4 diagonales a ~45°).",
+      "requires_chadi_validation": false
+    },
+    {
+      "id": "Z04",
+      "name": "Planta De Alimento",
+      "description": "Planta de producción de alimento balanceado.",
+      "color": "#C800FF",
+      "source": "Chadi",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 2319,
+        "y1": 3309,
+        "x2": 2480,
+        "y2": 3740,
+        "w": 160,
+        "h": 432
+      },
+      "bbox_normalized": {
+        "x1": 0.45993,
+        "y1": 0.73965,
+        "x2": 0.49187,
+        "y2": 0.83594
+      },
+      "element_type": "building",
+      "element_subtype": "planta_industrial",
+      "count": 1,
+      "validation_status": "validated",
+      "phase": 1,
+      "notes_chadi": null,
+      "requires_chadi_validation": false
+    },
+    {
+      "id": "Z05",
+      "name": "Cintas Transportadoras",
+      "description": "Sistema lineal de cintas transportadoras paralelo a galpones. CRÍTICO: NO romper conexiones entrada/salida en cada galpón.",
+      "color": "#FFFFFF",
+      "source": "Chadi",
+      "certainty": "high_trajectory_medium_connections",
+      "bbox_pixels": {
+        "x1": 779,
+        "y1": 2214,
+        "x2": 1027,
+        "y2": 3286,
+        "w": 248,
+        "h": 1072
+      },
+      "bbox_normalized": {
+        "x1": 0.15452,
+        "y1": 0.49486,
+        "x2": 0.20369,
+        "y2": 0.73434
+      },
+      "element_type": "infrastructure",
+      "element_subtype": "cintas_transportadoras",
+      "count": null,
+      "validation_status": "trajectory_validated_connections_pending",
+      "phase": 1,
+      "phase3_pending": "microzona por cada conexión cinta↔galpón (5-6 puntos marcados por Chadi)",
+      "notes_chadi": "Conexión entrada/salida en CADA galpón. No romper ninguna.",
+      "requires_chadi_validation": false
+    },
+    {
+      "id": "Z06",
+      "name": "Silos Secos",
+      "description": "7 silos secos de almacenamiento principal. Acero galvanizado corrugado, techos cónicos. Fila norte: 3 silos. Fila sur: 4 silos.",
+      "color": "#FF1493",
+      "source": "Juan (conteo confirmado tras revisión)",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 2746,
+        "y1": 3206,
+        "x2": 3451,
+        "y2": 3637,
+        "w": 706,
+        "h": 432
+      },
+      "bbox_normalized": {
+        "x1": 0.54464,
+        "y1": 0.71654,
+        "x2": 0.68451,
+        "y2": 0.81269
+      },
+      "element_type": "structure",
+      "element_subtype": "silo_seco_cilindrico",
+      "count": 7,
+      "count_detail": "fila norte: 3, fila sur: 4",
+      "validation_status": "validated",
+      "phase": 1,
+      "notes_chadi": "NO confundir con silos húmedos (Z15). Son los 7 silos GRANDES.",
+      "requires_chadi_validation": false
+    },
+    {
+      "id": "Z07",
+      "name": "Terreno Nuevo",
+      "description": "Área para expansión: 2 galpones recría nuevos (Z07_G_NEW_01 y Z07_G_NEW_02, 218×1219 px) + silo-bolsas.",
+      "color": "#00FF7F",
+      "source": "Juan",
+      "certainty": "high_perimeter_pending_content",
+      "bbox_pixels": {
+        "x1": 3635,
+        "y1": 0,
+        "x2": 5042,
+        "y2": 4124,
+        "w": 1407,
+        "h": 4124
+      },
+      "bbox_normalized": {
+        "x1": 0.72089,
+        "y1": 0.0,
+        "x2": 1.0,
+        "y2": 0.92177
+      },
+      "element_type": "open_area",
+      "element_subtype": "terreno_nuevo",
+      "count": null,
+      "planned_elements": [
+        {
+          "type": "galpon_recria",
+          "count": 2,
+          "reference": "Z01",
+          "status": "requires_chadi_validation"
+        },
+        {
+          "type": "silo_bolsas",
+          "count": null,
+          "status": "requires_chadi_validation"
+        }
+      ],
+      "validation_status": "validated_with_planned_elements",
+      "phase": 1,
+      "notes_chadi": null,
+      "requires_chadi_validation": true
+    },
+    {
+      "id": "Z08",
+      "name": "Casa De Gerencia",
+      "description": "Vivienda de gerencia.",
+      "color": "#0b206b",
+      "source": "Juan",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 3401,
+        "y1": 3820,
+        "x2": 3635,
+        "y2": 4098,
+        "w": 234,
+        "h": 278
+      },
+      "bbox_normalized": {
+        "x1": 0.6744,
+        "y1": 0.85381,
+        "x2": 0.72089,
+        "y2": 0.91588
+      },
+      "element_type": "building",
+      "element_subtype": "vivienda",
+      "count": 1,
+      "validation_status": "validated",
+      "phase": 1,
+      "notes_chadi": null,
+      "requires_chadi_validation": false
+    },
+    {
+      "id": "Z09",
+      "name": "Departamentos De Empleados",
+      "description": "Viviendas para empleados.",
+      "color": "#6a5b19",
+      "source": "Chadi",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 399,
+        "y1": 3852,
+        "x2": 1027,
+        "y2": 4057,
+        "w": 628,
+        "h": 205
+      },
+      "bbox_normalized": {
+        "x1": 0.07914,
+        "y1": 0.86096,
+        "x2": 0.20369,
+        "y2": 0.90679
+      },
+      "element_type": "building",
+      "element_subtype": "departamentos",
+      "count": null,
+      "validation_status": "validated",
+      "phase": 1,
+      "notes_chadi": null,
+      "requires_chadi_validation": false
+    },
+    {
+      "id": "Z10",
+      "name": "Clasificadora",
+      "description": "Recibe huevos mediante cintas transportadoras (Z05) y los clasifica. Conectada a Z03 vía Z05.",
+      "color": "#b3abb0",
+      "source": "Chadi",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 889,
+        "y1": 2560,
+        "x2": 1623,
+        "y2": 2833,
+        "w": 733,
+        "h": 274
+      },
+      "bbox_normalized": {
+        "x1": 0.17631,
+        "y1": 0.57216,
+        "x2": 0.32188,
+        "y2": 0.63322
+      },
+      "element_type": "building",
+      "element_subtype": "clasificadora",
+      "count": 1,
+      "relations": [
+        "Z03 → Z05 → Z10"
+      ],
+      "validation_status": "validated",
+      "phase": 1,
+      "notes_chadi": null,
+      "requires_chadi_validation": false
+    },
+    {
+      "id": "Z11",
+      "name": "Casa De Mantenimiento Sur",
+      "description": "Casa de mantenimiento sector sur. Posible conflicto de nombre con Z13.",
+      "color": "#ff0f6d",
+      "source": "Juan",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 1719,
+        "y1": 3944,
+        "x2": 1957,
+        "y2": 4103,
+        "w": 238,
+        "h": 159
+      },
+      "bbox_normalized": {
+        "x1": 0.34095,
+        "y1": 0.88154,
+        "x2": 0.38815,
+        "y2": 0.917
+      },
+      "element_type": "building",
+      "element_subtype": "vivienda_mantenimiento",
+      "count": 1,
+      "conflict": "Z13 también llamado Casa de Mantenimiento — validar con Chadi si son 2 estructuras distintas",
+      "validation_status": "geometry_ok_name_conflict_pending",
+      "phase": 1,
+      "notes_chadi": null,
+      "requires_chadi_validation": true
+    },
+    {
+      "id": "Z12",
+      "name": "Taller",
+      "description": "Taller de mantenimiento.",
+      "color": "#347c65",
+      "source": "Chadi",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 701,
+        "y1": 3623,
+        "x2": 958,
+        "y2": 3860,
+        "w": 257,
+        "h": 237
+      },
+      "bbox_normalized": {
+        "x1": 0.13901,
+        "y1": 0.80979,
+        "x2": 0.18999,
+        "y2": 0.86275
+      },
+      "element_type": "building",
+      "element_subtype": "taller",
+      "count": 1,
+      "validation_status": "validated",
+      "phase": 1,
+      "notes_chadi": null,
+      "requires_chadi_validation": false
+    },
+    {
+      "id": "Z13",
+      "name": "Casa De Mantenimiento Norte",
+      "description": "Estructura blanca chica al lado del galpón de Recría. Marcada por Chadi con círculo.",
+      "color": "#284695",
+      "source": "Chadi",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 1554,
+        "y1": 364,
+        "x2": 1943,
+        "y2": 569,
+        "w": 390,
+        "h": 205
+      },
+      "bbox_normalized": {
+        "x1": 0.30822,
+        "y1": 0.08137,
+        "x2": 0.38534,
+        "y2": 0.12721
+      },
+      "element_type": "building",
+      "element_subtype": "vivienda_mantenimiento",
+      "count": 1,
+      "conflict": "Z11 también llamado Casa de Mantenimiento — validar con Chadi",
+      "validation_status": "geometry_ok_name_conflict_pending",
+      "phase": 1,
+      "notes_chadi": null,
+      "requires_chadi_validation": true
+    },
+    {
+      "id": "Z14",
+      "name": "Aceitera",
+      "description": "Planta de procesamiento de aceite.",
+      "color": "#f23dd7",
+      "source": "Chadi",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 2466,
+        "y1": 3431,
+        "x2": 2599,
+        "y2": 3718,
+        "w": 133,
+        "h": 287
+      },
+      "bbox_normalized": {
+        "x1": 0.48909,
+        "y1": 0.76683,
+        "x2": 0.51546,
+        "y2": 0.83106
+      },
+      "element_type": "building",
+      "element_subtype": "planta_industrial",
+      "count": 1,
+      "validation_status": "validated",
+      "phase": 1,
+      "notes_chadi": null,
+      "requires_chadi_validation": false
+    },
+    {
+      "id": "Z15",
+      "name": "Silos Húmedos",
+      "description": "Silos húmedos. NO son los silos secos grandes (Z06).",
+      "color": "#cb8f8d",
+      "source": "Chadi",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 2663,
+        "y1": 3096,
+        "x2": 2755,
+        "y2": 3301,
+        "w": 92,
+        "h": 205
+      },
+      "bbox_normalized": {
+        "x1": 0.52816,
+        "y1": 0.69197,
+        "x2": 0.54641,
+        "y2": 0.73779
+      },
+      "element_type": "structure",
+      "element_subtype": "silo_humedo",
+      "count": null,
+      "validation_status": "validated",
+      "phase": 1,
+      "notes_chadi": "NO confundir con Z06 (silos secos grandes).",
+      "requires_chadi_validation": false
+    },
+    {
+      "id": "Z16",
+      "name": "Silos De Almacenamiento Consumo Y Expeller",
+      "description": "Silos secundarios para consumo propio y expeller.",
+      "color": "#6010d0",
+      "source": "Chadi",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 2448,
+        "y1": 3201,
+        "x2": 2654,
+        "y2": 3470,
+        "w": 206,
+        "h": 269
+      },
+      "bbox_normalized": {
+        "x1": 0.48552,
+        "y1": 0.71545,
+        "x2": 0.52638,
+        "y2": 0.77567
+      },
+      "element_type": "structure",
+      "element_subtype": "silo_consumo",
+      "count": null,
+      "validation_status": "validated",
+      "phase": 1,
+      "notes_chadi": null,
+      "requires_chadi_validation": false
+    },
+    {
+      "id": "Z17",
+      "name": "Planta De Descarga De Granos",
+      "description": "Estructura de descarga de granos.",
+      "color": "#7a5b13",
+      "source": "Chadi",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 2361,
+        "y1": 3036,
+        "x2": 2420,
+        "y2": 3246,
+        "w": 60,
+        "h": 209
+      },
+      "bbox_normalized": {
+        "x1": 0.46825,
+        "y1": 0.67862,
+        "x2": 0.48,
+        "y2": 0.72546
+      },
+      "element_type": "infrastructure",
+      "element_subtype": "descarga_granos",
+      "count": 1,
+      "validation_status": "validated",
+      "phase": 1,
+      "notes_chadi": null,
+      "requires_chadi_validation": false
+    },
+    {
+      "id": "Z18",
+      "name": "Secado Y Limpieza De Granos",
+      "description": "Es la estructura tubular/inferior. NO ubicar sobre la pasarela/tubular superior. Ubicar en la estructura inferior debajo de la conexión tubular hacia los silos.",
+      "color": "#fe2948",
+      "source": "Chadi + Juan",
+      "certainty": "low",
+      "bbox_pixels": {
+        "x1": 2663,
+        "y1": 3247,
+        "x2": 2869,
+        "y2": 3484,
+        "w": 206,
+        "h": 237
+      },
+      "bbox_normalized": {
+        "x1": 0.52816,
+        "y1": 0.72568,
+        "x2": 0.56901,
+        "y2": 0.77858
+      },
+      "element_type": "building",
+      "element_subtype": "secado_limpieza",
+      "count": 1,
+      "validation_status": "requires_chadi_validation",
+      "phase": 1,
+      "notes_chadi": "Bbox padre cuestionado por Juan/Phase 3 review (2026-05-28). Posible que la estructura tubular inferior real no este en este bbox - Chadi debe marcar exactamente.",
+      "requires_chadi_validation": true,
+      "geometry_status": "geometry_questioned"
+    },
+    {
+      "id": "Z19",
+      "name": "Tanques De Aceite",
+      "description": "3 tanques de aceite. NO confundir con sombras.",
+      "color": "#e66981",
+      "source": "Chadi + Juan",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 2482,
+        "y1": 3676,
+        "x2": 2580,
+        "y2": 3716,
+        "w": 98,
+        "h": 40
+      },
+      "bbox_normalized": {
+        "x1": 0.49226,
+        "y1": 0.82164,
+        "x2": 0.5117,
+        "y2": 0.83058
+      },
+      "element_type": "structure",
+      "element_subtype": "tanque_aceite_cilindrico",
+      "count": 3,
+      "validation_status": "validated",
+      "phase": 1,
+      "notes_chadi": "3 tanques exactos. Las sombras pueden engañar — verificar con crop.",
+      "requires_chadi_validation": false
+    },
+    {
+      "id": "Z20",
+      "name": "Descarga De Alimento",
+      "description": "Zona de descarga de alimento balanceado.",
+      "color": "#af1bdf",
+      "source": "Chadi",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 2251,
+        "y1": 3188,
+        "x2": 2434,
+        "y2": 3447,
+        "w": 183,
+        "h": 260
+      },
+      "bbox_normalized": {
+        "x1": 0.44644,
+        "y1": 0.71255,
+        "x2": 0.48274,
+        "y2": 0.77054
+      },
+      "element_type": "infrastructure",
+      "element_subtype": "descarga_alimento",
+      "count": 1,
+      "validation_status": "validated",
+      "phase": 1,
+      "notes_chadi": null,
+      "requires_chadi_validation": false
+    },
+    {
+      "id": "Z21",
+      "name": "Oficinas",
+      "description": "Edificio de oficinas administrativas.",
+      "color": "#b39bbd",
+      "source": "Juan",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 2067,
+        "y1": 3183,
+        "x2": 2191,
+        "y2": 3539,
+        "w": 124,
+        "h": 356
+      },
+      "bbox_normalized": {
+        "x1": 0.40995,
+        "y1": 0.71143,
+        "x2": 0.43454,
+        "y2": 0.79099
+      },
+      "element_type": "building",
+      "element_subtype": "oficinas",
+      "count": 1,
+      "validation_status": "validated",
+      "phase": 1,
+      "notes_chadi": null,
+      "requires_chadi_validation": false
+    },
+    {
+      "id": "Z22",
+      "name": "Balanza De Camiones",
+      "description": "Balanza de pesaje para camiones.",
+      "color": "#4c3fac",
+      "source": "Juan",
+      "certainty": "high",
+      "bbox_pixels": {
+        "x1": 1998,
+        "y1": 3188,
+        "x2": 2072,
+        "y2": 3544,
+        "w": 73,
+        "h": 356
+      },
+      "bbox_normalized": {
+        "x1": 0.39627,
+        "y1": 0.71255,
+        "x2": 0.41094,
+        "y2": 0.79211
+      },
+      "element_type": "infrastructure",
+      "element_subtype": "balanza_camiones",
+      "count": 1,
+      "validation_status": "validated",
+      "phase": 1,
+      "notes_chadi": null,
+      "requires_chadi_validation": false
+    }
+  ]
+}

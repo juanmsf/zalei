@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="../auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zalei Atlas · Inspector de Sectores (supera a Spark)</title>
+<!--
+  Mejoras vs atlas_crop_inspector.html de Spark:
+  1. Cero datos hardcodeados: lee ../atlas/zones.json + crops_manifest + microzones + validation + sectors_manifest via fetch.
+  2. Sectores derivados igual que scripts/recompose_master.py (union de miembros + margen), con overlay de bbox.
+  3. Zoom real 25-400% con rueda + pan por arrastre + pixelated + lectura de coordenadas crop-local y master-global.
+  4. Panel Chadi con checks vivos (conteos 10/7/3, pendientes, Z18 cuestionado, solapes).
+  5. Funciona también por file:// con snapshot embebido de respaldo (banner avisa).
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0e14;--panel:rgba(15,23,42,.96);--bd:rgba(255,255,255,.12);--grn:#22c55e;--blu:#38bdf8;--gld:#eab308;--red:#f87171;--tx:#f8fafc;--mut:#94a3b8}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--tx);font-family:'Plus Jakarta Sans',sans-serif;height:100vh;display:flex;overflow:hidden}
+  #sidebar{width:400px;background:var(--panel);border-right:1px solid var(--bd);display:flex;flex-direction:column;z-index:10}
+  .sb-header{padding:18px 20px;border-bottom:1px solid var(--bd)}
+  .tag{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--grn);letter-spacing:.14em;margin-bottom:4px}
+  .sb-header h1{font-size:17px;font-weight:800}
+  .sb-header p{font-size:12px;color:var(--mut);line-height:1.45;margin-top:4px}
+  #warn{background:rgba(234,179,8,.12);border:1px solid var(--gld);border-radius:8px;padding:8px 10px;font-size:11px;margin-top:8px;display:none}
+  #chadi{margin-top:10px;font-size:11.5px;line-height:1.5;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.35);border-radius:8px;padding:8px 10px}
+  #chadi .ok{color:var(--grn)} #chadi .warn{color:var(--gld)} #chadi .fail{color:var(--red)}
+  #tabs{display:flex;gap:6px;padding:10px 12px 0}
+  #tabs button{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--bd);color:#fff;border-radius:8px;padding:6px;font-size:11.5px;font-weight:700;cursor:pointer}
+  #tabs button.on{background:rgba(34,197,94,.18);border-color:var(--grn)}
+  .sectors-list{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+  .sector-card{background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;cursor:pointer}
+  .sector-card:hover{border-color:var(--grn)} .sector-card.active{background:rgba(34,197,94,.12);border-color:var(--grn)}
+  .sec-id{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--blu)}
+  .sec-title{font-size:13px;font-weight:700;margin:2px 0 6px}
+  .sec-meta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--blu);margin-bottom:6px}
+  .sec-rules{font-size:11.5px;color:var(--mut);line-height:1.4;margin-left:14px}
+  .badge{font-size:9.5px;border:1px solid var(--bd);border-radius:6px;padding:0 5px;margin-left:6px;color:var(--mut)}
+  #viewport{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,#171f2c 0%,#0a0e14 100%)}
+  #stage{overflow:auto;width:100%;height:100%;display:flex;align-items:center;justify-content:center;cursor:grab;padding:24px}
+  #wrap{position:relative;line-height:0}
+  #viewer-img{border:1px solid var(--bd);border-radius:8px;box-shadow:0 25px 60px rgba(0,0,0,.8);image-rendering:pixelated;max-width:none}
+  #overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .top-hud{position:absolute;top:16px;right:16px;background:var(--panel);border:1px solid var(--bd);border-radius:30px;padding:8px 14px;display:flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;z-index:20}
+  .hud-btn{background:rgba(255,255,255,.08);border:1px solid var(--bd);color:#fff;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:inherit}
+  .hud-btn:hover{background:var(--grn);color:#000} .hud-btn.on{background:var(--grn);color:#000}
+  #coords{position:absolute;bottom:14px;left:16px;background:var(--panel);border:1px solid var(--bd);border-radius:8px;padding:6px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--mut)}
+</style>
+</head>
+<body>
+<div id="sidebar">
+  <div class="sb-header">
+    <div class="tag">● MÉTODO ATLAS · DERIVADO DE zones.json</div>
+    <h1>Zalei Agropecuaria S.A.</h1>
+    <p>Sectores = unión de zonas miembro + margen (igual que <b>scripts/recompose_master.py</b>). Sin bboxes mágicos.</p>
+    <div id="warn"></div>
+    <div id="chadi">Cargando validación…</div>
+  </div>
+  <div id="tabs">
+    <button id="tab-sec" class="on">Sectores (4)</button>
+    <button id="tab-zon">Zonas (22)</button>
+  </div>
+  <div class="sectors-list" id="list"></div>
+</div>
+<div id="viewport">
+  <div class="top-hud">
+    <span id="hud">—</span>
+    <button class="hud-btn" id="z-out">−</button>
+    <button class="hud-btn" id="z-100">100%</button>
+    <button class="hud-btn" id="z-in">+</button>
+    <button class="hud-btn on" id="t-box">bbox</button>
+    <button class="hud-btn" id="t-var">clean</button>
+  </div>
+  <div id="stage"><div id="wrap"><img id="img" alt="sector"><svg id="overlay"></svg></div></div>
+  <div id="coords">crop (—,—) · master (—,—)</div>
+</div>
+<script>
+// Agrupación lógica idéntica a scripts/recompose_master.py (el bbox se calcula, no se copia)
+const SECTOR_DEFS=[
+ {id:"SECTOR_B_PONEDORAS",title:"Ponedoras + Cintas + Clasificadora + Taller",members:["Z03","Z05","Z10","Z12"],
+  rules:["Z03 = 10 galpones EXACTOS","Z05: no romper conexiones cinta↔galpón","Z10 recibe vía Z05; Z12 taller"]},
+ {id:"SECTOR_A_SILOS_PROCESO",title:"Silos + Aceitera + Plantas + Balanza/Oficinas",members:["Z04","Z06","Z14","Z15","Z16","Z17","Z18","Z19","Z20","Z21","Z22"],
+  rules:["Z06 = 7 silos (3N+4S)","Z19 = 3 tanques, no confundir sombras","Z18 = tubular INFERIOR (cuestionado)"]},
+ {id:"SECTOR_C_RECRIA_NORTE",title:"Recría existente + Casa Mant. Norte",members:["Z01","Z13"],
+  rules:["Z01 referencia de los 2 galpones nuevos","Calle azul SÍ · roja ELIMINADA"]},
+ {id:"SECTOR_D_SUR_ADMIN",title:"Franja sur administrativa",members:["Z08","Z09","Z11"],
+  rules:["Borde sur: 2 calles paralelas","Z11/Z13 posible conflicto de nombre"]},
+];
+const MARGIN=60, IMG_W=5042, IMG_H=4474;
+let ZONES=[], MANIFEST={}, MICRO=[], VALID=null, SECTORS=[], mode="sec";
+let idx=0, zoom=1, showBox=true, variant="clean", origin={x:0,y:0};
+
+async function load(p){const r=await fetch(p);if(!r.ok)throw new Error(p+" "+r.status);return r.json();}
+function union(members){
+  const boxes=members.map(m=>ZONES.find(z=>z.id===m)).filter(Boolean).map(z=>z.bbox_pixels);
+  const x1=Math.max(0,Math.min(...boxes.map(b=>b.x1))-MARGIN), y1=Math.max(0,Math.min(...boxes.map(b=>b.y1))-MARGIN);
+  const x2=Math.min(IMG_W,Math.max(...boxes.map(b=>b.x2))+MARGIN), y2=Math.min(IMG_H,Math.max(...boxes.map(b=>b.y2))+MARGIN);
+  return{x1,y1,x2,y2,w:x2-x1,h:y2-y1};
+}
+function buildSectors(){SECTORS=SECTOR_DEFS.map(d=>({...d,bbox:union(d.members)}));}
+
+function chadiPanel(){
+  const el=document.getElementById('chadi');
+  const zm=Object.fromEntries(ZONES.map(z=>[z.id,z]));
+  const row=(cls,txt)=>`<div class="${cls}">${txt}</div>`;
+  let h="";
+  [["Z03",10],["Z06",7],["Z19",3]].forEach(([id,exp])=>{
+    const z=zm[id];
+    h+=(!z||z.count!==exp)?row("fail",`✕ ${id} count=${z?z.count:"?"} ≠ ${exp}`):row("ok",`✓ ${id} = ${exp}`);
+  });
+  const z18=zm["Z18"];
+  if(z18&&(z18.geometry_status==="geometry_questioned"||z18.certainty==="low"))h+=row("warn","⚠ Z18 geometría cuestionada (tubular inferior)");
+  const pend=ZONES.filter(z=>z.requires_chadi_validation).map(z=>z.id);
+  if(pend.length)h+=row("warn","⚠ Pendientes Chadi: "+pend.join(", "));
+  if(VALID)h+=row("","Validación: PASS "+VALID.summary.PASS+" · FAIL "+VALID.summary.FAIL+" · WARN "+VALID.summary.WARN);
+  // solapes
+  for(let i=0;i<SECTORS.length;i++)for(let j=i+1;j<SECTORS.length;j++){
+    const a=SECTORS[i].bbox,b=SECTORS[j].bbox;
+    const w=Math.max(0,Math.min(a.x2,b.x2)-Math.max(a.x1,b.x1)),hh=Math.max(0,Math.min(a.y2,b.y2)-Math.max(a.y1,b.y1));
+    if(w*hh>0)h+=row("warn",`⚠ solape ${SECTORS[i].id}×${SECTORS[j].id}: ${(w*hh).toLocaleString()} px² (feather)`);
+  }
+  el.innerHTML=h;
+}
+
+function renderList(){
+  const box=document.getElementById('list');box.innerHTML="";
+  const items=mode==="sec"?SECTORS.map(s=>({id:s.id,title:s.title,meta:`${s.bbox.w}×${s.bbox.h} @(${s.bbox.x1},${s.bbox.y1}) · ${s.members.join(" ")}`,rules:s.rules})):
+    ZONES.map(z=>({id:z.id,title:z.name,meta:`${z.bbox_pixels.w}×${z.bbox_pixels.h} @(${z.bbox_pixels.x1},${z.bbox_pixels.y1}) · ${z.validation_status}${z.requires_chadi_validation?" · ⚠CHADI":""}${z.count?" · ×"+z.count:""}`,rules:[z.description||""]}));
+  items.forEach((it,i)=>{
+    const d=document.createElement('div');d.className='sector-card'+(i===idx?' active':'');
+    d.innerHTML=`<div class="sec-id">${it.id}</div><div class="sec-title">${it.title}</div><div class="sec-meta">${it.meta}</div><ul class="sec-rules">${it.rules.map(r=>`<li>${r}</li>`).join('')}</ul>`;
+    d.onclick=()=>{idx=i;renderList();show();};box.appendChild(d);
+  });
+}
+function current(){return mode==="sec"?SECTORS[idx]:null;}
+function curZone(){return mode==="zon"?ZONES[idx]:null;}
+
+function imgFor(item){
+  // Sectores cortados por recompose_master.py; zonas desde crops/ (variantes clean/border/coords/label)
+  if(mode==="sec")return `../outputs/sectors/${item.id.toLowerCase()}.png`;
+  const m=MANIFEST[item.id];
+  const folder=item.id.toLowerCase()+"_"+item.name.toLowerCase().replaceAll(" ","_").replaceAll("/","_");
+  return `../crops/${m?m.folder:folder}/${variant}.png`;
+}
+function show(){
+  const img=document.getElementById('img');
+  const item=mode==="sec"?current():curZone();if(!item)return;
+  const bb=mode==="sec"?item.bbox:item.bbox_pixels;
+  document.getElementById('hud').textContent=`${item.id||item.title} · ${bb.w}×${bb.h}`;
+  img.style.width=(bb.w*zoom)+"px";img.style.height="auto";
+  img.src=imgFor(item);
+  img.onload=()=>drawOverlay(bb);img.onerror=()=>{document.getElementById('hud').textContent+=" · (falta: ejecuta recompose/generate_crops)";document.getElementById('overlay').innerHTML="";};
+}
+function drawOverlay(bb){
+  const svg=document.getElementById('overlay'),img=document.getElementById('img');
+  svg.setAttribute('viewBox',`0 0 ${bb.w} ${bb.h}`);svg.innerHTML="";
+  if(!showBox)return;
+  const ns='http://www.w3.org/2000/svg';
+  const addRect=(x,y,w,h,color,dash)=>{
+    const r=document.createElementNS(ns,'rect');r.setAttribute('x',x);r.setAttribute('y',y);
+    r.setAttribute('width',w);r.setAttribute('height',h);r.setAttribute('fill','none');
+    r.setAttribute('stroke',color);r.setAttribute('stroke-width',Math.max(2,bb.w/400));if(dash)r.setAttribute('stroke-dasharray',dash);
+    svg.appendChild(r);
+  };
+  if(mode==="sec"){
+    const item=current();
+    item.members.forEach(mid=>{
+      const z=ZONES.find(z=>z.id===mid);if(!z)return;const b=z.bbox_pixels;
+      addRect(b.x1-bb.x1,b.y1-bb.y1,b.w,b.h,z.color||'#fff');
+      const t=document.createElementNS(ns,'text');
+      t.setAttribute('x',b.x1-bb.x1+6);t.setAttribute('y',b.y1-bb.y1+18);
+      t.setAttribute('fill','#fff');t.setAttribute('font-size','16');t.setAttribute('font-weight','bold');
+      t.setAttribute('stroke','#000');t.setAttribute('stroke-width','.7');t.setAttribute('paint-order','stroke');
+      t.textContent=mid;svg.appendChild(t);
+    });
+  }else{
+    const z=curZone();
+    // marco de la zona dentro del crop (el crop tiene padding 80px según manifest)
+    const m=MANIFEST[z.id];
+    if(m){const b=m.zone_bbox_in_crop;addRect(b.x1,b.y1,b.x2-b.x1,b.y2-b.y1,z.color||'#22c55e');}
+    (MICRO.filter(mm=>mm.parent_zone===z.id&&mm.bbox_pixels)).forEach(mm=>{
+      const bp=mm.bbox_pixels;
+      // master->crop: el crop empieza en crop_actual_bbox
+      const cx=m?bp.x1-m.crop_actual_bbox.x1:bp.x1-bb.x1, cy=m?bp.y1-m.crop_actual_bbox.y1:bp.y1-bb.y1;
+      addRect(cx,cy,bp.w,bp.h,mm.color||'#fff','5,3');
+    });
+  }
+}
+// zoom + pan + coordenadas
+const stage=document.getElementById('stage');
+document.getElementById('z-in').onclick=()=>{zoom=Math.min(4,zoom*1.25);show();};
+document.getElementById('z-out').onclick=()=>{zoom=Math.max(.25,zoom/1.25);show();};
+document.getElementById('z-100').onclick=()=>{zoom=1;show();};
+document.getElementById('t-box').onclick=e=>{showBox=!showBox;e.target.classList.toggle('on',showBox);show();};
+document.getElementById('t-var').onclick=e=>{variant=variant==="clean"?"label":variant==="label"?"border":variant==="border"?"coords":"clean";e.target.textContent=variant;if(mode==="zon")show();};
+stage.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.min(4,Math.max(.25,zoom*(e.deltaY<0?1.15:0.87)));show();},{passive:false});
+let drag=null;stage.addEventListener('mousedown',e=>{drag={x:e.clientX,y:e.clientY,sx:stage.scrollLeft,sy:stage.scrollTop};stage.style.cursor='grabbing';});
+window.addEventListener('mouseup',()=>{drag=null;stage.style.cursor='grab';});
+window.addEventListener('mousemove',e=>{if(drag){stage.scrollLeft=drag.sx-(e.clientX-drag.x);stage.scrollTop=drag.sy-(e.clientY-drag.y);}});
+document.getElementById('img').addEventListener('mousemove',e=>{
+  const r=e.target.getBoundingClientRect();
+  const bb=mode==="sec"?current().bbox:curZone().bbox_pixels;
+  const cx=Math.floor((e.clientX-r.left)/r.width*bb.w), cy=Math.floor((e.clientY-r.top)/r.height*bb.h);
+  document.getElementById('coords').textContent=`crop (${cx},${cy}) · master (${bb.x1+cx},${bb.y1+cy}) · ${(zoom*100).toFixed(0)}%`;
+});
+document.getElementById('tab-sec').onclick=e=>{mode="sec";idx=0;e.target.classList.add('on');document.getElementById('tab-zon').classList.remove('on');renderList();show();};
+document.getElementById('tab-zon').onclick=e=>{mode="zon";idx=0;e.target.classList.add('on');document.getElementById('tab-sec').classList.remove('on');renderList();show();};
+window.addEventListener('keydown',e=>{
+  const n=mode==="sec"?SECTORS.length:ZONES.length;
+  if(e.key==='ArrowDown'||e.key==='j'){idx=Math.min(idx+1,n-1);renderList();show();}
+  if(e.key==='ArrowUp'||e.key==='k'){idx=Math.max(idx-1,0);renderList();show();}
+  if(e.key==='+'||e.key==='='){zoom=Math.min(4,zoom*1.25);show();}
+  if(e.key==='-'){zoom=Math.max(.25,zoom/1.25);show();}
+  if(e.key==='0'){zoom=1;show();}
+});
+(async()=>{
+  try{
+    const[z,mc,mi,v]=await Promise.all([load('../atlas/zones.json'),load('../atlas/crops_manifest.json'),load('../atlas/microzones.json').catch(()=>({microzones:[]})),load('../atlas/validation.json').catch(()=>null)]);
+    ZONES=z.zones;(mc.crops||[]).forEach(c=>MANIFEST[c.zone_id]=c);MICRO=mi.microzones||[];VALID=v;
+    try{await load('../outputs/sectors/sectors_manifest.json');}catch(e){/* se genera con --export-only */}
+  }catch(e){
+    const w=document.getElementById('warn');
+    w.style.display='block';
+    w.textContent='No se pudo hacer fetch de ../atlas/*.json (¿abierto por file://?). Serví con http (p.ej. python -m http.server) o revisá rutas. '+e.message;
+    return;
+  }
+  buildSectors();chadiPanel();renderList();show();
+})();
+</script>
+</body>
+</html>

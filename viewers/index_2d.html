@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="../auth.js"></script>
+<meta charset="UTF-8">
+<title>Zalei Atlas — Viewer 2D</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; background: #0a0a0a; color: #eee; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow: hidden; }
+
+#app { display: flex; height: 100vh; }
+
+/* === Canvas === */
+#canvas-wrap { flex: 1; position: relative; overflow: hidden; cursor: grab; }
+#canvas-wrap.panning { cursor: grabbing; }
+#canvas-inner { position: absolute; transform-origin: 0 0; }
+
+#satellite { display: block; image-rendering: pixelated; }
+#svg-overlay { position: absolute; top: 0; left: 0; pointer-events: none; }
+#svg-overlay.interactive { pointer-events: all; }
+
+/* === Panel === */
+#panel { width: 320px; background: #141414; border-left: 1px solid #2a2a2a; display: flex; flex-direction: column; overflow: hidden; }
+#panel-header { padding: 12px 14px; border-bottom: 1px solid #2a2a2a; }
+#panel-header h1 { font-size: 15px; font-weight: 700; color: #fff; }
+#panel-header .sub { font-size: 11px; color: #666; margin-top: 2px; }
+
+#controls { padding: 10px 14px; border-bottom: 1px solid #2a2a2a; display: flex; flex-wrap: wrap; gap: 6px; }
+button { background: #222; color: #ccc; border: 1px solid #333; border-radius: 4px; padding: 5px 10px; font-size: 12px; cursor: pointer; }
+button:hover { background: #2a2a2a; color: #fff; }
+button.active { background: #0066cc; color: #fff; border-color: #0066cc; }
+
+#zoom-display { font-size: 11px; color: #555; padding: 6px 14px; border-bottom: 1px solid #1a1a1a; }
+
+#zone-list { flex: 1; overflow-y: auto; padding: 6px 0; }
+.zone-item { padding: 7px 14px; cursor: pointer; border-left: 3px solid transparent; display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.zone-item:hover { background: #1c1c1c; }
+.zone-item.selected { background: #1a2a3a; border-left-color: #0066cc; }
+.zone-color { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+.zone-name { flex: 1; color: #ccc; }
+.zone-badge { font-size: 10px; color: #888; background: #222; padding: 1px 5px; border-radius: 8px; }
+.zone-pending { font-size: 9px; color: #ffaa00; background: #2a1a00; padding: 1px 4px; border-radius: 3px; }
+
+#inspector { border-top: 1px solid #2a2a2a; padding: 12px 14px; font-size: 12px; }
+#inspector h3 { font-size: 13px; color: #fff; margin-bottom: 8px; }
+#inspector .field { margin-bottom: 5px; }
+#inspector .field .key { color: #666; font-size: 11px; }
+#inspector .field .val { color: #aaa; }
+#inspector .field .val.high { color: #4caf50; }
+#inspector .field .val.pending { color: #ffaa00; }
+
+#status-bar { padding: 4px 14px; border-top: 1px solid #1a1a1a; font-size: 10px; color: #444; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="canvas-wrap">
+    <div id="canvas-inner">
+      <img id="satellite" src="../zalei_satellite_5042x4474.png" alt="Zalei Satellite">
+      <svg id="svg-overlay" viewBox="0 0 5042 4474" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+  </div>
+
+  <div id="panel">
+    <div id="panel-header">
+      <h1>Zalei Atlas — 2D Viewer</h1>
+      <div class="sub">Method Atlas | 5042×4474 px | 22 zonas</div>
+    </div>
+
+    <div id="controls">
+      <button id="btn-fit" title="Fit view">Fit</button>
+      <button id="btn-reset" title="Reset zoom 1:1">1:1</button>
+      <button id="btn-zones" class="active" title="Toggle zone fills">Zonas</button>
+      <button id="btn-microzones" class="active" title="Toggle microzonas">Microzonas</button>
+      <button id="btn-labels" class="active" title="Toggle labels">Labels</button>
+      <button id="btn-pending" title="Highlight Chadi pending">Pendientes</button>
+    </div>
+
+    <div id="zoom-display">Zoom: 100% | Click zona/microzona para inspeccionar</div>
+
+    <div id="zone-list"></div>
+
+    <div id="inspector">
+      <h3>Inspector</h3>
+      <div id="inspector-content"><span style="color:#444">Seleccioná una zona o microzona</span></div>
+    </div>
+
+    <div id="status-bar">22 zonas | <span id="status-micro">microzonas: cargando...</span></div>
+  </div>
+</div>
+
+<script>
+// =========================================================
+// ATLAS DATA — from atlas/zones.json (embedded for offline use)
+// =========================================================
+const ATLAS_ZONES = [
+  { id:"Z01", name:"Recría Existente", color:"#FFD700", bbox:{x1:96,y1:133,x2:1316,y2:351,w:1219,h:218}, certainty:"high", count:null, pending:false, status:"validated", type:"galpon_recria" },
+  { id:"Z02", name:"Guano", color:"#A0522D", bbox:{x1:2182,y1:544,x2:3484,y2:2641,w:1302,h:2097}, certainty:"medium", count:null, pending:true, status:"geometry_ok_subtype_pending", type:"guano" },
+  { id:"Z03", name:"Galpones De Ponedoras", color:"#00B4FF", bbox:{x1:234,y1:2032,x2:1815,y2:3800,w:1581,h:1768}, certainty:"high", count:10, pending:false, status:"validated", type:"galpon_ponedoras" },
+  { id:"Z04", name:"Planta De Alimento", color:"#C800FF", bbox:{x1:2319,y1:3309,x2:2480,y2:3740,w:160,h:432}, certainty:"high", count:null, pending:false, status:"validated", type:"planta_industrial" },
+  { id:"Z05", name:"Cintas Transportadoras", color:"#FFFFFF", bbox:{x1:779,y1:2214,x2:1027,y2:3286,w:248,h:1072}, certainty:"high", count:null, pending:false, status:"trajectory_validated", type:"cintas" },
+  { id:"Z06", name:"Silos Secos", color:"#FF1493", bbox:{x1:2746,y1:3206,x2:3451,y2:3637,w:706,h:432}, certainty:"high", count:7, pending:false, status:"validated", type:"silo_seco" },
+  { id:"Z07", name:"Terreno Nuevo", color:"#00FF7F", bbox:{x1:3635,y1:0,x2:5042,y2:4124,w:1407,h:4124}, certainty:"high", count:null, pending:true, status:"perimeter_validated_content_pending", type:"terreno_nuevo" },
+  { id:"Z08", name:"Casa De Gerencia", color:"#0b206b", bbox:{x1:3401,y1:3820,x2:3635,y2:4098,w:234,h:278}, certainty:"high", count:null, pending:false, status:"validated", type:"vivienda" },
+  { id:"Z09", name:"Departamentos De Empleados", color:"#6a5b19", bbox:{x1:399,y1:3852,x2:1027,y2:4057,w:628,h:205}, certainty:"high", count:null, pending:false, status:"validated", type:"departamentos" },
+  { id:"Z10", name:"Clasificadora", color:"#b3abb0", bbox:{x1:889,y1:2560,x2:1623,y2:2833,w:733,h:274}, certainty:"high", count:null, pending:false, status:"validated", type:"clasificadora" },
+  { id:"Z11", name:"Casa De Mantenimiento Sur", color:"#ff0f6d", bbox:{x1:1719,y1:3944,x2:1957,y2:4103,w:238,h:159}, certainty:"high", count:null, pending:true, status:"name_conflict_pending", type:"vivienda_mant" },
+  { id:"Z12", name:"Taller", color:"#347c65", bbox:{x1:701,y1:3623,x2:958,y2:3860,w:257,h:237}, certainty:"high", count:null, pending:false, status:"validated", type:"taller" },
+  { id:"Z13", name:"Casa De Mantenimiento Norte", color:"#284695", bbox:{x1:1554,y1:364,x2:1943,y2:569,w:390,h:205}, certainty:"high", count:null, pending:true, status:"name_conflict_pending", type:"vivienda_mant" },
+  { id:"Z14", name:"Aceitera", color:"#f23dd7", bbox:{x1:2466,y1:3431,x2:2599,y2:3718,w:133,h:287}, certainty:"high", count:null, pending:false, status:"validated", type:"planta_industrial" },
+  { id:"Z15", name:"Silos Húmedos", color:"#cb8f8d", bbox:{x1:2663,y1:3096,x2:2755,y2:3301,w:92,h:205}, certainty:"high", count:null, pending:false, status:"validated", type:"silo_humedo" },
+  { id:"Z16", name:"Silos De Almacenamiento Consumo Y Expeller", color:"#6010d0", bbox:{x1:2448,y1:3201,x2:2654,y2:3470,w:206,h:269}, certainty:"high", count:null, pending:false, status:"validated", type:"silo_consumo" },
+  { id:"Z17", name:"Planta De Descarga De Granos", color:"#7a5b13", bbox:{x1:2361,y1:3036,x2:2420,y2:3246,w:60,h:209}, certainty:"high", count:null, pending:false, status:"validated", type:"descarga_granos" },
+  { id:"Z18", name:"Secado Y Limpieza De Granos", color:"#fe2948", bbox:{x1:2663,y1:3247,x2:2869,y2:3484,w:206,h:237}, certainty:"high", count:null, pending:false, status:"validated", type:"secado" },
+  { id:"Z19", name:"Tanques De Aceite", color:"#e66981", bbox:{x1:2438,y1:3660,x2:2636,y2:3736,w:197,h:77}, certainty:"high", count:3, pending:false, status:"validated", type:"tanque_aceite" },
+  { id:"Z20", name:"Descarga De Alimento", color:"#af1bdf", bbox:{x1:2251,y1:3188,x2:2434,y2:3447,w:183,h:260}, certainty:"high", count:null, pending:false, status:"validated", type:"descarga_alimento" },
+  { id:"Z21", name:"Oficinas", color:"#b39bbd", bbox:{x1:2067,y1:3183,x2:2191,y2:3539,w:124,h:356}, certainty:"high", count:null, pending:false, status:"validated", type:"oficinas" },
+  { id:"Z22", name:"Balanza De Camiones", color:"#4c3fac", bbox:{x1:1998,y1:3188,x2:2072,y2:3544,w:73,h:356}, certainty:"high", count:null, pending:false, status:"validated", type:"balanza" },
+];
+
+// =========================================================
+// MICROZONES — loaded from atlas/microzones.json at startup (Phase 3)
+// =========================================================
+let MICROZONES = [];   // {id, parent_zone, name, color, bbox_pixels, validation_status, confidence, requires_chadi_validation, notes}
+
+// =========================================================
+// STATE
+// =========================================================
+let scale = 1, tx = 0, ty = 0;
+let isPanning = false, lastMx = 0, lastMy = 0;
+let showZones = true, showLabels = true, showPendingOnly = false;
+let showMicrozones = true;
+let selectedZone = null;        // zone OR microzone id; resolution below in selectAny()
+
+const canvasWrap = document.getElementById('canvas-wrap');
+const canvasInner = document.getElementById('canvas-inner');
+const satellite = document.getElementById('satellite');
+const svgOverlay = document.getElementById('svg-overlay');
+const zoomDisplay = document.getElementById('zoom-display');
+const zoneListEl = document.getElementById('zone-list');
+const inspectorContent = document.getElementById('inspector-content');
+
+// =========================================================
+// SVG BUILD
+// =========================================================
+function hexToRgba(hex, alpha) {
+  const h = hex.replace('#','');
+  const r = parseInt(h.slice(0,2),16), g = parseInt(h.slice(2,4),16), b = parseInt(h.slice(4,6),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function buildSVG() {
+  const W = 5042, H = 4474;
+  svgOverlay.setAttribute('width', W);
+  svgOverlay.setAttribute('height', H);
+  svgOverlay.innerHTML = '';
+
+  const zones = showPendingOnly ? ATLAS_ZONES.filter(z => z.pending) : ATLAS_ZONES;
+
+  if (showZones) {
+    const gZones = document.createElementNS('http://www.w3.org/2000/svg','g');
+    gZones.setAttribute('id','layer-zones');
+    zones.forEach(z => {
+      const {x1,y1,w,h} = z.bbox;
+      const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+      rect.setAttribute('x', x1); rect.setAttribute('y', y1);
+      rect.setAttribute('width', w); rect.setAttribute('height', h);
+      rect.setAttribute('fill', hexToRgba(z.color, 0.20));
+      rect.setAttribute('stroke', z.color);
+      rect.setAttribute('stroke-width', selectedZone === z.id ? 5 : 3);
+      if (z.pending) rect.setAttribute('stroke-dasharray','14,7');
+      rect.setAttribute('data-zone', z.id);
+      rect.style.pointerEvents = 'all';
+      rect.style.cursor = 'pointer';
+      rect.addEventListener('click', () => selectZone(z.id));
+      const title = document.createElementNS('http://www.w3.org/2000/svg','title');
+      title.textContent = `${z.id}: ${z.name}${z.count ? ` (×${z.count})` : ''}`;
+      rect.appendChild(title);
+      gZones.appendChild(rect);
+    });
+    svgOverlay.appendChild(gZones);
+  }
+
+  if (showMicrozones) {
+    const gMicro = document.createElementNS('http://www.w3.org/2000/svg','g');
+    gMicro.setAttribute('id','layer-microzones');
+    MICROZONES.forEach(m => {
+      if (!m.bbox_pixels) return;  // skip pending
+      // Hide if its parent is hidden by pending filter
+      if (showPendingOnly && !zones.some(z => z.id === m.parent_zone)) return;
+      const bp = m.bbox_pixels;
+      const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+      rect.setAttribute('x', bp.x1); rect.setAttribute('y', bp.y1);
+      rect.setAttribute('width', bp.w); rect.setAttribute('height', bp.h);
+      if (m.rotation_deg) rect.setAttribute('transform', `rotate(${m.rotation_deg} ${bp.x1 + bp.w/2} ${bp.y1 + bp.h/2})`);
+      const color = m.color || '#fff';
+      // Style by validation_status: validated solid, probable lighter, ambiguous dashed
+      let alpha = 0.35, dash = null;
+      if (m.validation_status === 'validated') alpha = 0.45;
+      else if (m.validation_status === 'probable') alpha = 0.28;
+      else if (m.validation_status === 'ambiguous') { alpha = 0.18; dash = '6,4'; }
+      rect.setAttribute('fill', hexToRgba(color, alpha));
+      rect.setAttribute('stroke', color);
+      rect.setAttribute('stroke-width', selectedZone === m.id ? 4 : 1.8);
+      if (dash) rect.setAttribute('stroke-dasharray', dash);
+      rect.setAttribute('data-microzone', m.id);
+      rect.style.pointerEvents = 'all';
+      rect.style.cursor = 'pointer';
+      rect.addEventListener('click', e => { e.stopPropagation(); selectMicrozone(m.id); });
+      const title = document.createElementNS('http://www.w3.org/2000/svg','title');
+      const pendMark = m.requires_chadi_validation ? ' [CHADI]' : '';
+      title.textContent = `${m.id}: ${m.name} | ${m.validation_status} (${m.confidence})${pendMark}`;
+      rect.appendChild(title);
+      gMicro.appendChild(rect);
+      // Optional small ID label (short suffix)
+      const short = m.id.includes('_') ? m.id.split('_').slice(1).join('_') : m.id;
+      const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+      txt.setAttribute('x', bp.x1 + bp.w/2);
+      txt.setAttribute('y', bp.y1 + bp.h/2 + 6);
+      txt.setAttribute('text-anchor','middle');
+      txt.setAttribute('font-family','Arial,sans-serif');
+      txt.setAttribute('font-size', Math.max(10, Math.min(22, bp.w * 0.18)));
+      txt.setAttribute('font-weight','bold');
+      txt.setAttribute('fill','#fff');
+      txt.setAttribute('stroke','#000');
+      txt.setAttribute('stroke-width','0.5');
+      txt.setAttribute('paint-order','stroke');
+      txt.style.pointerEvents = 'none';
+      txt.textContent = short;
+      gMicro.appendChild(txt);
+    });
+    svgOverlay.appendChild(gMicro);
+  }
+
+  if (showLabels) {
+    const gLabels = document.createElementNS('http://www.w3.org/2000/svg','g');
+    gLabels.setAttribute('id','layer-labels');
+    zones.forEach(z => {
+      const {x1,y1,w,h} = z.bbox;
+      const cx = x1 + w/2, cy = y1 + h/2;
+      const fontSize = Math.max(14, Math.min(44, Math.floor(w * 0.06)));
+      const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+      g.setAttribute('data-zone', z.id);
+      g.style.cursor = 'pointer';
+      g.addEventListener('click', () => selectZone(z.id));
+
+      const bgW = z.name.length * fontSize * 0.58 + 16;
+      const bgH = fontSize + 10;
+      const bg = document.createElementNS('http://www.w3.org/2000/svg','rect');
+      bg.setAttribute('x', cx - bgW/2); bg.setAttribute('y', cy - bgH/2);
+      bg.setAttribute('width', bgW); bg.setAttribute('height', bgH);
+      bg.setAttribute('fill','#000'); bg.setAttribute('fill-opacity','0.65'); bg.setAttribute('rx','3');
+      g.appendChild(bg);
+
+      const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+      txt.setAttribute('x', cx); txt.setAttribute('y', cy + fontSize*0.35);
+      txt.setAttribute('text-anchor','middle');
+      txt.setAttribute('font-family','Arial,sans-serif');
+      txt.setAttribute('font-size', fontSize);
+      txt.setAttribute('font-weight','bold');
+      txt.setAttribute('fill', z.color);
+      txt.textContent = z.name;
+      g.appendChild(txt);
+
+      if (z.count) {
+        const sub = document.createElementNS('http://www.w3.org/2000/svg','text');
+        sub.setAttribute('x', cx); sub.setAttribute('y', cy + fontSize + 6);
+        sub.setAttribute('text-anchor','middle');
+        sub.setAttribute('font-family','Arial,sans-serif');
+        sub.setAttribute('font-size', Math.floor(fontSize*0.7));
+        sub.setAttribute('fill','#CCCCCC');
+        sub.textContent = `×${z.count}`;
+        g.appendChild(sub);
+      }
+      gLabels.appendChild(g);
+    });
+    svgOverlay.appendChild(gLabels);
+  }
+
+  svgOverlay.style.width = W + 'px';
+  svgOverlay.style.height = H + 'px';
+}
+
+// =========================================================
+// ZONE LIST
+// =========================================================
+function buildZoneList() {
+  zoneListEl.innerHTML = '';
+  const zones = showPendingOnly ? ATLAS_ZONES.filter(z => z.pending) : ATLAS_ZONES;
+  zones.forEach(z => {
+    const div = document.createElement('div');
+    div.className = 'zone-item' + (selectedZone === z.id ? ' selected' : '');
+    div.dataset.zone = z.id;
+    div.innerHTML = `
+      <div class="zone-color" style="background:${z.color}"></div>
+      <span class="zone-name">${z.id}: ${z.name}</span>
+      ${z.count ? `<span class="zone-badge">×${z.count}</span>` : ''}
+      ${z.pending ? `<span class="zone-pending">CHADI</span>` : ''}
+    `;
+    div.addEventListener('click', () => selectZone(z.id));
+    zoneListEl.appendChild(div);
+  });
+}
+
+// =========================================================
+// ZONE SELECTION / INSPECTOR
+// =========================================================
+function selectZone(zid) {
+  selectedZone = zid;
+  const z = ATLAS_ZONES.find(z => z.id === zid);
+  if (!z) return;
+
+  buildZoneList();
+  buildSVG();
+
+  // Fly to zone
+  flyTo(z.bbox);
+
+  // Inspector
+  const certClass = z.certainty === 'high' ? 'high' : z.pending ? 'pending' : '';
+  inspectorContent.innerHTML = `
+    <div class="field"><span class="key">ID</span><br><span class="val">${z.id}</span></div>
+    <div class="field"><span class="key">Nombre</span><br><span class="val">${z.name}</span></div>
+    <div class="field"><span class="key">Tipo</span><br><span class="val">${z.type}</span></div>
+    <div class="field"><span class="key">Certeza</span><br><span class="val ${certClass}">${z.certainty}</span></div>
+    <div class="field"><span class="key">Estado</span><br><span class="val">${z.status}</span></div>
+    ${z.count !== null ? `<div class="field"><span class="key">Conteo</span><br><span class="val">×${z.count}</span></div>` : ''}
+    <div class="field"><span class="key">BBox px</span><br><span class="val">(${z.bbox.x1},${z.bbox.y1}) → (${z.bbox.x2},${z.bbox.y2}) — ${z.bbox.w}×${z.bbox.h}</span></div>
+    ${z.pending ? `<div class="field"><span class="key" style="color:#ffaa00">Validación Chadi</span><br><span class="val pending">PENDIENTE</span></div>` : ''}
+    <div style="margin-top:8px">
+      <a href="../crops/${z.id.toLowerCase()}_${z.name.toLowerCase().replace(/ /g,'_').replace(/\//g,'_')}/label.png" target="_blank" style="color:#0066cc;font-size:11px">Ver crop label</a>
+    </div>
+  `;
+}
+
+function selectMicrozone(mid) {
+  selectedZone = mid;
+  const m = MICROZONES.find(mm => mm.id === mid);
+  if (!m) return;
+  buildSVG();
+  if (m.bbox_pixels) flyTo(m.bbox_pixels);
+  const valColorMap = {
+    validated:'#4caf50', probable:'#ffd54f', ambiguous:'#ff9800',
+    bbox_pending:'#888', planned_position_pending:'#888',
+    planned_count_and_position_pending:'#888'
+  };
+  const valColor = valColorMap[m.validation_status] || '#aaa';
+  const pendBadge = m.requires_chadi_validation
+    ? `<div class="field"><span class="key" style="color:#ffaa00">Validación Chadi</span><br><span class="val pending">PENDIENTE</span></div>` : '';
+  const bbox = m.bbox_pixels
+    ? `(${m.bbox_pixels.x1},${m.bbox_pixels.y1}) → (${m.bbox_pixels.x2},${m.bbox_pixels.y2}) — ${m.bbox_pixels.w}×${m.bbox_pixels.h}`
+    : '<i style="color:#888">sin bbox aún</i>';
+  inspectorContent.innerHTML = `
+    <div style="margin-bottom:6px;padding:3px 6px;background:#1a2a3a;border-left:3px solid #0066cc;font-size:11px;color:#88aacc">MICROZONA</div>
+    <div class="field"><span class="key">ID</span><br><span class="val">${m.id}</span></div>
+    <div class="field"><span class="key">Nombre</span><br><span class="val">${m.name}</span></div>
+    <div class="field"><span class="key">Parent zone</span><br><span class="val">${m.parent_zone}</span></div>
+    <div class="field"><span class="key">Tipo</span><br><span class="val">${m.element_type || '-'}</span></div>
+    <div class="field"><span class="key">Validation status</span><br><span class="val" style="color:${valColor}">${m.validation_status}</span></div>
+    <div class="field"><span class="key">Confidence</span><br><span class="val">${m.confidence || 'n/a'}</span></div>
+    <div class="field"><span class="key">Source</span><br><span class="val">${m.source || '-'}</span></div>
+    <div class="field"><span class="key">BBox px</span><br><span class="val">${bbox}</span></div>
+    ${m.notes ? `<div class="field"><span class="key">Notas</span><br><span class="val" style="font-size:10px;line-height:1.4">${m.notes}</span></div>` : ''}
+    ${pendBadge}
+  `;
+}
+
+// =========================================================
+// PAN / ZOOM
+// =========================================================
+function applyTransform() {
+  canvasInner.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`;
+  canvasInner.style.transformOrigin = '0 0';
+  zoomDisplay.textContent = `Zoom: ${Math.round(scale*100)}% | Pos: (${Math.round(-tx/scale)}, ${Math.round(-ty/scale)})`;
+}
+
+function flyTo(bbox) {
+  const cw = canvasWrap.clientWidth, ch = canvasWrap.clientHeight;
+  const cx = bbox.x1 + bbox.w / 2, cy = bbox.y1 + bbox.h / 2;
+  const scaleX = cw / (bbox.w + 200), scaleY = ch / (bbox.h + 200);
+  scale = Math.min(Math.min(scaleX, scaleY), 8);
+  tx = cw/2 - cx * scale;
+  ty = ch/2 - cy * scale;
+  applyTransform();
+}
+
+function fitView() {
+  const cw = canvasWrap.clientWidth, ch = canvasWrap.clientHeight;
+  const scaleX = cw / 5042, scaleY = ch / 4474;
+  scale = Math.min(scaleX, scaleY);
+  tx = (cw - 5042 * scale) / 2;
+  ty = (ch - 4474 * scale) / 2;
+  applyTransform();
+}
+
+canvasWrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  const rect = canvasWrap.getBoundingClientRect();
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  const factor = e.deltaY < 0 ? 1.12 : 1/1.12;
+  const newScale = Math.max(0.05, Math.min(20, scale * factor));
+  tx = mx - (mx - tx) * (newScale / scale);
+  ty = my - (my - ty) * (newScale / scale);
+  scale = newScale;
+  applyTransform();
+}, { passive: false });
+
+canvasWrap.addEventListener('mousedown', e => {
+  if (e.button !== 0) return;
+  isPanning = true; lastMx = e.clientX; lastMy = e.clientY;
+  canvasWrap.classList.add('panning');
+});
+window.addEventListener('mousemove', e => {
+  if (!isPanning) return;
+  tx += e.clientX - lastMx; ty += e.clientY - lastMy;
+  lastMx = e.clientX; lastMy = e.clientY;
+  applyTransform();
+});
+window.addEventListener('mouseup', () => { isPanning = false; canvasWrap.classList.remove('panning'); });
+
+// Touch support
+let lastDist = null, lastTouchMx = 0, lastTouchMy = 0;
+canvasWrap.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) { lastTouchMx = e.touches[0].clientX; lastTouchMy = e.touches[0].clientY; }
+  if (e.touches.length === 2) { lastDist = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY); }
+}, {passive:true});
+canvasWrap.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (e.touches.length === 1) {
+    tx += e.touches[0].clientX - lastTouchMx; ty += e.touches[0].clientY - lastTouchMy;
+    lastTouchMx = e.touches[0].clientX; lastTouchMy = e.touches[0].clientY;
+    applyTransform();
+  }
+  if (e.touches.length === 2) {
+    const dist = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+    if (lastDist) {
+      const factor = dist / lastDist;
+      const mx = (e.touches[0].clientX + e.touches[1].clientX)/2;
+      const my = (e.touches[0].clientY + e.touches[1].clientY)/2;
+      const rect = canvasWrap.getBoundingClientRect();
+      const newScale = Math.max(0.05, Math.min(20, scale * factor));
+      tx = (mx - rect.left) - ((mx - rect.left) - tx) * (newScale/scale);
+      ty = (my - rect.top) - ((my - rect.top) - ty) * (newScale/scale);
+      scale = newScale;
+      applyTransform();
+    }
+    lastDist = dist;
+  }
+}, {passive:false});
+
+// =========================================================
+// CONTROLS
+// =========================================================
+document.getElementById('btn-fit').addEventListener('click', fitView);
+document.getElementById('btn-reset').addEventListener('click', () => { scale=1; tx=0; ty=0; applyTransform(); });
+document.getElementById('btn-zones').addEventListener('click', function() {
+  showZones = !showZones;
+  this.classList.toggle('active', showZones);
+  buildSVG();
+});
+document.getElementById('btn-microzones').addEventListener('click', function() {
+  showMicrozones = !showMicrozones;
+  this.classList.toggle('active', showMicrozones);
+  buildSVG();
+});
+document.getElementById('btn-labels').addEventListener('click', function() {
+  showLabels = !showLabels;
+  this.classList.toggle('active', showLabels);
+  buildSVG();
+});
+document.getElementById('btn-pending').addEventListener('click', function() {
+  showPendingOnly = !showPendingOnly;
+  this.classList.toggle('active', showPendingOnly);
+  buildZoneList();
+  buildSVG();
+});
+
+// Keyboard shortcuts
+window.addEventListener('keydown', e => {
+  if (e.key === 'f' || e.key === 'F') fitView();
+  if (e.key === 'Escape') { selectedZone = null; buildZoneList(); buildSVG(); }
+});
+
+// =========================================================
+// INIT
+// =========================================================
+function initAfterSatLoad() { buildSVG(); buildZoneList(); fitView(); }
+
+// Fetch microzones; viewer needs HTTP server (28 MB image already requires it)
+fetch('../atlas/microzones.json')
+  .then(r => r.ok ? r.json() : Promise.reject(r.status))
+  .then(j => {
+    MICROZONES = j.microzones || [];
+    const withBbox = MICROZONES.filter(m => m.bbox_pixels).length;
+    document.getElementById('status-micro').textContent =
+      `microzonas: ${MICROZONES.length} (${withBbox} con bbox)`;
+    buildSVG();  // re-render if loaded after first paint
+  })
+  .catch(err => {
+    document.getElementById('status-micro').innerHTML =
+      `<span style="color:#ff6666">microzonas: ERROR ${err} (¿servidor HTTP corriendo?)</span>`;
+  });
+
+satellite.addEventListener('load', initAfterSatLoad);
+if (satellite.complete) initAfterSatLoad();
+</script>
+</body>
+</html>
